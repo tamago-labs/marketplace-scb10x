@@ -5,7 +5,7 @@ let admin
 let relayer
 let validator
 
-describe("Cross-chain NFT swaps via Gateway contract", () => {
+describe("Gateway contract", () => {
 
     beforeEach(async () => {
         [admin, relayer, validator] = await ethers.getSigners()
