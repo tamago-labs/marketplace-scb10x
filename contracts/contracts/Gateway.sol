@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.6.12;
 
-import "@openzeppelin/contracts/utils/Pausable.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
 import "./interfaces/IGateway.sol";
@@ -10,7 +9,7 @@ import "./interfaces/IGateway.sol";
  * @title Gateway Contract (Single Relayer / Validator version)
  */
 
-contract Gateway is ReentrancyGuard, Pausable, IGateway {
+contract Gateway is ReentrancyGuard, IGateway {
     using Address for address;
 
     enum Role {
@@ -33,7 +32,7 @@ contract Gateway is ReentrancyGuard, Pausable, IGateway {
     // ACL
     mapping(address => Role) private permissions;
     // Chain ID
-    uint256 public chainId;
+    uint256 public override chainId;
     // Each message contains Merkle Tree's root of all orders listed from all EVM chains
     mapping(uint256 => RelayMessage) public relayMessages;
     uint256 public relayMessageCount;
