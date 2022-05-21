@@ -1,0 +1,16 @@
+{
+  "name": "marketplace-contracts",
+  "devDependencies": {
+    "@nomiclabs/hardhat-ethers": "^2.0.6",
+    "@nomiclabs/hardhat-waffle": "^2.0.3",
+    "chai": "^4.3.6",
+    "ethereum-waffle": "^3.4.4",
+    "ethers": "^5.6.6",
+    "hardhat": "^2.9.6"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "3.4",
+    "keccak256": "^1.0.6",
+    "merkletreejs": "^0.2.31"
+  }
+}
