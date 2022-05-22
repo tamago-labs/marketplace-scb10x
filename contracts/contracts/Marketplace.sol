@@ -524,8 +524,7 @@ contract Marketplace is
                 _tokenIdOrAmount
             );
         } else {
-            IERC20(_assetAddress).safeTransferFrom(
-                address(this),
+            IERC20(_assetAddress).safeTransfer(
                 msg.sender,
                 _tokenIdOrAmount
             );
