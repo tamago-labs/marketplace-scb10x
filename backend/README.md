@@ -10,10 +10,10 @@
 
 ## Orders
 
-| HTTP Method | path            | RequestBody | Response                                                |
-| ----------- | --------------- | ----------- | ------------------------------------------------------- |
-| GET         | /orders         | none        | { "status": "ok", "orders": [{...},{...},{...}]}        |
-| GET         | /orders/{id}    | none        | { "status": "ok", "order": {...}}                       |
-| POST        | /orders         | required    | { "status": "ok", "body": {...req.body} , "orderId": 1} |
-| POST        | /orders/confirm | WIP         | WIP                                                     |
-| POST        | /orders/cancel  | WIP         | WIP                                                     |
+| HTTP Method | path            | RequestBody                 | Response                                                |
+| ----------- | --------------- | --------------------------- | ------------------------------------------------------- |
+| GET         | /orders         | none                        | { "status": "ok", "orders": [{...},{...},{...}]}        |
+| GET         | /orders/{id}    | none                        | { "status": "ok", "order": {...}}                       |
+| POST        | /orders         | \*required                  | { "status": "ok", "body": {...req.body} , "orderId": 1} |
+| POST        | /orders/confirm | {orderId,message,signature} | { "status": "ok", "orderId": 1}                         |
+| POST        | /orders/cancel  | {orderId,message,signature} | { "status": "ok", "orderId": 1}                         |
