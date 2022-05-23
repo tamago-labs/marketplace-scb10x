@@ -1,7 +1,8 @@
 import React from "react"
 import ReactDOM from "react-dom/client"
+import { BrowserRouter } from "react-router-dom"
 import { Web3ReactProvider } from "@web3-react/core"
-import { ethers } from "ethers";
+import { ethers } from "ethers"
 import App from "./App"
 import reportWebVitals from "./reportWebVitals"
 import "bootstrap/dist/css/bootstrap.min.css"
@@ -15,9 +16,11 @@ const getLibrary = (provider) => {
 const root = ReactDOM.createRoot(document.getElementById("root"))
 root.render(
   <React.StrictMode>
-    <Web3ReactProvider getLibrary={getLibrary}>
-      <App />
-    </Web3ReactProvider>
+    <BrowserRouter>
+      <Web3ReactProvider getLibrary={getLibrary}>
+        <App />
+      </Web3ReactProvider>
+    </BrowserRouter>
   </React.StrictMode>
 )
 

@@ -52,7 +52,7 @@ const Jumbotron = () => {
               }}
               className="btn btn-secondary shadow"
             >
-              Sell
+              Create Order
             </a>
           </div>
         </div>

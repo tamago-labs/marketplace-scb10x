@@ -28,12 +28,12 @@ const AnimatedComponent = styled.svg`
 const ListContainer = styled.div`
   display: flex;
   flex-wrap: wrap;
-	margin-top: 32px;
+  margin-top: 32px;
 `
 
 const Lists = () => {
   return (
-    <div style={{ marginTop: 32, paddingBottom: 32}} className="container">
+    <div style={{ marginTop: 32, paddingBottom: 32 }} className="container">
       <Header>
         <div className="title">
           <AnimatedComponent height="50" width="50">
@@ -41,10 +41,21 @@ const Lists = () => {
           </AnimatedComponent>
           NFT Lists
         </div>
+        <a
+          style={{
+            zIndex: 10,
+            color: "white",
+            borderRadius: "32px",
+            padding: "12px 24px",
+          }}
+          className="btn btn-secondary shadow"
+        >
+          Create Order
+        </a>
       </Header>
       <ListContainer>
-				<NFTCard />
-			</ListContainer>
+        <NFTCard />
+      </ListContainer>
     </div>
   )
 }

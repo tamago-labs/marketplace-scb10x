@@ -1,7 +1,7 @@
-import { createGlobalStyle } from 'styled-components'
-import Header from './components/header'
-import Jumbotron from './components/jumbotron'
-import Lists from './components/lists'
+import { createGlobalStyle } from "styled-components"
+import { Routes, Route, Link } from "react-router-dom"
+import Header from "./components/header"
+import Home from "./components/Home"
 
 const GlobalStyle = createGlobalStyle`
   * {
@@ -21,17 +21,18 @@ const GlobalStyle = createGlobalStyle`
     background-size: cover;
     background: linear-gradient(to right, #896eff 0, #5f3bff 51%, #896eff 100%);
   }
-`;
+`
 
 function App() {
   return (
     <div className="App">
       <GlobalStyle />
       <Header />
-      <Jumbotron />
-      <Lists />
+      <Routes>
+        <Route path="/" element={<Home />} />
+      </Routes>
     </div>
-  );
+  )
 }
 
-export default App;
+export default App
