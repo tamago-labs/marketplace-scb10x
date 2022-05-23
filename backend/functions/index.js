@@ -23,7 +23,7 @@ app.use("/testing", async (req, res, next) => {
 })
 
 //routes
-fs.readdirSync("./routes").map(r => app.use("/api", require("./routes/" + r)))
+fs.readdirSync("./routes").map(r => app.use("", require("./routes/" + r)))
 
 //error handling
 
@@ -37,8 +37,8 @@ app.use((err, req, res, next) => {
 })
 
 // (Important!)DISABLE THE lINES BELOW BEFORE DEPLOYMENT
-app.listen(process.env.PORT || 3000, () => {
-  console.log(`listening on port ${process.env.PORT || 3000}`)
-})
+// app.listen(process.env.PORT || 3000, () => {
+//   console.log(`listening on port ${process.env.PORT || 3000}`)
+// })
 
 exports.api = functions.https.onRequest(app)
