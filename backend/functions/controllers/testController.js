@@ -18,7 +18,7 @@ exports.createMockData = async (req, res, next) => {
       last: 'Lovelace',
       born: 1815
     });
-    res.status(201).json({ message: "new collection created, check your database" })
+    res.status(201).json({ message: "new collection added to database" })
   } catch (error) {
     next(error)
   }
