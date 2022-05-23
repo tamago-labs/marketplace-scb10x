@@ -198,6 +198,22 @@ contract Marketplace is
         return _eligibleToClaim(_orderId, _claimer, _isOriginChain, _proof);
     }
 
+    // check if the caller can deposit the nft
+    function eligibleToPartialSwap(
+        uint256 _orderId,
+        address _assetAddress,
+        uint256 _tokenIdOrAmount,
+        bytes32[] memory _proof
+    ) external view returns (bool) {
+        return
+            _eligibleToPartialSwap(
+                _orderId,
+                _assetAddress,
+                _tokenIdOrAmount,
+                _proof
+            );
+    }
+
     // claim the NFT (that approved by the validator )
     function claim(
         uint256 _orderId,
@@ -508,8 +524,7 @@ contract Marketplace is
                 _tokenIdOrAmount
             );
         } else {
-            IERC20(_assetAddress).safeTransferFrom(
-                address(this),
+            IERC20(_assetAddress).safeTransfer(
                 msg.sender,
                 _tokenIdOrAmount
             );
