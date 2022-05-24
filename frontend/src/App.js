@@ -2,6 +2,8 @@ import { createGlobalStyle } from "styled-components"
 import { Routes, Route, Link } from "react-router-dom"
 import Header from "./components/header"
 import Home from "./components/Home"
+import Footer from "./components/footer"
+import OrderDetails from "./components/OrderDetails"
 
 const GlobalStyle = createGlobalStyle`
   * {
@@ -30,7 +32,9 @@ function App() {
       <Header />
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/order/:id" element={<OrderDetails />} />
       </Routes>
+      <Footer/>
     </div>
   )
 }

@@ -6,6 +6,8 @@ import { ethers } from "ethers"
 import App from "./App"
 import reportWebVitals from "./reportWebVitals"
 import "bootstrap/dist/css/bootstrap.min.css"
+import 'react-loading-skeleton/dist/skeleton.css'
+import { SkeletonTheme } from 'react-loading-skeleton'
 
 const getLibrary = (provider) => {
   const library = new ethers.providers.Web3Provider(provider)
@@ -18,7 +20,9 @@ root.render(
   <React.StrictMode>
     <BrowserRouter>
       <Web3ReactProvider getLibrary={getLibrary}>
-        <App />
+        <SkeletonTheme highlightColor="#ccc">
+          <App />
+        </SkeletonTheme>
       </Web3ReactProvider>
     </BrowserRouter>
   </React.StrictMode>

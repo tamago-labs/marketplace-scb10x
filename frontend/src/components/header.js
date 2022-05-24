@@ -2,6 +2,7 @@ import styled from "styled-components"
 import { useState, useContext } from "react"
 import { useWeb3React } from "@web3-react/core"
 import { isBrowser } from "react-device-detect"
+import { Link } from "react-router-dom";
 
 import {
   shortAddress,
@@ -19,9 +20,8 @@ const NetworkBadge = styled(({ className, toggleSwitchChain, chainId }) => {
         onClick={toggleSwitchChain}
       >
         <div className="image-container">
-          <img src={resolveNetworkIconUrl(chainId)} />
+          <img style={{ height: "100%" }} src={resolveNetworkIconUrl(chainId)} />
         </div>
-
         <span className="ml-4">{resolveNetworkName(chainId)}</span>
       </a>
     </div>
@@ -45,6 +45,9 @@ const NetworkBadge = styled(({ className, toggleSwitchChain, chainId }) => {
     display: flex;
     align-items: center;
     justify-content: center;
+
+    
+
   }
 
   > .btn-custom {
@@ -91,14 +94,14 @@ function Header() {
                 className="logo-header mostion logo-dark"
                 style={{ width: "225px" }}
               >
-                <a href="https://tamago.finance" target="_blank">
+                <Link to="/">
                   <img
                     src="/images/logo.svg"
                     alt="logo"
                     width="225px"
                     height="45px"
                   />
-                </a>
+                </Link>
               </div>
               {/* <!-- Extra Nav --> */}
               <div className="extra-nav" style={{ cursor: "pointer", display: "flex", alignItems: "center" }}>
