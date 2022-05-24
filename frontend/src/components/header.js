@@ -91,9 +91,9 @@ function Header() {
                 className="logo-header mostion logo-dark"
                 style={{ width: "225px" }}
               >
-                <a>
+                <a href="https://tamago.finance" target="_blank">
                   <img
-                    src="/images/logo-luckbox-3.svg"
+                    src="/images/logo.svg"
                     alt="logo"
                     width="225px"
                     height="45px"
@@ -106,7 +106,7 @@ function Header() {
                   <>
                     {!account ? (
                       <a
-                        style={{ zIndex: 10, color: "white", backgroundImage: "linear-gradient(to right, #f55f8d 0, #f8ae56 51%, #f55f8d 100%)", borderRadius: "32px", padding: 12}}
+                        style={{ zIndex: 10, color: "white", backgroundImage: "linear-gradient(to right, #f55f8d 0, #f8ae56 51%, #f55f8d 100%)", borderRadius: "32px", padding: 12 }}
                         className="btn btn-primary shadow"
                         onClick={toggleWalletConnect}
                       >

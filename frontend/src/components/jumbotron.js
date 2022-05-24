@@ -1,67 +1,64 @@
 import React from "react"
 import styled from "styled-components"
+import { Button } from "./buttons"
 
-const Container = styled.div`
-  display: flex;
-  align-items: center;
-  width: 100%;
+const Container = styled.div.attrs(() => ({ className: "container" }))`
+  margin-top: 1rem;
+`
 
-  .left {
-    font-size: 32px;
-    color: #fff;
-    width: 50%;
+const WelcomeText = styled.div`
+  font-size: 16px;  
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+`
 
-    .action {
-      width: 100%;
-      display: flex;
-			margin-top: 12px;
-    }
-  }
+const Buttons = styled.div`
+  margin-top: 1rem;
+  margin-bottom: 2rem;
+  text-align: center;
+`
 
-  .right {
-    width: 50%;
-    text-align: center;
+const TextLink = styled.a`
+  color: inherit;  
+  font-size: 14px; 
+
+  :hover {
+    cursor: pointer;
+    color: white;
   }
 `
 
+
 const Jumbotron = () => {
   return (
-    <div style={{ marginTop: 40 }} className="container">
-      <Container>
-        <div className="left">
-          We Provide Web3 Smart Raffle On-Chain Solutions to Empower Every NFT
-          Community
-          <div className="action">
-            <a
-              style={{
-                zIndex: 10,
-                color: "white",
-                borderRadius: "32px",
-                padding: "12px 24px",
-              }}
-              className="btn btn-primary shadow mx-4"
-            >
-              Buy
-            </a>
-						<a
-              style={{
-                zIndex: 10,
-                color: "white",
-                borderRadius: "32px",
-                padding: "12px 24px",
-              }}
-              className="btn btn-secondary shadow"
-            >
-              Create Order
-            </a>
-          </div>
-        </div>
-        <div className="right">
-          <img width="460" height="460" src="/images/illustration-eggs.png" />
-        </div>
-      </Container>
-    </div>
+    <Container>
+      <WelcomeText>
+        Welcome to Beta version of Tamago multi-chain NFT marketplace allows anyone to list the NFT once and sell everywhere, supports ERC-721/ERC-1155/ERC-20 tokens
+      </WelcomeText>
+      <Buttons>
+        <Button style={{marginBottom: "10px", }}>
+          Create Order
+        </Button>
+        <br/>
+        <TextLink href="https://github.com/tamago-finance/marketplace-scb10x" target="_blank">
+          GitHub
+        </TextLink>
+        <TextLink href="https://docs.tamago.finance/tamago-finance/multi-chain-marketplace" target="_blank" style={{marginLeft: "10px"}}>
+          Docs
+        </TextLink>
+         
+        {/* <Button className="btn-secondary">
+          Github
+        </Button>
+        <Button className="btn-secondary">
+          Docs
+        </Button> */}
+      </Buttons>
+    </Container>
   )
 }
+
 
 export default Jumbotron
