@@ -12,6 +12,8 @@ export const resolveNetworkName = (networkId) => {
       return "BNB Smart Chain"
     case 137:
       return "Polygon"
+    case 80001:
+      return "Mumbai"
     default:
       return "Not Support Chain"
   }
@@ -26,6 +28,8 @@ export const resolveNetworkIconUrl = (networkId) => {
     case 56:
       return "https://raw.githubusercontent.com/sushiswap/icons/master/network/bsc.jpg"
     case 137:
+      return "https://raw.githubusercontent.com/sushiswap/icons/master/network/polygon.jpg"
+    case 80001:
       return "https://raw.githubusercontent.com/sushiswap/icons/master/network/polygon.jpg"
     default:
       return "https://via.placeholder.com/30x30"
@@ -60,5 +64,18 @@ export const countdown = (seconds) => {
     minutesLeft: pad(minutesLeft),
     minutes: pad(minutes),
     remainingSeconds: pad(remainingSeconds),
+  }
+}
+
+export const resolveStatus = ({
+  canceled,
+  fulfilled,
+}) => {
+  if (canceled) {
+    return "Canceled"
+  } else if (fulfilled) {
+    return "Sold"
+  } else {
+    return "New"
   }
 }

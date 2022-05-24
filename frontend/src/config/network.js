@@ -1,16 +1,16 @@
 export const NETWORK = [
-  {
-    chainId: "0x1",
-    chainName: "Ethereum",
-    icon: "https://raw.githubusercontent.com/sushiswap/icons/master/network/mainnet.jpg",
-    nativeCurrency: {
-      name: "Ethereum",
-      symbol: "ETH",
-      decimals: 18,
-    },
-    rpcUrls: ["https://mainnet.infura.io/v3"],
-    blockExplorerUrls: ["https://etherscan.com"],
-  },
+  // {
+  //   chainId: "0x1",
+  //   chainName: "Ethereum",
+  //   icon: "https://raw.githubusercontent.com/sushiswap/icons/master/network/mainnet.jpg",
+  //   nativeCurrency: {
+  //     name: "Ethereum",
+  //     symbol: "ETH",
+  //     decimals: 18,
+  //   },
+  //   rpcUrls: ["https://mainnet.infura.io/v3"],
+  //   blockExplorerUrls: ["https://etherscan.com"],
+  // },
   {
     chainId: "0x89",
     chainName: "Polygon",
@@ -48,11 +48,18 @@ export const NETWORK = [
     rpcUrls: ['https://kovan.poa.network'],
     blockExplorerUrls: ['https://kovan.etherscan.io/'],
   },
-
-
-
-
-
+  {
+    chainId: "0x13881",
+    chainName: "Mumbai Testnet",
+    icon: "https://raw.githubusercontent.com/sushiswap/icons/master/network/polygon.jpg",
+    nativeCurrency: {
+      name: "Matic",
+      symbol: "MATIC",
+      decimals: 18,
+    },
+    rpcUrls: ["https://matic-mainnet.chainstacklabs.com/"],
+    blockExplorerUrls: ["https://polygonscan.com"],
+  }
   // {
   //   chainId: '0x63564C40',
   //   chainName: 'Harmony',
