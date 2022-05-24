@@ -5,7 +5,8 @@
 | HTTP Method | path             | RequestBody | Response                                               |
 | ----------- | ---------------- | ----------- | ------------------------------------------------------ |
 | GET         | /testing         | none        | {"message":"The testing endpoint functions correctly"} |
-| GET         | /test/get        | none        | { message: "TESTGETJSON" }                             |
+| GET         | /test/get        | none        | { "message": "TESTGETJSON" }                           |
+| GET         | /test/ethers     | none        | {"status":"ok","blocknumber":14834871}                 |
 | POST        | /test/createMock | none        | { message: "new collection added to database" }        |
 
 ## Orders
