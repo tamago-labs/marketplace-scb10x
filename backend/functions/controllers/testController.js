@@ -1,5 +1,5 @@
 const { db } = require("../firebase")
-
+const { ethers } = require("ethers")
 
 exports.getTestJSON = async (req, res, next) => {
   try {
@@ -22,4 +22,18 @@ exports.createMockData = async (req, res, next) => {
   } catch (error) {
     next(error)
   }
+}
+
+exports.testEthers = async (req, res, next) => {
+  try {
+
+    const provider = new ethers.providers.getDefaultProvider();
+    const blocknumber = await provider.getBlockNumber()
+    console.log(blocknumber)
+    res.status(200).json({ status: "ok", blocknumber })
+  } catch (error) {
+    next(error)
+  }
+
+
 }

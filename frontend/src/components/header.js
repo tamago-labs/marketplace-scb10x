@@ -1,7 +1,6 @@
 import styled from "styled-components"
 import { useState, useContext } from "react"
 import { useWeb3React } from "@web3-react/core"
-import { isBrowser } from "react-device-detect"
 import { Link } from "react-router-dom";
 
 import {

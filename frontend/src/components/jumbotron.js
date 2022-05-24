@@ -1,5 +1,6 @@
 import React from "react"
 import styled from "styled-components"
+import { Link } from "react-router-dom";
 import { Button } from "./buttons"
 
 const Container = styled.div.attrs(() => ({ className: "container" }))`
@@ -38,9 +39,11 @@ const Jumbotron = () => {
         Welcome to Beta version of Tamago multi-chain NFT marketplace allows anyone to list the NFT once and sell everywhere, supports ERC-721/ERC-1155/ERC-20 tokens
       </WelcomeText>
       <Buttons>
-        <Button style={{marginBottom: "10px", }}>
-          Create Order
-        </Button>
+        <Link to="/createOrder">
+          <Button style={{marginBottom: "10px", }}>
+            Create Order
+          </Button>
+        </Link>
         <br/>
         <TextLink href="https://github.com/tamago-finance/marketplace-scb10x" target="_blank">
           GitHub

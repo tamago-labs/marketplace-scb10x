@@ -2,12 +2,14 @@ import React from "react"
 import ReactDOM from "react-dom/client"
 import { BrowserRouter } from "react-router-dom"
 import { Web3ReactProvider } from "@web3-react/core"
+import { MoralisProvider } from "react-moralis"
 import { ethers } from "ethers"
 import App from "./App"
 import reportWebVitals from "./reportWebVitals"
 import "bootstrap/dist/css/bootstrap.min.css"
 import 'react-loading-skeleton/dist/skeleton.css'
 import { SkeletonTheme } from 'react-loading-skeleton'
+import { MORALIS_URL, MORALIS_ID } from "./constants"
 
 const getLibrary = (provider) => {
   const library = new ethers.providers.Web3Provider(provider)
@@ -20,9 +22,11 @@ root.render(
   <React.StrictMode>
     <BrowserRouter>
       <Web3ReactProvider getLibrary={getLibrary}>
-        <SkeletonTheme highlightColor="#ccc">
-          <App />
-        </SkeletonTheme>
+        <MoralisProvider serverUrl={MORALIS_URL} appId={MORALIS_ID}>
+          <SkeletonTheme highlightColor="#ccc">
+            <App />
+          </SkeletonTheme>
+        </MoralisProvider>
       </Web3ReactProvider>
     </BrowserRouter>
   </React.StrictMode>
