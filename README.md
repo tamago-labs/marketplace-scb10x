@@ -1,2 +1,2 @@
-# marketplace-scb10x
+# Multi-chain NFT Marketplace
 A multi-chain marketplace MVP 
