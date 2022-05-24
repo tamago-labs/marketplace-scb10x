@@ -1,7 +1,10 @@
-import React from "react"
+import React, { useEffect, useState } from "react"
 import styled, { keyframes } from "styled-components"
 import { Link } from "react-router-dom";
 import NFTCard from "./nftCard"
+import Skeleton from "react-loading-skeleton"
+import useOrder from "../hooks/useOrder"
+
 
 const Header = styled.div`
   display: flex;
@@ -30,9 +33,23 @@ const ListContainer = styled.div`
   display: flex;
   flex-wrap: wrap;
   margin-top: 32px;
+  justify-content: center;
 `
 
 const Lists = () => {
+
+  const [orders, setOrders] = useState([])
+
+  const { getAllOrders } = useOrder()
+
+  useEffect(() => {
+
+    getAllOrders().then(setOrders)
+
+  }, [])
+
+  console.log("orders --> ", orders)
+
   return (
     <div style={{ marginTop: 32, paddingBottom: 32 }} className="container">
       <Header>
@@ -40,22 +57,38 @@ const Lists = () => {
           <AnimatedComponent height="50" width="50">
             <circle cx="25" cy="25" r="10" fill="red" />
           </AnimatedComponent>
-          NFT Lists
+          New Orders
         </div>
-        <Link to="/createOrder"
-          style={{
-            zIndex: 10,
-            color: "white",
-            borderRadius: "32px",
-            padding: "12px 24px",
-          }}
-          className="btn btn-secondary shadow"
-        >
-          Create Order
-        </Link>
+        <div style={{ display: "flex" }}>
+          <div style={{ marginTop: "auto", marginBottom: "auto" }}>
+            <label>Chain:</label>
+            <select>
+              <option value="all">All</option>
+              <option value="polygon">Polygon</option>
+              <option value="bnb">BNB Chain</option>
+              <option value="kovan">Kovan Testnet</option>
+              <option value="mumbai">Mumbai Testnet</option>
+            </select>
+          </div>
+
+        </div>
       </Header>
       <ListContainer>
-        <NFTCard />
+        {orders.length === 0 &&
+          <>
+            <Skeleton height="380px" width="260px" style={{ borderRadius: "12px" }} /> 
+          </>
+        }
+
+        {
+          orders.length > 0 && orders.map((order, index) => {
+            return (
+              <Link to={`/order/${order.orderId}`}>
+                <NFTCard key={index} order={order} />
+              </Link>
+            )
+          })
+        }
       </ListContainer>
     </div>
   )

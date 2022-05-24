@@ -7,6 +7,8 @@ import { ethers } from "ethers"
 import App from "./App"
 import reportWebVitals from "./reportWebVitals"
 import "bootstrap/dist/css/bootstrap.min.css"
+import 'react-loading-skeleton/dist/skeleton.css'
+import { SkeletonTheme } from 'react-loading-skeleton'
 import { MORALIS_URL, MORALIS_ID } from "./constants"
 
 const getLibrary = (provider) => {
@@ -21,7 +23,9 @@ root.render(
     <BrowserRouter>
       <Web3ReactProvider getLibrary={getLibrary}>
         <MoralisProvider serverUrl={MORALIS_URL} appId={MORALIS_ID}>
-          <App />
+          <SkeletonTheme highlightColor="#ccc">
+            <App />
+          </SkeletonTheme>
         </MoralisProvider>
       </Web3ReactProvider>
     </BrowserRouter>
