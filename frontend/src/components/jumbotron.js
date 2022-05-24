@@ -1,5 +1,6 @@
 import React from "react"
 import styled from "styled-components"
+import { Link } from "react-router-dom";
 
 const Container = styled.div`
   display: flex;
@@ -43,7 +44,7 @@ const Jumbotron = () => {
             >
               Buy
             </a>
-						<a
+						<Link to="/createOrder"
               style={{
                 zIndex: 10,
                 color: "white",
@@ -53,7 +54,7 @@ const Jumbotron = () => {
               className="btn btn-secondary shadow"
             >
               Create Order
-            </a>
+            </Link>
           </div>
         </div>
         <div className="right">

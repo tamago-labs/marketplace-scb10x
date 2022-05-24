@@ -1,7 +1,7 @@
 import styled from "styled-components"
 import { useState, useContext } from "react"
 import { useWeb3React } from "@web3-react/core"
-import { isBrowser } from "react-device-detect"
+import { Link } from "react-router-dom";
 
 import {
   shortAddress,
@@ -91,14 +91,14 @@ function Header() {
                 className="logo-header mostion logo-dark"
                 style={{ width: "225px" }}
               >
-                <a>
+                <Link to="/">
                   <img
                     src="/images/logo-luckbox-3.svg"
                     alt="logo"
                     width="225px"
                     height="45px"
                   />
-                </a>
+                </Link>
               </div>
               {/* <!-- Extra Nav --> */}
               <div className="extra-nav" style={{ cursor: "pointer", display: "flex", alignItems: "center" }}>

@@ -1,5 +1,6 @@
 import React from "react"
 import styled, { keyframes } from "styled-components"
+import { Link } from "react-router-dom";
 import NFTCard from "./nftCard"
 
 const Header = styled.div`
@@ -41,7 +42,7 @@ const Lists = () => {
           </AnimatedComponent>
           NFT Lists
         </div>
-        <a
+        <Link to="/createOrder"
           style={{
             zIndex: 10,
             color: "white",
@@ -51,7 +52,7 @@ const Lists = () => {
           className="btn btn-secondary shadow"
         >
           Create Order
-        </a>
+        </Link>
       </Header>
       <ListContainer>
         <NFTCard />
