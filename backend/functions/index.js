@@ -41,4 +41,4 @@ app.use((err, req, res, next) => {
 //   console.log(`listening on port ${process.env.PORT || 3000}`)
 // })
 
-exports.api = functions.https.onRequest(app)
+exports.api = functions.region('asia-east2').https.onRequest(app)
