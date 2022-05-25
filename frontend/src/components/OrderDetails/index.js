@@ -5,6 +5,7 @@ import useOrder from "../../hooks/useOrder"
 import styled from "styled-components";
 import { resolveNetworkName, shortAddress, resolveStatus } from "../../helper";
 import AssetCard from "./assetCard";
+import { AlertWarning } from "../alert";
 
 const Container = styled.div.attrs(() => ({ className: "container" }))`
     margin-top: 2rem;
@@ -83,7 +84,7 @@ const OrderDetails = () => {
 
         id && getOrder(id).then(setOrder)
 
-    }, [id])
+    }, [id, getOrder])
 
     console.log("order --> ", order)
 
@@ -169,14 +170,14 @@ const OrderDetails = () => {
             <div style={{ marginTop: "1rem", marginBottom: "1rem", height: "40px" }}>
 
                 {crossChain &&
-                    <div className="alert alert-warning" style={{ maxWidth: "800px", textAlign: "center", padding: "5px 20px 5px 20px", marginLeft: "auto", marginRight: "auto" }}>
+                    <AlertWarning>
                         You would be facing delays of up to 10 minutes for cross-chain swaps
-                    </div>
+                    </AlertWarning>
                 }
                 {!crossChain &&
-                    <div className="alert alert-warning" style={{ maxWidth: "800px", textAlign: "center", padding: "5px 20px 5px 20px", marginLeft: "auto", marginRight: "auto" }}>
+                    <AlertWarning>
                         Metamask/Web3 Wallet may popup twice for approving
-                    </div>
+                    </AlertWarning>
                 }
 
             </div>

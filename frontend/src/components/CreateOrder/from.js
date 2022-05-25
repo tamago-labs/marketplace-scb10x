@@ -1,5 +1,8 @@
+import { useWeb3React } from "@web3-react/core"
 import React, { useState, useEffect } from "react"
 import styled from "styled-components"
+import { Alert } from "../alert"
+import { resolveNetworkName } from "../../helper"
 
 const Content = styled.div`
   margin-top: 12px;
@@ -9,6 +12,7 @@ const Content = styled.div`
   max-height: 600px;
   overflow: scroll;
   padding: 12px;
+  min-height: 400px;
 `
 
 const Card = styled.div`
@@ -42,39 +46,53 @@ const ButtonContainer = styled.div`
 `
 
 const From = ({ nfts, fromData, setFromData, step, setStep }) => {
+
+  const { chainId } = useWeb3React()
+
   return (
     <>
+
+      {/* <Alert style={{ textAlign: "center", marginTop: "20px" }}>
+        Select NFT from your wallet that you want to list and deposit
+      </Alert> */}
+
       <Content>
+        {!nfts &&
+          <div>
+            Loading NFTs from your wallet...
+          </div>
+        }
         {nfts
           ? nfts.map((nft, index) => (
-              <Card
-                key={index}
-                selected={fromData && fromData.token_hash === nft.token_hash}
-                onClick={() => setFromData(nft)}
-              >
-                <img src={nft.metadata.image} width="100%" height="220" />
-                <div className="name">{nft.name}</div>
-                <div className="name">Token ID: {nft.token_id}</div>
-              </Card>
-            ))
+            <Card
+              key={index}
+              selected={fromData && fromData.token_hash === nft.token_hash}
+              onClick={() => setFromData(nft)}
+            >
+              <img src={nft.metadata.image} width="100%" height="220" />
+              <div className="name">{nft.name || nft.metadata.name}{` `}#{nft.token_id}</div>
+              {/* <div className="name">Token ID: {nft.token_id}</div> */}
+              <div className="name">Chain: {resolveNetworkName(chainId)}</div>
+            </Card>
+          ))
           : null}
       </Content>
-			<ButtonContainer>
-          {fromData && (
-            <a
-              style={{
-                zIndex: 10,
-                color: "white",
-                borderRadius: "32px",
-                padding: "12px 24px",
-              }}
-              className="btn btn-primary shadow"
-              onClick={() => setStep(step + 1)}
-            >
-              Next
-            </a>
-          )}
-        </ButtonContainer>
+      <ButtonContainer>
+        {fromData && (
+          <a
+            style={{
+              zIndex: 10,
+              color: "white",
+              borderRadius: "32px",
+              padding: "12px 24px",
+            }}
+            className="btn btn-primary shadow"
+            onClick={() => setStep(step + 1)}
+          >
+            Next
+          </a>
+        )}
+      </ButtonContainer>
     </>
   )
 }

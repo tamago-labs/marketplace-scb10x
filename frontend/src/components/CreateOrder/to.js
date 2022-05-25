@@ -9,6 +9,7 @@ const Content = styled.div`
   max-height: 600px;
   overflow: scroll;
   padding: 12px;
+  min-height: 600px;
 `
 
 const Card = styled.div`
@@ -59,10 +60,21 @@ const SearchInput = styled.input.attrs(() => ({
   }
 `
 
+
+const shorterName = (name) => {
+  return name.length > 28
+    ? `${name.slice(
+      0,
+      15
+    )}...${name.slice(-4)}`
+    : name
+}
+
 const To = ({ searchNFT, toData, setToData, step, setStep, setSearchText, searchText }) => {
   const onSearchTextChange = (e) => {
     setSearchText(e.target.value)
   }
+
 
   return (
     <>
@@ -72,28 +84,20 @@ const To = ({ searchNFT, toData, setToData, step, setStep, setSearchText, search
       <Content>
         {searchNFT
           ? searchNFT.map((nft, index) => (
-              <Card
-                key={index}
-                selected={toData && toData.token_hash === nft.token_hash}
-                onClick={() => setToData(nft)}
-              >
-                <img src={nft.metadata.image} width="100%" height="220" />
-                <div className="name">
-                  {nft.metadata.name.length > 28
-                    ? `${nft.metadata.name.slice(
-                        0,
-                        15
-                      )}...${nft.metadata.name.slice(-4)}`
-                    : nft.metadata.name}
-                </div>
-                <div className="name">
-                  Token ID:{" "}
-                  {nft.token_id.length > 28
-                    ? `${nft.token_id.slice(0, 15)}...${nft.token_id.slice(-4)}`
-                    : nft.token_id}
-                </div>
-              </Card>
-            ))
+            <Card
+              key={index}
+              selected={toData && toData.token_hash === nft.token_hash}
+              onClick={() => setToData(nft)}
+            >
+              <img src={nft.metadata.image} width="100%" height="220" />
+              <div className="name">
+                {shorterName(nft.metadata.name)}{` `}#{shorterName( nft.token_id)}
+              </div>
+              <div className="name">
+                Chain: TBD
+              </div>
+            </Card>
+          ))
           : null}
       </Content>
       <ButtonContainer>
