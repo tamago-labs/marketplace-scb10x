@@ -1,6 +1,8 @@
-import React from "react"
+import React, { useEffect, useState } from "react"
 import styled from "styled-components"
 import { resolveNetworkName } from "../helper"
+import useOrder from "../hooks/useOrder"
+import Skeleton from "react-loading-skeleton"
 
 const Container = styled.div`
   background-color: rgba(38, 38, 38, 0.6);
@@ -24,14 +26,38 @@ const Container = styled.div`
   }
 `
 
-const NFTCard = ({ order }) => {
+const NFTCard = ({ order, id }) => {
 
-  console.log("order : ", order)
+  const { resolveMetadata } = useOrder()
+  const [data, setData] = useState()
+
+  useEffect(() => {
+
+    if (order) {
+
+      setTimeout(() => {
+        resolveMetadata({
+          assetAddress: order.baseAssetAddress,
+          tokenId: order.baseAssetTokenId,
+          chainId: order.chainId
+        }).then(setData)
+      }, id * 3000)
+
+    }
+
+  }, [order, id])
 
   return (
     <Container>
-      <img src="https://via.placeholder.com/200x200" width="100%" height="220" />
-      <div className="name">Clone X</div>
+
+      {data ? <img src={data.metadata && data.metadata.image ? data.metadata.image : "https://via.placeholder.com/200x200"} width="100%" height="220" />
+        : <Skeleton height="220px" />
+      }
+
+
+      <div className="name">
+        {data ? `${data.metadata.name} #${order.baseAssetTokenId} ` : <Skeleton height="16px"/>}
+      </div>
       <div className="name">Chain: {resolveNetworkName(order.chainId)}</div>
       <a
         style={{
