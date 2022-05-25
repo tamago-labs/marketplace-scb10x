@@ -6,6 +6,7 @@ import styled from "styled-components";
 import { resolveNetworkName, shortAddress, resolveStatus } from "../../helper";
 import AssetCard from "./assetCard";
 import { AlertWarning } from "../alert";
+import Skeleton from "react-loading-skeleton";
 
 const Container = styled.div.attrs(() => ({ className: "container" }))`
     margin-top: 2rem;
@@ -73,10 +74,11 @@ const HowTo = styled.div.attrs(() => ({ className: "col-sm-4" }))`
 
 const OrderDetails = () => {
 
-    const { getOrder } = useOrder()
+    const { getOrder, resolveMetadata } = useOrder()
 
     const [order, setOrder] = useState()
     const [crossChain, setCrosschain] = useState(false)
+    const [data, setData] = useState()
 
     const { id } = useParams();
 
@@ -86,7 +88,17 @@ const OrderDetails = () => {
 
     }, [id, getOrder])
 
-    console.log("order --> ", order)
+    useEffect(() => {
+
+        if (order) {
+            resolveMetadata({
+                assetAddress: order.baseAssetAddress,
+                tokenId: order.baseAssetTokenId,
+                chainId: order.chainId
+            }).then(setData)
+        }
+
+    }, [order])
 
     const items = useMemo(() => {
 
@@ -96,7 +108,9 @@ const OrderDetails = () => {
 
         return []
 
-    }, [order, crossChain,])
+    }, [order, crossChain])
+
+
 
     if (!order) {
         return (
@@ -106,20 +120,26 @@ const OrderDetails = () => {
         )
     }
 
+    console.log("data --> ", data)
+
     return (
         <Container>
             <div className="row">
 
                 <Details>
                     <div>
-                        <Image src="https://via.placeholder.com/400x400" />
+
+                        {data ? <Image src={data.metadata && data.metadata.image ? data.metadata.image : "https://via.placeholder.com/200x200"} width="100%" height="220" />
+                            : <Skeleton width="200px" height="220px" />
+                        }
+ 
                     </div>
-                    <div style={{ marginLeft: "1rem", flexGrow: 1 }}>
+                    <div style={{ marginLeft: "2rem", flexGrow: 1 }}>
                         <h4>
-                            Baby Ape Mutant Club
+                        {data ? `${data.metadata.name} #${order.baseAssetTokenId} ` : <Skeleton  />}
                         </h4>
                         <p>
-                            Wait for reveal
+                        {data ? `${data.metadata.description} ` : <Skeleton  />}
                         </p>
                         <div>
                             <Info
@@ -138,15 +158,15 @@ const OrderDetails = () => {
                                 name={"Added By"}
                                 value={shortAddress(order.ownerAddress)}
                             />
-                            <p style={{ fontSize: "12px" }}>Contract Address : {order.baseAssetAddress}</p>
+                            {/* <p style={{ fontSize: "12px" }}>Contract Address : {order.baseAssetAddress}</p> */}
                         </div>
                     </div>
                 </Details>
-                <HowTo>
+                {/* <HowTo>
                     <div className="box">
                         <h6>How To Swap</h6>
                     </div>
-                </HowTo>
+                </HowTo> */}
             </div>
 
             <hr style={{ marginTop: "2rem", marginBottom: "2rem" }} />
@@ -187,7 +207,7 @@ const OrderDetails = () => {
             <div style={{ display: "flex", flexWrap: "wrap", marginTop: "1rem", justifyContent: "center" }}>
                 {items.map((item, index) => {
                     return (
-                        <AssetCard crossChain={crossChain} item={item} key={index} />
+                        <AssetCard id={index} crossChain={crossChain} item={item} key={index} />
                     )
                 })
 

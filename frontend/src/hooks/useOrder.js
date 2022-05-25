@@ -6,6 +6,7 @@ import React, {
     useState,
     useCallback,
 } from "react"
+import { useMoralisWeb3Api } from "react-moralis"
 import { useWeb3React } from '@web3-react/core'
 import axios from "axios"
 import { ethers } from "ethers"
@@ -13,6 +14,8 @@ import { MerkleTree } from "merkletreejs"
 import keccak256 from "keccak256"
 
 const useOrder = () => {
+
+    const Web3Api = useMoralisWeb3Api()
 
     const context = useWeb3React()
 
@@ -53,9 +56,48 @@ const useOrder = () => {
         return data.order
     }, [])
 
+    const getMetadata = async (nft) => {
+        let metadata = JSON.parse(nft.metadata)
+
+        // fetch from token uri
+        if (!metadata && nft && nft.token_uri) {
+            console.log("no metadata!")
+
+            const uri = nft.token_uri.replaceAll("000000000000000000000000000000000000000000000000000000000000000", "")
+            // proxy 
+            const { data } = await axios.get(`https://slijsy3prf.execute-api.ap-southeast-1.amazonaws.com/stage/proxy/${uri}`)
+
+            if (data && data.data) {
+                metadata = data.data
+            }
+        }
+
+        return {
+            ...nft,
+            metadata,
+        }
+    }
+
+    const resolveMetadata = async ({
+        assetAddress,
+        tokenId,
+        chainId
+    }) => {
+
+        const options = {
+            address: `${assetAddress}`,
+            token_id: `${tokenId}`,
+            chain: `0x${chainId.toString(16)}`,
+        };
+
+        const tokenIdMetadata = await Web3Api.token.getTokenIdMetadata(options);
+        return await getMetadata( tokenIdMetadata )
+    }
+
     return {
         getAllOrders,
-        getOrder
+        getOrder,
+        resolveMetadata
     }
 }
 

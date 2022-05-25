@@ -1,6 +1,8 @@
-import React from "react"
+import React, { useEffect, useState } from "react"
 import styled from "styled-components"
 import { resolveNetworkName } from "../../helper"
+import useOrder from "../../hooks/useOrder"
+import Skeleton from "react-loading-skeleton"
 
 const Container = styled.div`
   background-color: rgba(38, 38, 38, 0.6);
@@ -19,12 +21,42 @@ const Container = styled.div`
   }
 `
 
-const AssetCard = ({ item, crossChain }) => {
+const AssetCard = ({ item, crossChain, id }) => {
+
+    const { resolveMetadata } = useOrder()
+    const [data, setData] = useState()
+
+    useEffect(() => {
+
+        if (item && item.tokenType !== 0) {
+
+            setTimeout(() => {
+
+                resolveMetadata({
+                    assetAddress: item.assetAddress,
+                    tokenId: item.assetTokenIdOrAmount,
+                    chainId: item.chainId
+                }).then(setData)
+
+            }, (id + 1) * 3000)
+
+        }
+
+        return () => {
+            setData()
+        }
+
+    }, [item, id])
+
 
     return (
         <Container>
-            <img src="https://via.placeholder.com/200x200" width="100%" height="220" />
-            <div className="name">Clone X</div>
+            {data ? <img src={data.metadata && data.metadata.image ? data.metadata.image : "https://via.placeholder.com/200x200"} width="100%" height="220" />
+                : <Skeleton height="220px" />
+            }
+            <div className="name">
+                {data ? `${data.metadata.name} #${item.assetTokenIdOrAmount} ` : <Skeleton height="16px" />}
+            </div>
             <div className="name">Chain: {resolveNetworkName(item.chainId)}</div>
 
             {!crossChain &&

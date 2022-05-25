@@ -36,7 +36,7 @@ const Jumbotron = () => {
   return (
     <Container>
       <WelcomeText>
-        Welcome to Beta version of Tamago multi-chain NFT marketplace allows anyone to list the NFT once and sell everywhere, supports ERC-721/ERC-1155/ERC-20 tokens
+        Welcome to Alpha version of Tamago multi-chain NFT marketplace allows anyone to list the NFT once and sell everywhere, supports ERC-721/ERC-1155/ERC-20 tokens
       </WelcomeText>
       <Buttons>
         <Link to="/createOrder">
