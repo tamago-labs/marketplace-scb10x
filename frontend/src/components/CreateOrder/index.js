@@ -8,6 +8,15 @@ import Confirm from "./confirm"
 import { AlertWarning } from "../alert"
 import axios from "axios"
 
+
+export const PROCESS = {
+  FILL: 0,
+  GENERATE_ID: 1,
+  DEPOSIT: 2,
+  CONFIRM: 3,
+  COMPLETE: 4
+}
+
 const Title = styled.div`
   font-weight: bold;
   font-size: 32px;
@@ -23,6 +32,8 @@ const StepHeader = styled.div`
   align-items: center;
   justify-content: space-around;
 `
+
+
 
 const Step = styled.div`
   display: flex;
@@ -52,6 +63,8 @@ const CreateOrder = () => {
   const [searchNFT, setSearchNFT] = useState()
   const [step, setStep] = useState(1)
   const Web3Api = useMoralisWeb3Api()
+
+  const [process, setProcess] = useState(PROCESS.FILL)
 
   const getMetadata = async (nft) => {
     let metadata = JSON.parse(nft.metadata)
@@ -176,10 +189,12 @@ const CreateOrder = () => {
           toData={toData}
           step={step}
           setStep={setStep}
+          process={process}
+          setProcess={setProcess}
         />
       )}
 
-      <div style={{ maxWidth: "800px", marginLeft: "auto", marginRight: "auto", marginTop :"2rem" }}>
+      <div style={{ maxWidth: "800px", marginLeft: "auto", marginRight: "auto", marginTop: "2rem" }}>
         <p style={{ fontSize: "14px", textAlign: "center" }}>
           Please be aware that the UI is being developed, contact us in case if you want to cancel your order or withdraw a dispute.
         </p>

@@ -44,7 +44,7 @@ const ButtonContainer = styled.div`
 
 const SearchInput = styled.input.attrs(() => ({
   type: "text",
-  placeholder: "Search NFT, Eg. Azuki Metawarden",
+  placeholder: "Search NFT, Eg. Azuki, Tamago",
 }))`
   background: transparent;
   border: 1px solid #fff;
