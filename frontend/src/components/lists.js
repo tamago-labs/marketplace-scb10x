@@ -76,7 +76,7 @@ const Lists = () => {
       <ListContainer>
         {orders.length === 0 &&
           <>
-            <Skeleton height="380px" width="260px" style={{ borderRadius: "12px" }} /> 
+            Loading...
           </>
         }
 
@@ -84,7 +84,7 @@ const Lists = () => {
           orders.length > 0 && orders.map((order, index) => {
             return (
               <Link to={`/order/${order.orderId}`}>
-                <NFTCard key={index} order={order} />
+                <NFTCard key={index} id={index} order={order} />
               </Link>
             )
           })
