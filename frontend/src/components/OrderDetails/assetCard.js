@@ -4,7 +4,7 @@ import { resolveNetworkName } from "../../helper"
 import useOrder from "../../hooks/useOrder"
 import Skeleton from "react-loading-skeleton"
 import { Puff } from "react-loading-icons"
-
+import { ethers } from "ethers"
 
 const Container = styled.div`
   background-color: rgba(38, 38, 38, 0.6);
@@ -71,14 +71,37 @@ const AssetCard = ({ order, item, crossChain, id }) => {
 
     }, [order])
 
+    console.log("item --> ", item)
+
     return (
         <Container>
-            {data ? <img src={data.metadata && data.metadata.image ? data.metadata.image : "https://via.placeholder.com/200x200"} width="100%" height="220" />
-                : <Skeleton height="220px" />
+
+
+            {item.tokenType !== 0 &&
+                <>
+                    {data ? <img src={data.metadata && data.metadata.image ? data.metadata.image : "https://via.placeholder.com/200x200"} width="100%" height="220" />
+                        : <Skeleton height="220px" />
+                    }
+                    <div className="name">
+                        {data ? `${data.metadata.name} #${item.assetTokenIdOrAmount} ` : <Skeleton height="16px" />}
+                    </div>
+                </>
+
             }
-            <div className="name">
-                {data ? `${data.metadata.name} #${item.assetTokenIdOrAmount} ` : <Skeleton height="16px" />}
-            </div>
+
+            {item.tokenType === 0 &&
+                <>
+                    <div style={{ display: "flex", height: "220px" }}>
+                        <div style={{ margin: "auto", fontSize: "24px" }}>
+                            ERC-20
+                        </div>
+                    </div>
+                    <div className="name"> {ethers.utils.formatUnits(item.assetTokenIdOrAmount, item.decimals)}{` `}{item.symbol}</div>
+                </>
+
+            }
+
+
             <div className="name">Chain: {resolveNetworkName(item.chainId)}</div>
 
             {!crossChain &&
