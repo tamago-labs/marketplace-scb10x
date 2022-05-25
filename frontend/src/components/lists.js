@@ -48,8 +48,6 @@ const Lists = () => {
 
   }, [])
 
-  console.log("orders --> ", orders)
-
   return (
     <div style={{ marginTop: 32, paddingBottom: 32 }} className="container">
       <Header>
@@ -62,12 +60,12 @@ const Lists = () => {
         <div style={{ display: "flex" }}>
           <div style={{ marginTop: "auto", marginBottom: "auto" }}>
             <label>Chain:</label>
-            <select>
+            <select style={{width : "135px"}}>
               <option value="all">All</option>
-              <option value="polygon">Polygon</option>
+              {/* <option value="polygon">Polygon</option>
               <option value="bnb">BNB Chain</option>
               <option value="kovan">Kovan Testnet</option>
-              <option value="mumbai">Mumbai Testnet</option>
+              <option value="mumbai">Mumbai Testnet</option> */}
             </select>
           </div>
 

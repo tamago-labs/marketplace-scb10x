@@ -11,30 +11,30 @@ export const NETWORK = [
   //   rpcUrls: ["https://mainnet.infura.io/v3"],
   //   blockExplorerUrls: ["https://etherscan.com"],
   // },
-  {
-    chainId: "0x89",
-    chainName: "Polygon",
-    icon: "https://raw.githubusercontent.com/sushiswap/icons/master/network/polygon.jpg",
-    nativeCurrency: {
-      name: "Matic",
-      symbol: "MATIC",
-      decimals: 18,
-    },
-    rpcUrls: ["https://matic-mainnet.chainstacklabs.com/"],
-    blockExplorerUrls: ["https://polygonscan.com"],
-  },
-  {
-    chainId: '0x38',
-    chainName: 'BNB Smart Chain',
-    icon: 'https://raw.githubusercontent.com/sushiswap/icons/master/network/bsc.jpg',
-    nativeCurrency: {
-      name: 'Binance Coin',
-      symbol: 'BNB',
-      decimals: 18,
-    },
-    rpcUrls: ['https://bsc-dataseed1.binance.org'],
-    blockExplorerUrls: ['https://bscscan.com'],
-  },
+  // {
+  //   chainId: "0x89",
+  //   chainName: "Polygon",
+  //   icon: "https://raw.githubusercontent.com/sushiswap/icons/master/network/polygon.jpg",
+  //   nativeCurrency: {
+  //     name: "Matic",
+  //     symbol: "MATIC",
+  //     decimals: 18,
+  //   },
+  //   rpcUrls: ["https://matic-mainnet.chainstacklabs.com/"],
+  //   blockExplorerUrls: ["https://polygonscan.com"],
+  // },
+  // {
+  //   chainId: '0x38',
+  //   chainName: 'BNB Smart Chain',
+  //   icon: 'https://raw.githubusercontent.com/sushiswap/icons/master/network/bsc.jpg',
+  //   nativeCurrency: {
+  //     name: 'Binance Coin',
+  //     symbol: 'BNB',
+  //     decimals: 18,
+  //   },
+  //   rpcUrls: ['https://bsc-dataseed1.binance.org'],
+  //   blockExplorerUrls: ['https://bscscan.com'],
+  // },
   //kovan testnet
   {
     chainId: '0x2A',

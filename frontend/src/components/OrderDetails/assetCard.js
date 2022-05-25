@@ -1,8 +1,10 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useState, useCallback } from "react"
 import styled from "styled-components"
 import { resolveNetworkName } from "../../helper"
 import useOrder from "../../hooks/useOrder"
 import Skeleton from "react-loading-skeleton"
+import { Puff } from "react-loading-icons"
+
 
 const Container = styled.div`
   background-color: rgba(38, 38, 38, 0.6);
@@ -21,10 +23,13 @@ const Container = styled.div`
   }
 `
 
-const AssetCard = ({ item, crossChain, id }) => {
+const AssetCard = ({ order, item, crossChain, id }) => {
 
     const { resolveMetadata } = useOrder()
     const [data, setData] = useState()
+    const [loading, setLoading] = useState(false)
+
+    const { swap } = useOrder()
 
     useEffect(() => {
 
@@ -48,6 +53,23 @@ const AssetCard = ({ item, crossChain, id }) => {
 
     }, [item, id])
 
+    const onSwap = useCallback(async (index) => {
+
+        setLoading(true)
+
+        try {
+            const tx = await swap(order, index)
+            await tx.wait()
+        } catch (e) {
+            console.log(e)
+            alert(`${e.message}`)
+        }
+
+        setLoading(false)
+
+
+
+    }, [order])
 
     return (
         <Container>
@@ -60,7 +82,7 @@ const AssetCard = ({ item, crossChain, id }) => {
             <div className="name">Chain: {resolveNetworkName(item.chainId)}</div>
 
             {!crossChain &&
-                <a
+                <button
                     style={{
                         color: "white",
                         borderRadius: "32px",
@@ -68,23 +90,31 @@ const AssetCard = ({ item, crossChain, id }) => {
                         width: "100%"
                     }}
                     className="btn btn-primary shadow"
+                    onClick={() => onSwap(item.index)}
+                    disabled={loading}
                 >
+                    {loading &&
+                        <Puff height="24px" style={{ marginRight: "5px" }} width="24px" />}
                     Swap
-                </a>
+                </button>
 
             }
             {crossChain &&
-                <a
-                    style={{
-                        color: "white",
-                        borderRadius: "32px",
-                        marginTop: "12px",
-                        width: "100%"
-                    }}
-                    className="btn btn-primary shadow"
-                >
-                    Swap
-                </a>
+                <>
+                    <button
+                        style={{
+                            color: "white",
+                            borderRadius: "32px",
+                            marginTop: "12px",
+                            width: "100%"
+                        }}
+                        className="btn btn-primary shadow"
+                        disabled={true}
+                    >
+                        Swap
+                    </button>
+
+                </>
 
             }
         </Container>

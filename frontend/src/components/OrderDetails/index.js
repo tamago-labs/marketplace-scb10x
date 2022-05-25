@@ -103,7 +103,15 @@ const OrderDetails = () => {
     const items = useMemo(() => {
 
         if (order && order.barterList.length > 0) {
-            return order.barterList.filter(item => crossChain ? item.chainId !== order.chainId : item.chainId === order.chainId)
+
+            const list = order.barterList.map((item, index) => {
+                return {
+                    ...item,
+                    index
+                }
+            })
+
+            return list.filter(item => crossChain ? item.chainId !== order.chainId : item.chainId === order.chainId)
         }
 
         return []
@@ -119,8 +127,7 @@ const OrderDetails = () => {
             </Container>
         )
     }
-
-    console.log("data --> ", data)
+ 
 
     return (
         <Container>
@@ -194,11 +201,11 @@ const OrderDetails = () => {
                         You would be facing delays of up to 10 minutes for cross-chain swaps
                     </AlertWarning>
                 }
-                {!crossChain &&
+                {/* {!crossChain &&
                     <AlertWarning>
                         Metamask/Web3 Wallet may popup twice for approving
                     </AlertWarning>
-                }
+                } */}
 
             </div>
 
@@ -207,10 +214,9 @@ const OrderDetails = () => {
             <div style={{ display: "flex", flexWrap: "wrap", marginTop: "1rem", justifyContent: "center" }}>
                 {items.map((item, index) => {
                     return (
-                        <AssetCard id={index} crossChain={crossChain} item={item} key={index} />
+                        <AssetCard id={index} order={order} crossChain={crossChain} item={item} key={index} />
                     )
                 })
-
                 }
             </div>
 

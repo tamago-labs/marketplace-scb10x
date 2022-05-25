@@ -4,6 +4,7 @@ import { useWeb3React } from "@web3-react/core"
 import styled from "styled-components"
 import { ArrowRight, Check, X } from "react-feather"
 import { Puff } from 'react-loading-icons'
+import { ethers } from "ethers"
 import { resolveNetworkName } from "../../helper"
 import { PROCESS } from "./"
 import { Alert } from "../alert"
@@ -14,6 +15,9 @@ const Content = styled.div`
   margin-top: 12px;
   display: flex;
   justify-content: center;
+  max-width: 1000px;
+  margin-left: auto;
+  margin-right: auto;
 `
 
 const CardContainer = styled.div`
@@ -27,6 +31,7 @@ const CardContainer = styled.div`
   .title {
     font-size: 32px;
   }
+  
 `
 
 const Card = styled.div`
@@ -116,11 +121,20 @@ const getOrderTemplate = () => {
   return order
 }
 
-const Confirm = ({ fromData, toData, step, setStep, process, setProcess }) => {
+const Confirm = ({
+  fromData,
+  toData,
+  step,
+  setStep,
+  process,
+  setProcess,
+  setToData,
+  toTokens
+}) => {
 
   const [loading, setLoading] = useState(false)
 
-  const { createOrder, depositNft , signMessage , confirmOrder } = useOrder()
+  const { createOrder, depositNft, signMessage, confirmOrder } = useOrder()
 
   const { chainId, account } = useWeb3React()
   const [orderId, setOrderId] = useState()
@@ -142,25 +156,30 @@ const Confirm = ({ fromData, toData, step, setStep, process, setProcess }) => {
 
     if (toData) {
 
-      order.barterList = [
-        {
-          assetAddress: toData.token_address,
-          assetTokenIdOrAmount: toData.token_id,
-          tokenType: toData.contract_type === "ERC1155" ? 2 : 1,
-          chainId: 42
-        },
-        {
-          assetAddress: toData.token_address,
-          assetTokenIdOrAmount: toData.token_id,
-          tokenType: toData.contract_type === "ERC1155" ? 2 : 1,
-          chainId: 80001
+      console.log("todata -->", toData)
+
+      order.barterList = toData.map(item => {
+        return {
+          assetAddress: item.token_address,
+          assetTokenIdOrAmount: item.token_id,
+          tokenType: item.contract_type === "ERC1155" ? 2 : 1,
+          chainId: item.chainId
         }
-      ]
+      })
+
+    }
+    
+    if (toTokens) {
+
+      order.barterList = order.barterList.concat(
+        toTokens
+      )
+
     }
 
     return order
 
-  }, [fromData, toData, orderId, chainId])
+  }, [fromData, toData, orderId, chainId, toTokens])
 
   const onGenerateId = useCallback(async () => {
 
@@ -255,7 +274,6 @@ const Confirm = ({ fromData, toData, step, setStep, process, setProcess }) => {
     }
   }
 
-  console.log(toData)
 
   return (
     <>
@@ -268,20 +286,40 @@ const Confirm = ({ fromData, toData, step, setStep, process, setProcess }) => {
             <div className="name">Chain: {resolveNetworkName(chainId)}</div>
           </Card>
         </CardContainer>
-        <CardContainer>
-          <ArrowRight size="100px" />
+        <CardContainer style={{ display: "flex" }}>
+          <div style={{ marginTop: "auto", marginBottom: "auto" }}>
+            <ArrowRight size="60px" />
+          </div>
         </CardContainer>
         <CardContainer style={{ overflow: "scroll" }}>
           <div className="title">To</div>
+
+          {toTokens && toTokens.length > 0 && toTokens.map((token, index) => {
+            return (
+              <Card onClick={() => { }} key={index}>
+
+                <div style={{ height: "220px", display: "flex" }}>
+                  <div style={{ margin: "auto", fontSize: "24px" }}>
+                    ERC-20
+                  </div>
+                </div>
+                <div className="name"> {ethers.utils.formatUnits(token.assetTokenIdOrAmount, token.decimals)}{` `}{token.symbol}</div>
+                <div className="name">Chain: {resolveNetworkName(token.chainId)}</div>
+              </Card>
+            )
+          })
+
+          }
+
           {toData
             ? toData.map((nft, index) => (
-                <Card onClick={() => onClickCard(nft)} key={index}>
-                  <div className="remove">Remove</div>
-                  <img src={nft.metadata.image} width="100%" height="220" />
-                  <div className="name">{nft.metadata.name}</div>
-                  <div className="name">Token ID: {nft.token_id}</div>
-                </Card>
-              ))
+              <Card onClick={() => onClickCard(nft)} key={index}>
+                <div className="remove">Remove</div>
+                <img src={nft.metadata.image} width="100%" height="220" />
+                <div className="name">{nft.metadata.name}{` `}#{nft.token_id}</div>
+                <div className="name">Chain: {resolveNetworkName(nft.chainId)}</div>
+              </Card>
+            ))
             : null}
         </CardContainer>
       </Content>
@@ -351,7 +389,7 @@ const Confirm = ({ fromData, toData, step, setStep, process, setProcess }) => {
 
       <ButtonContainer>
         {step > 1 && (
-          <a
+          <button
             style={{
               zIndex: 10,
               color: "white",
@@ -360,9 +398,10 @@ const Confirm = ({ fromData, toData, step, setStep, process, setProcess }) => {
             }}
             className="btn btn-secondary shadow mx-4"
             onClick={() => setStep(step - 1)}
+            disabled={loading || process !== PROCESS.FILL}
           >
             Back
-          </a>
+          </button>
         )}
         {fromData && toData && (
           <button
