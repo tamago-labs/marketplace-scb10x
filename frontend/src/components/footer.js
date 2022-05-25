@@ -15,6 +15,7 @@ const TextLink = styled.a`
 
 const Container = styled.div.attrs(() => ({ className: "container" }))`
   margin-top: 6rem;
+  padding-bottom: 1rem;
   font-size: 14px;
   display: flex;
   flex-direction: row;
