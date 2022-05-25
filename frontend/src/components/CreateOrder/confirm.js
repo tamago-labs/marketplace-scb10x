@@ -86,17 +86,16 @@ const ButtonContainer = styled.div`
 `
 
 const TableContainer = styled.div`
-background-color: rgba(38, 38, 38, 0.6);
-padding: 10px;
-max-width: 600px;
-margin-left:auto;
-margin-right: auto;
-border-radius: 12px;
+  background-color: rgba(38, 38, 38, 0.6);
+  padding: 10px;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 12px;
 
-.table {
-  color: white;
-}
-
+  .table {
+    color: white;
+  }
 `
 
 const orderTemplate = {
@@ -111,13 +110,13 @@ const orderTemplate = {
   baseAssetAddress: "",
   baseAssetTokenId: 0,
   baseAssetIs1155: false,
-  barterList: []
+  barterList: [],
 }
 
 const getOrderTemplate = () => {
   let order = orderTemplate
-  const randomNumber = Math.floor(Math.random() * (9999 - 1000 + 1)) + 1000;
-  order['title'] = `My Order #${randomNumber}`
+  const randomNumber = Math.floor(Math.random() * (9999 - 1000 + 1)) + 1000
+  order["title"] = `My Order #${randomNumber}`
   return order
 }
 
@@ -140,7 +139,6 @@ const Confirm = ({
   const [orderId, setOrderId] = useState()
 
   const values = useMemo(() => {
-
     let order = getOrderTemplate()
 
     if (orderId) {
@@ -151,13 +149,12 @@ const Confirm = ({
       order.chainId = chainId
       order.baseAssetAddress = fromData.token_address
       order.baseAssetTokenId = fromData.token_id
-      order.baseAssetIs1155 = fromData.contract_type === "ERC1155" ? true : false
+      order.baseAssetIs1155 =
+        fromData.contract_type === "ERC1155" ? true : false
     }
 
     if (toData) {
-
-      console.log("todata -->", toData)
-
+ 
       order.barterList = toData.map(item => {
         return {
           assetAddress: item.token_address,
@@ -182,7 +179,6 @@ const Confirm = ({
   }, [fromData, toData, orderId, chainId, toTokens])
 
   const onGenerateId = useCallback(async () => {
-
     console.log("creating --> ", values)
 
     setLoading(true)
@@ -197,17 +193,14 @@ const Confirm = ({
     }
 
     setLoading(false)
-
   }, [values, createOrder])
 
   const onDeposit = useCallback(async () => {
-
     console.log("depositing --> ", values)
 
     setLoading(true)
 
     try {
-
       const tx = await depositNft(values)
 
       await tx.wait()
@@ -221,7 +214,6 @@ const Confirm = ({
   }, [values])
 
   const onConfirm = useCallback(async () => {
-
     const message = "Please sign this message to confirm your order."
 
     const { signature } = await signMessage(message)
@@ -232,7 +224,7 @@ const Confirm = ({
       await confirmOrder({
         orderId,
         message,
-        signature
+        signature,
       })
 
       setProcess(PROCESS.CONFIRM)
@@ -241,7 +233,6 @@ const Confirm = ({
     }
 
     setLoading(false)
-
   }, [values, orderId])
 
   const proceed = useCallback(() => {
@@ -282,7 +273,10 @@ const Confirm = ({
           <div className="title">From</div>
           <Card>
             <img src={fromData.metadata.image} width="100%" height="220" />
-            <div className="name">{fromData.name || fromData.metadata.name}{` `}#{fromData.token_id}</div>
+            <div className="name">
+              {fromData.name || fromData.metadata.name}
+              {` `}#{fromData.token_id}
+            </div>
             <div className="name">Chain: {resolveNetworkName(chainId)}</div>
           </Card>
         </CardContainer>
@@ -325,67 +319,41 @@ const Confirm = ({
       </Content>
 
       <TableContainer>
-
         <table className="table">
           <thead>
             <tr>
-              <td>
-                #
-              </td>
-              <td>
-                Process
-              </td>
-              <td>
-
-              </td>
+              <td>#</td>
+              <td>Process</td>
+              <td></td>
             </tr>
           </thead>
           <tbody>
-            <tr  >
+            <tr>
               <td>1</td>
-              <td>
-                Upload an entry to the storage (ID:{orderId})
-              </td>
-              <td>
-                {process > 0 ? <Check /> : <X />}
-              </td>
+              <td>Upload an entry to the storage (ID:{orderId})</td>
+              <td>{process > 0 ? <Check /> : <X />}</td>
             </tr>
-            <tr  >
+            <tr>
               <td>2</td>
-              <td>
-                Deposit your base asset
-              </td>
-              <td>
-                {process > 1 ? <Check /> : <X />}
-              </td>
+              <td>Deposit your base asset</td>
+              <td>{process > 1 ? <Check /> : <X />}</td>
             </tr>
-            <tr  >
+            <tr>
               <td>3</td>
-              <td>
-                Sign a message to confirm
-              </td>
-              <td>
-                {process > 2 ? <Check /> : <X />}
-              </td>
+              <td>Sign a message to confirm</td>
+              <td>{process > 2 ? <Check /> : <X />}</td>
             </tr>
           </tbody>
-
         </table>
-
       </TableContainer>
 
       <p className="mt-3 text-center">
         To confirm the order, you must complete above steps one by one.
       </p>
 
-      {process === PROCESS.CONFIRM &&
-        (
-          <Alert>
-            Your order has been successfully created!
-          </Alert>
-        )
-
-      }
+      {process === PROCESS.CONFIRM && (
+        <Alert>Your order has been successfully created!</Alert>
+      )}
 
       <ButtonContainer>
         {step > 1 && (
@@ -417,9 +385,9 @@ const Confirm = ({
             disabled={loading || process === PROCESS.CONFIRM}
             onClick={proceed}
           >
-
-            {loading &&
-              <Puff height="24px" style={{ marginRight: "5px" }} width="24px" />}
+            {loading && (
+              <Puff height="24px" style={{ marginRight: "5px" }} width="24px" />
+            )}
 
             {process === PROCESS.FILL && "Confirm"}
             {process === PROCESS.GENERATE_ID && "Deposit"}
