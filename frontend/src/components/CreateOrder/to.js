@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react"
 import styled from "styled-components"
 import Skeleton from "react-loading-skeleton"
+import { resolveNetworkName } from "../../helper"
 
 const Content = styled.div`
   margin-top: 12px;
@@ -61,32 +62,88 @@ const SearchInput = styled.input.attrs(() => ({
   }
 `
 
+const ChainSelector = styled.select`
+  background: transparent;
+  border: 1px solid #fff;
+  padding: 12px;
+  border-radius: 32px;
+  font-size: 16px;
+  color: #fff;
+  min-width: 180px;
+  margin-top: 12px;
+  margin-left: 12px;
+`
+
 const To = ({
   searchNFT,
   toData,
   setToData,
   step,
   setStep,
-  onSearchTextChange,
+  setSearchText,
   searchText,
   searchLoading,
+  setSearchChain,
+  searchChain,
+  fetchSearchNFTs,
 }) => {
   const shorterName = (name) => {
     return name.length > 28 ? `${name.slice(0, 15)}...${name.slice(-4)}` : name
+  }
+
+  const onSearchTextChange = (e) => {
+    setSearchText(e.target.value)
+  }
+
+  const onClickCard = (nft) => {
+    if (toData.find((data) => data.token_hash === nft.token_hash)) {
+      const newNFTArray = toData.filter(
+        (data) => data.token_hash !== nft.token_hash
+      )
+      setToData(newNFTArray)
+    } else {
+      setToData([...toData, nft])
+    }
   }
 
   return (
     <>
       <div className="d-flex justify-content-center my-2">
         <SearchInput value={searchText} onChange={onSearchTextChange} />
+        <ChainSelector
+          onChange={(e) => setSearchChain(Number(e.target.value))}
+          defaultValue={resolveNetworkName(searchChain)}
+        >
+          <option value={137}>Polygon</option>
+          <option value={56}>BNB Chain</option>
+          <option value={42}>Kovan Testnet</option>
+          <option value={80001}>Mumbai Testnet</option>
+        </ChainSelector>
+        <a
+          style={{
+            zIndex: 10,
+            color: "white",
+            borderRadius: "32px",
+            padding: "12px 24px",
+            display: "flex",
+            alignItems: "center",
+            marginLeft: "12px",
+          }}
+          className="btn btn-primary shadow"
+          onClick={fetchSearchNFTs}
+        >
+          Search
+        </a>
       </div>
       <Content>
         {searchNFT && !searchLoading
           ? searchNFT.map((nft, index) => (
               <Card
                 key={index}
-                selected={toData && toData.token_hash === nft.token_hash}
-                onClick={() => setToData(nft)}
+                selected={toData.find(
+                  (data) => data.token_hash === nft.token_hash
+                )}
+                onClick={() => onClickCard({ ...nft, chainId: searchChain })}
               >
                 <img src={nft.metadata.image} width="100%" height="220" />
                 <div className="name">

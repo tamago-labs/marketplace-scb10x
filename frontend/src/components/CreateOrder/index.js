@@ -47,9 +47,10 @@ const CreateOrder = () => {
   const { account, chainId } = useWeb3React()
   const [nfts, setNfts] = useState()
   const [fromData, setFromData] = useState()
-  const [toData, setToData] = useState()
+  const [toData, setToData] = useState([])
   const [searchText, setSearchText] = useState()
   const [searchNFT, setSearchNFT] = useState()
+  const [searchChain, setSearchChain] = useState()
   const [step, setStep] = useState(1)
   const [searchLoading, setSearchLoading] = useState(false)
   const Web3Api = useMoralisWeb3Api()
@@ -90,10 +91,11 @@ const CreateOrder = () => {
   }
 
   const fetchSearchNFTs = async () => {
+    if (!searchText || searchText.length <= 2) return
     setSearchLoading(true)
     const options = {
       q: searchText,
-      chain: `0x${chainId.toString(16)}`,
+      chain: `0x${searchChain.toString(16)}`,
       filter: "name",
     }
     const { result } = await Web3Api.token.searchNFTs(options)
@@ -112,13 +114,9 @@ const CreateOrder = () => {
   useEffect(() => {
     if (!account && !chainId) return
 
+    setSearchChain(chainId)
     fetchNFTBalance()
   }, [account, chainId])
-
-  useEffect(() => {
-    if (!searchText || searchText.length <= 2) return
-    fetchSearchNFTs()
-  }, [searchText])
 
   return (
     <div style={{ marginTop: 32 }} className="container">
@@ -170,6 +168,9 @@ const CreateOrder = () => {
           setStep={setStep}
           setSearchText={setSearchText}
           searchText={searchText}
+          setSearchChain={setSearchChain}
+          searchChain={searchChain}
+          fetchSearchNFTs={fetchSearchNFTs}
         />
       )}
 
@@ -178,6 +179,7 @@ const CreateOrder = () => {
         <Confirm
           fromData={fromData}
           toData={toData}
+          setToData={setToData}
           step={step}
           setStep={setStep}
         />
