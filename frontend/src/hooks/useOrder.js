@@ -15,6 +15,7 @@ import keccak256 from "keccak256"
 import { API_BASE, NFT_MARKETPLACE } from "../constants"
 import MarketplaceABI from "../abi/marketplace.json"
 import NFTABI from "../abi/nft.json"
+import ERC20ABI from "../abi/erc20.json"
 
 const useOrder = () => {
 
@@ -134,12 +135,20 @@ const useOrder = () => {
         }
 
         // only same chain
-        const leaves = values.barterList.filter(item => item.chainId === values.chainId).map(item => ethers.utils.keccak256(ethers.utils.solidityPack(["address", "uint256"], [item.assetAddress, item.assetTokenIdOrAmount])))
-        console.log("leaves --> ", leaves)
-        
-        const tree = new MerkleTree(leaves, keccak256, { sortPairs: true })
 
-        const hexRoot = tree.getHexRoot()
+        const leaves = values.barterList.filter(item => item.chainId === values.chainId).map(item => ethers.utils.keccak256(ethers.utils.solidityPack(["address", "uint256"], [item.assetAddress, item.assetTokenIdOrAmount])))
+        console.log("leaves --> ", leaves, values.barterList.filter(item => item.chainId === values.chainId))
+
+        let tree
+        let hexRoot
+
+        if (leaves.length > 0) {
+            tree = new MerkleTree(leaves, keccak256, { sortPairs: true })
+
+            hexRoot = tree.getHexRoot()
+        } else {
+            hexRoot = ethers.utils.formatBytes32String("")
+        }
 
         return await contract.create(
             values.orderId,
@@ -196,6 +205,56 @@ const useOrder = () => {
         return await getMetadata(tokenIdMetadata)
     }
 
+    const swap = useCallback(async (order, tokenIndex) => {
+
+        if (!account) {
+            throw new Error("Wallet not connected")
+        }
+
+        if ((NFT_MARKETPLACE.filter(item => item.chainId === order.chainId)).length === 0) {
+            throw new Error("Marketplace contract is not available on given chain")
+        }
+
+        const token = order.barterList[tokenIndex]
+
+        console.log("current token : ", token)
+
+        if (chainId !== order.chainId) {
+            throw new Error("Invalid chain")
+        }
+
+        const { contractAddress } = NFT_MARKETPLACE.find(item => item.chainId === order.chainId)
+
+        const contract = new ethers.Contract(contractAddress, MarketplaceABI, library.getSigner())
+
+        if (token.tokenType === 0) {
+            // erc20
+            const tokenContract = new ethers.Contract(token.assetAddress, ERC20ABI, library.getSigner())
+
+            if ((await tokenContract.allowance(account, contractAddress)).toString() === "0") {
+                const tx = await tokenContract.approve(contractAddress, ethers.constants.MaxUint256)
+                await tx.wait()
+            }
+
+        } else {
+            // erc721 / 1155
+            const nftContract = new ethers.Contract(token.assetAddress, NFTABI, library.getSigner())
+
+            if (await nftContract.isApprovedForAll(account, contractAddress) === false) {
+                const tx = await nftContract.setApprovalForAll(contractAddress, true)
+                await tx.wait()
+            }
+
+        }
+
+        const leaves = order.barterList.map(item => ethers.utils.keccak256(ethers.utils.solidityPack(["address", "uint256"], [item.assetAddress, item.assetTokenIdOrAmount])))
+        const tree = new MerkleTree(leaves, keccak256, { sortPairs: true })
+
+        const proof = tree.getHexProof(ethers.utils.keccak256(ethers.utils.solidityPack(["address", "uint256"], [token.assetAddress, token.assetTokenIdOrAmount])))
+
+        return await contract.swap(order.orderId, token.assetAddress, token.assetTokenIdOrAmount, token.tokenType , proof)
+    }, [account, chainId, library])
+
     return {
         getAllOrders,
         getOrder,
@@ -203,7 +262,8 @@ const useOrder = () => {
         createOrder,
         confirmOrder,
         depositNft,
-        signMessage
+        signMessage,
+        swap
     }
 }
 

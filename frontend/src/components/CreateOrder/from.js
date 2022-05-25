@@ -38,6 +38,10 @@ const Card = styled.div`
   }
 `
 
+const shorterName = (name) => {
+  return name.length > 28 ? `${name.slice(0, 15)}...${name.slice(-4)}` : name
+}
+
 const ButtonContainer = styled.div`
   width: 100%;
   display: flex;
@@ -66,8 +70,7 @@ const From = ({ nfts, fromData, setFromData, step, setStep }) => {
               onClick={() => setFromData(nft)}
             >
               <img src={nft.metadata.image} width="100%" height="220" />
-              <div className="name">{nft.name || nft.metadata.name}{` `}#{nft.token_id}</div>
-              {/* <div className="name">Token ID: {nft.token_id}</div> */}
+              <div className="name">{(nft.name) || (nft.metadata.name)}{` `}#{shorterName(nft.token_id)}</div> 
               <div className="name">Chain: {resolveNetworkName(chainId)}</div>
             </Card>
           ))

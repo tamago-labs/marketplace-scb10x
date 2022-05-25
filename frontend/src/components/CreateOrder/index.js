@@ -59,6 +59,7 @@ const CreateOrder = () => {
   const [nfts, setNfts] = useState()
   const [fromData, setFromData] = useState()
   const [toData, setToData] = useState([])
+  const [toTokens, setToTokens ] = useState([])
   const [searchText, setSearchText] = useState()
   const [searchNFT, setSearchNFT] = useState()
   const [searchChain, setSearchChain] = useState()
@@ -90,7 +91,7 @@ const CreateOrder = () => {
     }
   }
 
-  const fetchNFTBalance = async () => {
+  const fetchNFTBalance = async ({ chainId, account }) => {
     const options = {
       chain: `0x${chainId.toString(16)}`,
       address: account,
@@ -103,7 +104,17 @@ const CreateOrder = () => {
     setNfts(filteredData)
   }
 
-  const fetchSearchNFTs = async () => {
+  useEffect(() => {
+    setSearchNFT([])
+  }, [searchChain])
+
+  const fetchSearchNFTs = async ({
+    searchText,
+    searchChain
+  }) => {
+
+ 
+
     if (!searchText || searchText.length <= 2) return
     setSearchLoading(true)
     const options = {
@@ -119,7 +130,9 @@ const CreateOrder = () => {
         metadata,
       }
     })
+
     const filteredData = data.filter((nft) => nft.metadata)
+
     setSearchNFT(filteredData)
     setSearchLoading(false)
   }
@@ -128,7 +141,10 @@ const CreateOrder = () => {
     if (!account && !chainId) return
 
     setSearchChain(chainId)
-    fetchNFTBalance()
+    fetchNFTBalance({
+      chainId,
+      account
+    })
   }, [account, chainId])
 
   return (
@@ -184,6 +200,8 @@ const CreateOrder = () => {
           setSearchChain={setSearchChain}
           searchChain={searchChain}
           fetchSearchNFTs={fetchSearchNFTs}
+          toTokens={toTokens}
+          setToTokens={setToTokens}
         />
       )}
 
@@ -197,6 +215,7 @@ const CreateOrder = () => {
           setStep={setStep}
           process={process}
           setProcess={setProcess}
+          toTokens={toTokens}
         />
       )}
 
