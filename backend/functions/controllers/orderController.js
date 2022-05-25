@@ -31,7 +31,7 @@ exports.getOrder = async (req, res, next) => {
       result.push(doc.data())
     });
 
-    res.status(200).json({ status: "ok", order: result })
+    res.status(200).json({ status: "ok", order: result[0] })
   } catch (error) {
     next(error)
   }
