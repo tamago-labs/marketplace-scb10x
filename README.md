@@ -24,6 +24,7 @@ Contract Name | Contract Address
 --- | --- 
 Gateway | 0x88CFE41a3083652216f0974136198A70EA847261
 Marketplace | 0xBa9c7eC462dB716E6F79B7D58a38D0b5E5f79141
+Mock NFT | 0x0e627EdbBF37785FE8284ff46fD42FD5f51d07ce
 
 ### Mumbai Testnet
 
@@ -31,3 +32,4 @@ Contract Name | Contract Address
 --- | --- 
 Gateway | 0x16EE94e3C07B24EbA6067eb9394BA70178aAc4c0
 Marketplace | 0xf2260B00250c772CB64606dBb88d9544F709308C
+Mock NFT | 0x576430Ecadbd9729B32a4cA9Fed9F38331273924
