@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react"
 import styled from "styled-components"
+import Skeleton from "react-loading-skeleton"
 
 const Content = styled.div`
   margin-top: 12px;
@@ -59,7 +60,16 @@ const SearchInput = styled.input.attrs(() => ({
   }
 `
 
-const To = ({ searchNFT, toData, setToData, step, setStep, setSearchText, searchText }) => {
+const To = ({
+  searchNFT,
+  toData,
+  setToData,
+  step,
+  setStep,
+  setSearchText,
+  searchText,
+  searchLoading,
+}) => {
   const onSearchTextChange = (e) => {
     setSearchText(e.target.value)
   }
@@ -70,7 +80,7 @@ const To = ({ searchNFT, toData, setToData, step, setStep, setSearchText, search
         <SearchInput value={searchText} onChange={onSearchTextChange} />
       </div>
       <Content>
-        {searchNFT
+        {searchNFT && !searchLoading
           ? searchNFT.map((nft, index) => (
               <Card
                 key={index}
@@ -94,7 +104,30 @@ const To = ({ searchNFT, toData, setToData, step, setStep, setSearchText, search
                 </div>
               </Card>
             ))
-          : null}
+          : searchLoading && (
+              <>
+                <Skeleton
+                  height="380px"
+                  width="260px"
+                  style={{ borderRadius: "12px", margin: "12px" }}
+                />
+                <Skeleton
+                  height="380px"
+                  width="260px"
+                  style={{ borderRadius: "12px", margin: "12px" }}
+                />
+                <Skeleton
+                  height="380px"
+                  width="260px"
+                  style={{ borderRadius: "12px", margin: "12px" }}
+                />
+                <Skeleton
+                  height="380px"
+                  width="260px"
+                  style={{ borderRadius: "12px", margin: "12px" }}
+                />
+              </>
+            )}
       </Content>
       <ButtonContainer>
         {step > 1 && (

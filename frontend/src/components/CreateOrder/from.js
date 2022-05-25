@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react"
 import styled from "styled-components"
+import Skeleton from "react-loading-skeleton"
 
 const Content = styled.div`
   margin-top: 12px;
@@ -45,36 +46,59 @@ const From = ({ nfts, fromData, setFromData, step, setStep }) => {
   return (
     <>
       <Content>
-        {nfts
-          ? nfts.map((nft, index) => (
-              <Card
-                key={index}
-                selected={fromData && fromData.token_hash === nft.token_hash}
-                onClick={() => setFromData(nft)}
-              >
-                <img src={nft.metadata.image} width="100%" height="220" />
-                <div className="name">{nft.name}</div>
-                <div className="name">Token ID: {nft.token_id}</div>
-              </Card>
-            ))
-          : null}
-      </Content>
-			<ButtonContainer>
-          {fromData && (
-            <a
-              style={{
-                zIndex: 10,
-                color: "white",
-                borderRadius: "32px",
-                padding: "12px 24px",
-              }}
-              className="btn btn-primary shadow"
-              onClick={() => setStep(step + 1)}
+        {nfts ? (
+          nfts.map((nft, index) => (
+            <Card
+              key={index}
+              selected={fromData && fromData.token_hash === nft.token_hash}
+              onClick={() => setFromData(nft)}
             >
-              Next
-            </a>
-          )}
-        </ButtonContainer>
+              <img src={nft.metadata.image} width="100%" height="220" />
+              <div className="name">{nft.name}</div>
+              <div className="name">Token ID: {nft.token_id}</div>
+            </Card>
+          ))
+        ) : (
+          <>
+            <Skeleton
+              height="380px"
+              width="260px"
+              style={{ borderRadius: "12px", margin: "12px" }}
+            />
+            <Skeleton
+              height="380px"
+              width="260px"
+              style={{ borderRadius: "12px", margin: "12px" }}
+            />
+            <Skeleton
+              height="380px"
+              width="260px"
+              style={{ borderRadius: "12px", margin: "12px" }}
+            />
+            <Skeleton
+              height="380px"
+              width="260px"
+              style={{ borderRadius: "12px", margin: "12px" }}
+            />
+          </>
+        )}
+      </Content>
+      <ButtonContainer>
+        {fromData && (
+          <a
+            style={{
+              zIndex: 10,
+              color: "white",
+              borderRadius: "32px",
+              padding: "12px 24px",
+            }}
+            className="btn btn-primary shadow"
+            onClick={() => setStep(step + 1)}
+          >
+            Next
+          </a>
+        )}
+      </ButtonContainer>
     </>
   )
 }

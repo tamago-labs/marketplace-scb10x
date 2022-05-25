@@ -49,6 +49,7 @@ const CreateOrder = () => {
   const [searchText, setSearchText] = useState()
   const [searchNFT, setSearchNFT] = useState()
   const [step, setStep] = useState(1)
+  const [searchLoading, setSearchLoading] = useState(false)
   const Web3Api = useMoralisWeb3Api()
 
   const fetchNFTBalance = async () => {
@@ -69,6 +70,7 @@ const CreateOrder = () => {
   }
 
   const fetchSearchNFTs = async () => {
+    setSearchLoading(true)
     const options = {
       q: searchText,
       chain: `0x${chainId.toString(16)}`,
@@ -84,6 +86,7 @@ const CreateOrder = () => {
     })
     const filteredData = data.filter((nft) => nft.metadata)
     setSearchNFT(filteredData)
+    setSearchLoading(false)
   }
 
   useEffect(() => {
@@ -126,6 +129,7 @@ const CreateOrder = () => {
       {/* To Section */}
       {step === 2 && (
         <To
+          searchLoading={searchLoading}
           searchNFT={searchNFT}
           toData={toData}
           setToData={setToData}
@@ -139,8 +143,8 @@ const CreateOrder = () => {
       {/* Confirm Section */}
       {step === 3 && (
         <Confirm
-					fromData={fromData}
-					toData={toData}
+          fromData={fromData}
+          toData={toData}
           step={step}
           setStep={setStep}
         />
