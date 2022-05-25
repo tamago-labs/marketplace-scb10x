@@ -5,6 +5,8 @@ import { useMoralisWeb3Api } from "react-moralis"
 import From from "./from"
 import To from "./to"
 import Confirm from "./confirm"
+import { AlertWarning } from "../alert"
+import axios from "axios"
 
 const Title = styled.div`
   font-weight: bold;
@@ -30,7 +32,7 @@ const Step = styled.div`
   .circle {
     border: 1px solid #fff;
     background: ${(props) =>
-      props.active ? "rgba(255, 255,255 , 0.38)" : "transparent"};
+    props.active ? "rgba(38, 38, 38, 0.6)" : "transparent"};
     width: 24px;
     height: 24px;
     margin-right: 8px;
@@ -52,19 +54,37 @@ const CreateOrder = () => {
   const [searchLoading, setSearchLoading] = useState(false)
   const Web3Api = useMoralisWeb3Api()
 
+  const getMetadata = async (nft) => {
+    let metadata = JSON.parse(nft.metadata)
+
+    // fetch from token uri
+    if (!metadata && nft && nft.token_uri) {
+      console.log("no metadata!")
+
+      const uri = nft.token_uri.replaceAll("000000000000000000000000000000000000000000000000000000000000000", "")
+      // proxy 
+      const { data } = await axios.get(`https://slijsy3prf.execute-api.ap-southeast-1.amazonaws.com/stage/proxy/${uri}`)
+
+      if (data && data.data) {
+        metadata = data.data
+      }
+    }
+
+    return {
+      ...nft,
+      metadata,
+    }
+  }
+
   const fetchNFTBalance = async () => {
     const options = {
       chain: `0x${chainId.toString(16)}`,
       address: account,
     }
     const { result } = await Web3Api.account.getNFTs(options)
-    const data = result.map((nft) => {
-      const metadata = JSON.parse(nft.metadata)
-      return {
-        ...nft,
-        metadata,
-      }
-    })
+
+    const data = await Promise.all(result.map(item => getMetadata(item)))
+
     const filteredData = data.filter((nft) => nft.metadata)
     setNfts(filteredData)
   }
@@ -102,7 +122,19 @@ const CreateOrder = () => {
 
   return (
     <div style={{ marginTop: 32 }} className="container">
+
       <Title>Create Order</Title>
+
+
+
+      {!account && (
+        <AlertWarning>
+          Connect your wallet to continue
+        </AlertWarning>
+      )}
+
+      <hr />
+
       <StepHeader>
         <Step active={step === 1}>
           <div className="circle">1</div>
@@ -115,6 +147,7 @@ const CreateOrder = () => {
           <div className="circle">3</div>Confirm
         </Step>
       </StepHeader>
+
       {/* From Section */}
       {step === 1 && (
         <From
@@ -149,6 +182,12 @@ const CreateOrder = () => {
           setStep={setStep}
         />
       )}
+
+      <div style={{ maxWidth: "800px", marginLeft: "auto", marginRight: "auto", marginTop :"2rem" }}>
+        <p style={{ fontSize: "14px", textAlign: "center" }}>
+          Please be aware that the UI is being developed, contact us in case if you want to cancel your order or withdraw a dispute.
+        </p>
+      </div>
     </div>
   )
 }

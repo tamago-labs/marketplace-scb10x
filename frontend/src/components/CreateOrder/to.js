@@ -10,6 +10,7 @@ const Content = styled.div`
   max-height: 600px;
   overflow: scroll;
   padding: 12px;
+  min-height: 600px;
 `
 
 const Card = styled.div`
@@ -66,12 +67,12 @@ const To = ({
   setToData,
   step,
   setStep,
-  setSearchText,
+  onSearchTextChange,
   searchText,
   searchLoading,
 }) => {
-  const onSearchTextChange = (e) => {
-    setSearchText(e.target.value)
+  const shorterName = (name) => {
+    return name.length > 28 ? `${name.slice(0, 15)}...${name.slice(-4)}` : name
   }
 
   return (
@@ -89,19 +90,10 @@ const To = ({
               >
                 <img src={nft.metadata.image} width="100%" height="220" />
                 <div className="name">
-                  {nft.metadata.name.length > 28
-                    ? `${nft.metadata.name.slice(
-                        0,
-                        15
-                      )}...${nft.metadata.name.slice(-4)}`
-                    : nft.metadata.name}
+                  {shorterName(nft.metadata.name)}
+                  {` `}#{shorterName(nft.token_id)}
                 </div>
-                <div className="name">
-                  Token ID:{" "}
-                  {nft.token_id.length > 28
-                    ? `${nft.token_id.slice(0, 15)}...${nft.token_id.slice(-4)}`
-                    : nft.token_id}
-                </div>
+                <div className="name">Chain: TBD</div>
               </Card>
             ))
           : searchLoading && (

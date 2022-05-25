@@ -1,6 +1,9 @@
+import { useWeb3React } from "@web3-react/core"
 import React, { useState, useEffect } from "react"
 import styled from "styled-components"
 import Skeleton from "react-loading-skeleton"
+import { Alert } from "../alert"
+import { resolveNetworkName } from "../../helper"
 
 const Content = styled.div`
   margin-top: 12px;
@@ -10,6 +13,7 @@ const Content = styled.div`
   max-height: 600px;
   overflow: scroll;
   padding: 12px;
+  min-height: 400px;
 `
 
 const Card = styled.div`
@@ -43,8 +47,16 @@ const ButtonContainer = styled.div`
 `
 
 const From = ({ nfts, fromData, setFromData, step, setStep }) => {
+
+  const { chainId } = useWeb3React()
+
   return (
     <>
+
+      {/* <Alert style={{ textAlign: "center", marginTop: "20px" }}>
+        Select NFT from your wallet that you want to list and deposit
+      </Alert> */}
+
       <Content>
         {nfts ? (
           nfts.map((nft, index) => (
@@ -54,8 +66,9 @@ const From = ({ nfts, fromData, setFromData, step, setStep }) => {
               onClick={() => setFromData(nft)}
             >
               <img src={nft.metadata.image} width="100%" height="220" />
-              <div className="name">{nft.name}</div>
-              <div className="name">Token ID: {nft.token_id}</div>
+              <div className="name">{nft.name || nft.metadata.name}{` `}#{nft.token_id}</div>
+              {/* <div className="name">Token ID: {nft.token_id}</div> */}
+              <div className="name">Chain: {resolveNetworkName(chainId)}</div>
             </Card>
           ))
         ) : (

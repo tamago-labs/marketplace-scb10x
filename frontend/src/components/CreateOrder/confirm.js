@@ -1,6 +1,11 @@
 import React from "react"
+import { useWeb3React } from "@web3-react/core"
+
 import styled from "styled-components"
 import { ArrowRight } from "react-feather"
+
+import { resolveNetworkName } from "../../helper"
+
 
 const Content = styled.div`
   margin-top: 12px;
@@ -46,15 +51,18 @@ const ButtonContainer = styled.div`
 `
 
 const Confirm = ({ fromData, toData, step, setStep }) => {
+
+  const { chainId } = useWeb3React()
+
   return (
     <>
       <Content>
         <CardContainer>
           <div className="title">From</div>
           <Card>
-            <img src={fromData.metadata.image} width="100%" height="220" />
-            <div className="name">{fromData.name}</div>
-            <div className="name">Token ID: {fromData.token_id}</div>
+            <img src={fromData.metadata.image} width="100%" height="220" /> 
+            <div className="name">{fromData.name || fromData.metadata.name}{` `}#{fromData.token_id}</div>
+            <div className="name">Chain: { resolveNetworkName( chainId )}</div>
           </Card>
         </CardContainer>
         <CardContainer>
