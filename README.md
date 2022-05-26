@@ -1,5 +1,17 @@
 # Multi-chain NFT Marketplace
-A multi-chain marketplace MVP 
+
+## Introduction
+
+A multi-chain markerplace allows anyone list NFT once and sell to any chain. Supports of ERC-721, ERC-1155 and accepts payment with ERC-721, ERC-1155 and ERC-20 tokens. Currently live on Kovan and Mumbai Testnet and soon available on Polygon and BNB chain.
+
+## Live URL
+
+https://marketplace-10x.tamago.finance
+
+## Modules
+
+The project consists of 4 modules, `/frontend` made by React, `/contracts` with Hardhat, `/backend` with Google Firebase serves as backend API manages order records and `/services` with Node.js contains the scripts to run validator and relayer nodes.
+
 
 
 ## API
@@ -35,7 +47,7 @@ Contract Name | Contract Address
 --- | --- 
 Gateway | 0x88CFE41a3083652216f0974136198A70EA847261
 Marketplace | 0xBa9c7eC462dB716E6F79B7D58a38D0b5E5f79141
-Mock NFT | 0x0e627EdbBF37785FE8284ff46fD42FD5f51d07ce
+Mock NFT | 0x48a47587c82E0B21d213D22064433BB67a7a7171
 
 ### Mumbai Testnet
 
@@ -44,3 +56,8 @@ Contract Name | Contract Address
 Gateway | 0x16EE94e3C07B24EbA6067eb9394BA70178aAc4c0
 Marketplace | 0xf2260B00250c772CB64606dBb88d9544F709308C
 Mock NFT | 0x576430Ecadbd9729B32a4cA9Fed9F38331273924
+
+
+## License
+
+MIT © Tamago Finance
