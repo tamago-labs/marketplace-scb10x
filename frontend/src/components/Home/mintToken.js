@@ -6,6 +6,7 @@ import MockERC1155Token from "../../abi/mockERC1155Token.json"
 import { MOCK_NFT } from "../../constants"
 import { resolveNetworkName } from "../../helper"
 import ERC20ABI from "../../abi/erc20.json"
+import MockNFT from "../../abi/mockNFT.json"
 
 const ListContainer = styled.div`
   display: flex;
@@ -99,22 +100,28 @@ const MintToken = () => {
 
   const [chain, setChain] = useState(42)
 
-  const onMint = useCallback(async (id) => {
+  const onMint = useCallback(async (address, id) => {
 
     if (chain !== chainId) {
       alert("Incorrect chain!")
     }
 
-    const contract = new ethers.Contract(
-      MOCK_NFT[chainId].address,
-      MockERC1155Token,
-      library.getSigner()
-    )
-
-    console.log(account, id, 1, 0)
-
     try {
-      await contract.mint(account, id, 1, "0x")
+      if (address === "0xf4d331039448182cf140de338177706657df8ce9") {
+        const contract = new ethers.Contract(
+          address,
+          MockNFT,
+          library.getSigner()
+        )
+        await contract.mint()
+      } else {
+        const contract = new ethers.Contract(
+          address,
+          MockERC1155Token,
+          library.getSigner()
+        )
+        await contract.mint(account, id, 1, "0x")
+      }
     } catch (e) {
       console.log(`${e.message}`)
     }
@@ -177,7 +184,7 @@ const MintToken = () => {
           mocks.map((nft) => (
             <NFTCard>
               <img src={nft.image} width="100%" height="120px" />
-              <a onClick={() => onMint(nft.tokenId)}>
+              <a onClick={() => onMint(nft.address, nft.tokenId)}>
                 <div className="name text-center">Mint{` `}{nft.name}{` `}#{nft.tokenId}</div>
               </a>
             </NFTCard>
