@@ -14,7 +14,21 @@ const Header = styled.div`
     font-weight: 600;
     font-size: 32px;
     color: #fff;
+
+    
+
   }
+
+  @media only screen and (max-width: 600px) {
+    .title {
+      font-weight: 600;
+      font-size: 18px;
+  
+      
+  
+    }
+  }
+
 `
 
 function blinkingEffect() {

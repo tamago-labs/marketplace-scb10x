@@ -23,6 +23,10 @@ const Container = styled.div`
   }
 `
 
+const shorterName = (name) => {
+    return name.length > 28 ? `${name.slice(0, 15)}...${name.slice(-4)}` : name
+}
+
 const AssetCard = ({ order, item, crossChain, id }) => {
 
     const { resolveMetadata } = useOrder()
@@ -71,7 +75,6 @@ const AssetCard = ({ order, item, crossChain, id }) => {
 
     }, [order])
 
-    console.log("item --> ", item)
 
     return (
         <Container>
@@ -83,7 +86,7 @@ const AssetCard = ({ order, item, crossChain, id }) => {
                         : <Skeleton height="220px" />
                     }
                     <div className="name">
-                        {data ? `${data.metadata.name} #${item.assetTokenIdOrAmount} ` : <Skeleton height="16px" />}
+                        {data ? `${shorterName(data.metadata.name)} #${item.assetTokenIdOrAmount} ` : <Skeleton height="16px" />}
                     </div>
                 </>
 
@@ -136,7 +139,9 @@ const AssetCard = ({ order, item, crossChain, id }) => {
                     >
                         Swap
                     </button>
-
+                    <p style={{ fontSize: "12px", color: "red", textAlign: "center", marginTop: "10px" }}>
+                        Validator is Temporarily Stopped
+                    </p>
                 </>
 
             }

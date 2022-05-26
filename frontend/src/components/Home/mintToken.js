@@ -5,6 +5,7 @@ import { ethers } from "ethers"
 import MockERC1155Token from "../../abi/mockERC1155Token.json"
 import { MOCK_NFT } from "../../constants"
 import { resolveNetworkName } from "../../helper"
+import ERC20ABI from "../../abi/erc20.json"
 
 const ListContainer = styled.div`
   display: flex;
@@ -72,8 +73,26 @@ const Container = styled.div.attrs(() => ({ className: "container" }))`
   border-radius: 24px;
   padding: 20px;
   padding-top: 40px;
-  max-width: 800px;
+  max-width: 800px; 
 `
+
+const TOKENS = [
+  {
+    symbol: "USDC",
+    chainId: 42,
+    contract: "0x8F6e0835CCA21892d5296D58EB0C8206B623BF2B"
+  },
+  {
+    symbol: "USDT",
+    chainId: 42,
+    contract: "0x8afc69A0C245f4d84Ba160F19df1F76a44991d65"
+  },
+  {
+    symbol: "DAI",
+    chainId: 42,
+    contract: "0xC926A3F31Ad3db8f27Bbfe4aD42a19A0BCaD8059"
+  }
+]
 
 const MintToken = () => {
   const { chainId, account, library } = useWeb3React()
@@ -102,6 +121,27 @@ const MintToken = () => {
 
   }, [chainId, chain, account, library])
 
+  const onMintERC20 = useCallback(async (symbol) => {
+
+    if (chain !== chainId) {
+      alert("Incorrect chain!")
+    }
+
+    const row = TOKENS.find(item => item.symbol === symbol)
+
+    const contract = new ethers.Contract(
+      row.contract,
+      ERC20ABI,
+      library.getSigner()
+    )
+    try {
+      await contract.faucet()
+    } catch (e) {
+      console.log(`${e.message}`)
+    }
+
+  }, [chainId, chain, account, library])
+
   const mocks = useMemo(() => {
 
     if (MOCK_NFT[chain]) {
@@ -109,6 +149,8 @@ const MintToken = () => {
     }
     return []
   }, [chain])
+
+  const tokens = TOKENS.filter(item => item.chainId === chain)
 
   return (
     <Container>
@@ -129,7 +171,6 @@ const MintToken = () => {
             <option value={80001}>Mumbai</option>
           </select>
         </div>
-
       </div>
       <ListContainer>
         {
@@ -139,20 +180,27 @@ const MintToken = () => {
               <a onClick={() => onMint(nft.tokenId)}>
                 <div className="name text-center">Mint{` `}{nft.name}{` `}#{nft.tokenId}</div>
               </a>
-              {/* <a
-                style={{
-                  color: "white",
-                  borderRadius: "32px",
-                  marginTop: "12px",
-                  width: "100%",
-                }}
-                className="btn btn-primary shadow"
-                onClick={() => onMint(nft.tokenId)}
-              >
-                Mint
-              </a> */}
             </NFTCard>
           ))}
+
+
+        {tokens.map((token, index) => {
+          return (
+            <NFTCard key={index}>
+              <div style={{ display: "flex", height: "120px", width: "100%", border :"1px solid white"}}>
+                <div style={{ margin: "auto" }}>
+                  ERC-20
+                </div>
+              </div>
+              <a onClick={() => onMintERC20(token.symbol)}>
+                <div className="name text-center">Mint{` `}{token.symbol}</div>
+              </a>
+            </NFTCard>
+          )
+        })
+
+        }
+
       </ListContainer>
     </Container>
   )
