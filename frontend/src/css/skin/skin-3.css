@@ -1,0 +1,289 @@
+:root {
+  --gradient3: linear-gradient(to right, #ef146e 0, #fea958 51%, #ef146e 100%);
+  --gradient-sec3: linear-gradient(
+    to right,
+    #111c58 0,
+    #5c2782 51%,
+    #111c58 100%
+  );
+}
+
+[color="color_3"] .clients-logo:hover,
+[color="color_3"] .dlab-accordion .card-header .dlab-title a {
+  background-image: var(--gradient-sec3);
+  background-size: 200%;
+}
+[color="color_3"] .gradient,
+[color="color_3"] .widget_nav_menu li.active a,
+[color="color_3"] .widget_nav_menu li a:hover {
+  background-image: var(--gradient3);
+}
+[color="color_3"] .pricingtable-wrapper.style-3.active .btn,
+[color="color_3"] .site-header .is-fixed .extra-nav .btn.btn-light,
+[color="color_3"] .btn-light:hover {
+  border-color: transparent !important;
+  background-image: var(--gradient3) !important;
+  background-size: 200%;
+}
+[color="color_3"] .pricingtable-wrapper.style-3.active:hover .btn {
+  background-position: right center;
+}
+[color="color_3"]button.scroltop,
+[color="color_3"] .bootstrap-select .dropdown-menu ul li.selected a,
+[color="color_3"] .site-filters.style-1 .filters li.active a,
+[color="color_3"] .video-bx.style-3 .popup-youtube,
+[color="color_3"] .owl-btn-white .owl-prev:hover,
+[color="color_3"] .owl-btn-white .owl-next:hover,
+[color="color_3"] .overlay-primary:before,
+[color="color_3"] .download-file,
+[color="color_3"] .dlab-blog.style-2 .post-date,
+[color="color_3"]
+  .testimonials-wraper-2
+  .testimonial-thumbs
+  .testimonial-pic
+  img,
+[color="color_3"]
+  .testimonials-wraper-2
+  .testimonial-thumbs
+  .testimonial-pic:before,
+[color="color_3"]
+  .testimonials-wraper-2
+  .testimonial-thumbs
+  .testimonial-pic:after,
+[color="color_3"]
+  .testimonials-wraper-2
+  .testimonial-thumbs
+  .testimonial-pic
+  .shape-bx:before {
+  background: -moz-linear-gradient(left, #ef146e 0%, #fea958 100%);
+  background: -webkit-linear-gradient(left, #ef146e 0%, #fea958 100%);
+  background: linear-gradient(to right, #ef146e 0%, #fea958 100%);
+}
+[color="color_3"] .dlab-accordion .card-header .dlab-title a.collapsed {
+  background: #fff;
+}
+@media only screen and (max-width: 991px) {
+  [color="color_3"] .header-nav .nav > li > a i {
+    background-color: #ef146e;
+  }
+}
+[color="color_3"] .shadow-primary,
+[color="color_3"] .video-bx.style-3 .popup-youtube,
+[color="color_3"] .site-filters.style-1 .filters li.active a,
+[color="color_3"] .site-filters.style-3 .filters li.active a {
+  box-shadow: 0 2px 15px rgba(239, 20, 110, 0.3);
+}
+
+[color="color_3"] .site-filters.style-1,
+[color="color_3"] .blockquote.style-3,
+[color="color_3"] nav .pagination .page-item .page-link,
+[color="color_3"] .widget_archive ul li a span,
+[color="color_3"] .bgl-primary,
+[color="color_3"] .site-filters.style-3 .filters li a,
+[color="color_3"] .icon-bx-wraper.style-5 .icon-bx,
+[color="color_3"] .icon-bx-wraper.style-3.left > [class*="icon-bx-"]:after,
+[color="color_3"] .dlab-social-icon.primary-light li a,
+[color="color_3"] .btn-link.style-1:before {
+  background-color: rgba(245, 95, 141, 0.1);
+}
+[color="color_3"] .dlab-team.style-3 .overlay-content {
+  background-color: rgba(245, 95, 141, 0.7);
+}
+[color="color_3"] .pricingtable-wrapper.style-3.active .btn,
+[color="color_3"] .pricingtable-wrapper.style-3:hover .btn,
+[color="color_3"] .site-header .is-fixed .extra-nav .btn.btn-light {
+  border-color: transparent;
+}
+[color="color_3"] .owl-btn-1 .owl-nav .owl-prev:hover,
+[color="color_3"] .owl-btn-1 .owl-nav .owl-next:hover,
+[color="color_3"] .btn-outline-primary:active,
+[color="color_3"] .btn-outline-primary:focus,
+[color="color_3"] .btn-outline-primary:hover,
+[color="color_3"] .pricingtable-wrapper.style-3:hover .btn,
+[color="color_3"] .btn-primary:active,
+[color="color_3"] .btn-primary:focus,
+[color="color_3"] .btn-primary:hover {
+  background: #dd396b;
+  border-color: #dd396b;
+}
+[color="color_3"] .btn-primary.gradient:active,
+[color="color_3"] .btn-primary.gradient:focus,
+[color="color_3"] .btn-primary.gradient:hover {
+  background-image: var(--gradient3);
+  background-position: right center;
+  background-size: 200%;
+}
+[color="color_3"]::selection,
+[color="color_3"] .btn-primary,
+[color="color_3"] .owl-btn-primary .owl-prev,
+[color="color_3"] .owl-btn-primary .owl-next,
+[color="color_3"] .overlay-primary-light:before,
+[color="color_3"] .overlay-primary-middle:before,
+[color="color_3"] .overlay-primary-dark:before,
+[color="color_3"] .widget_tag_cloud .tagcloud a:hover:before,
+[color="color_3"] .dlab-img-overlay1.primary:before,
+[color="color_3"] .dlab-img-overlay1.primary:after,
+[color="color_3"] .widget_tag_cloud .tagcloud a:before,
+[color="color_3"] .owl-dots-primary-full .owl-dots .owl-dot span,
+[color="color_3"] .owl-dots-primary-big .owl-dots .owl-dot span,
+[color="color_3"] .owl-dots-white-full .owl-dots .owl-dot:active span,
+[color="color_3"] .owl-dots-white-full .owl-dots .owl-dot.active span,
+[color="color_3"] .owl-dots-black-full .owl-dots .owl-dot:active span,
+[color="color_3"] .owl-dots-black-full .owl-dots .owl-dot.active span,
+[color="color_3"] .owl-dots-primary-full .owl-dots .owl-dot:active span,
+[color="color_3"] .owl-dots-primary-full .owl-dots .owl-dot.active span,
+[color="color_3"] .toggle-switch .custom-control-label:before,
+[color="color_3"] .icon-bx-wraper.style-3 .wraper-effect:after,
+[color="color_3"] .dlab-blog .dlab-meta > ul > li.post-share ul,
+[color="color_3"] .dlab-blog .dlab-meta > ul > li.post-share ul:after,
+[color="color_3"] .dlab-separator.style-1:after,
+[color="color_3"] .widget .widget-title:before,
+[color="color_3"] .comment-respond.style-1 .comment-reply-title:before,
+[color="color_3"] .comments-area.style-1 .comments-title:before,
+[color="color_3"] .extra-blog.style-1 .blog-title:before,
+[color="color_3"] .dlab-separator.style-1:before,
+[color="color_3"] .video-bx.style-2 .popup-youtube,
+[color="color_3"] .header-nav .nav > li .sub-menu li a:after,
+[color="color_3"] .btn-link i,
+[color="color_3"] .dlab-separator.style-1,
+[color="color_3"] .countdown-social li a:hover,
+[color="color_3"]
+  .testimonials-wraper-2
+  .testimonial-content
+  .swiper-pagination-bullet-active {
+  background-color: #ef146e;
+}
+[color="color_3"] .bg-primary {
+  background-color: #ef146e !important;
+}
+[color="color_3"] a,
+[color="color_3"] a:hover,
+[color="color_3"] .btn-link,
+[color="color_3"] .btn-link:hover,
+[color="color_3"] .btn-link i .text-primary,
+[color="color_3"] .btn-outline-primary,
+[color="color_3"] .pricingtable-wrapper.style-1.active .btn i,
+[color="color_3"] .owl-btn-white .owl-prev,
+[color="color_3"] .owl-btn-white .owl-next,
+[color="color_3"] .blockquote.style-3:before,
+[color="color_3"] .widget_tag_cloud .tagcloud a:before,
+[color="color_3"] .icon-bx-wraper.style-5 .icon-bx .icon-cell,
+[color="color_3"] .dlab-overlay-box.style-3 .dlab-info:before,
+[color="color_3"] .dlab-accordion .card-header .dlab-title a:before,
+[color="color_3"] ul.primary li:before,
+[color="color_3"] .site-filters.style-2 .filters li.active a,
+[color="color_3"] .pricingtable-wrapper.style-1 .pricingtable-bx,
+[color="color_3"] .widget_archive ul li a:hover,
+[color="color_3"] .blockquote.style-1:before,
+[color="color_3"] .widget_tag_cloud .tagcloud a,
+[color="color_3"] .dlab-blog .dlab-meta > ul > li i,
+[color="color_3"] .dlab-social-icon.primary-light li a,
+[color="color_3"] footer .widget_services.style-1 ul li a:before,
+[color="color_3"] footer .footer-bottom .copyright-text a,
+[color="color_3"] .dlab-team.style-3:hover .dlab-name a,
+[color="color_3"]
+  .pricingtable-wrapper.style-2
+  [class*="icon-bx-"]
+  .icon-cell
+  i,
+[color="color_3"] .blockquote.style-2:before,
+[color="color_3"] .header-nav .nav > li .sub-menu li:hover > a,
+[color="color_3"] .dlab-social-icon li a,
+[color="color_3"] .download-file ul li a:hover .text,
+[color="color_3"] .error-page .dlab_error,
+[color="color_3"] .pricingtable-wrapper.style-2.active .btn,
+[color="color_3"] .testimonial-4.quote-right:before {
+  color: #ef146e;
+}
+[color="color_3"] .text-primary {
+  color: #ef146e !important;
+}
+.btn-primary,
+[color="color_3"] .site-filters.style-2 .filters li.active a,
+[color="color_3"] .testimonial-1 .testimonial-pic,
+[color="color_3"] .widget_tag_cloud .tagcloud a,
+[color="color_3"] .btn-outline-primary,
+[color="color_3"] .progress-bx .progress .progress-bar:after,
+[color="color_3"] .testimonial-3 .testimonial-pic,
+[color="color_3"] .custom-control-input:checked ~ .custom-control-label::before,
+[color="color_3"] .toggle-switch .custom-control-label:before,
+[color="color_3"] .form-control:focus,
+[color="color_3"] .form-control:active,
+[color="color_3"] .form-control.active,
+[color="color_3"] .pricingtable-wrapper.style-3.active .btn,
+[color="color_3"] .pricingtable-wrapper.style-3:hover .btn {
+  border-color: #ef146e;
+}
+
+/* Globle Css */
+[color="color_3"]
+  .recent-posts-entry
+  .widget-post-bx
+  .widget-post
+  .dlab-meta
+  li,
+[color="color_3"] .widget_archive ul li a,
+[color="color_3"] body {
+  color: #5c6390;
+}
+[color="color_3"] .widget .widget-title,
+[color="color_3"] .site-filters.style-1 .filters li a,
+[color="color_3"] .widget_archive ul li a span,
+[color="color_3"] nav .pagination .page-item .page-link,
+[color="color_3"] .pricingtable-wrapper.style-3 .pricingtable-bx small,
+[color="color_3"] .dlab-accordion .card-header .dlab-title a.collapsed,
+[color="color_3"] .testimonial-name,
+[color="color_3"] .site-filters.style-2 .filters li a,
+[color="color_3"]
+  .toggle-switch
+  .custom-control-input:checked
+  ~ .custom-control-label:after,
+[color="color_3"] .dlab-blog .post-tags a,
+[color="color_3"] h1 a,
+[color="color_3"] h2 a,
+[color="color_3"] h3 a,
+[color="color_3"] h4 a,
+[color="color_3"] h5 a,
+[color="color_3"] h6 a,
+[color="color_3"]
+  .comments-area
+  .comment-list
+  > .comment
+  .comment-body
+  .comment-author
+  .fn,
+[color="color_3"] h1,
+[color="color_3"] h2,
+[color="color_3"] h3,
+[color="color_3"] h4,
+[color="color_3"] h5,
+[color="color_3"] h6,
+[color="color_3"] .h1,
+[color="color_3"] .h2,
+[color="color_3"] .h3,
+[color="color_3"] .h4,
+[color="color_3"] .h5,
+[color="color_3"] .h6 {
+  color: #1f2471;
+}
+
+[color="color_3"] .owl-btn-primary .owl-prev:hover,
+[color="color_3"] .owl-btn-primary .owl-next:hover,
+[color="color_3"] .video-bx.style-1 .popup-youtube:hover {
+  color: #fff;
+}
+[color="color_3"] .bg-gray {
+  background: #f8f5fe;
+}
+[color="color_3"] .search-bx.style-1 {
+  background-color: #1f2471;
+}
+/* Footer */
+[color="color_3"] .site-footer.style-1,
+[color="color_3"] .site-footer.style-2 {
+  background-color: #38216e !important;
+}
+[color="color_3"] .site-footer.style-2 .footer-bottom,
+[color="color_3"] footer .footer-bottom {
+  background-color: #645194;
+}
