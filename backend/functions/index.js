@@ -3,7 +3,7 @@ const express = require("express")
 const morgan = require("morgan")
 const cors = require("cors")
 const fs = require("fs")
-
+const { orderTrails } = require("./services/order-trails")
 
 // initialize app
 const app = express();
@@ -37,8 +37,15 @@ app.use((err, req, res, next) => {
 })
 
 // (Important!)DISABLE THE lINES BELOW BEFORE DEPLOYMENT
+//The line below for local  API development and testing
 // app.listen(process.env.PORT || 3000, () => {
 //   console.log(`listening on port ${process.env.PORT || 3000}`)
 // })
+//The line below for local order fulfillment update 
+// orderTrails()
 
 exports.api = functions.region('asia-east2').https.onRequest(app)
+exports.orderTrails = functions.region('asia-east2').pubsub.schedule('every 10 minutes').onRun(() => {
+  orderTrails()
+  return null
+})
