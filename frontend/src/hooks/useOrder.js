@@ -247,7 +247,7 @@ const useOrder = () => {
 
         }
 
-        const leaves = order.barterList.map(item => ethers.utils.keccak256(ethers.utils.solidityPack(["address", "uint256"], [item.assetAddress, item.assetTokenIdOrAmount])))
+        const leaves = order.barterList.filter(item => item.chainId === chainId).map(item => ethers.utils.keccak256(ethers.utils.solidityPack(["address", "uint256"], [item.assetAddress, item.assetTokenIdOrAmount])))
         const tree = new MerkleTree(leaves, keccak256, { sortPairs: true })
 
         const proof = tree.getHexProof(ethers.utils.keccak256(ethers.utils.solidityPack(["address", "uint256"], [token.assetAddress, token.assetTokenIdOrAmount])))

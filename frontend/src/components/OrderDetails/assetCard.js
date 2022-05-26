@@ -62,6 +62,7 @@ const AssetCard = ({ order, item, crossChain, id }) => {
         setLoading(true)
 
         try {
+
             const tx = await swap(order, index)
             await tx.wait()
         } catch (e) {
@@ -71,9 +72,7 @@ const AssetCard = ({ order, item, crossChain, id }) => {
 
         setLoading(false)
 
-
-
-    }, [order])
+    }, [order, swap])
 
 
     return (
