@@ -15,32 +15,32 @@ export const NFT_MARKETPLACE = [
 
 export const MOCK_NFT = {
     42: {
-        address: "0x0e627EdbBF37785FE8284ff46fD42FD5f51d07ce",
+        address: "0x48a47587c82E0B21d213D22064433BB67a7a7171",
         list: [
             {
-                name: "Tamago NFT",
+                name: "Tamago Kovan NFT",
                 tokenId: "1",
-                image: "https://img.tamago.finance/voucher/kovan/1.png"
+                image: "https://nftluckbox.xyz/images/mock/kovan/01.png"
             },
             {
-                name: "Tamago NFT",
+                name: "Tamago Kovan NFT",
                 tokenId: "2",
-                image: "https://img.tamago.finance/voucher/kovan/2.png"
+                image:  "https://nftluckbox.xyz/images/mock/kovan/02.png"
             },
             {
-                name: "Tamago NFT",
+                name: "Tamago Kovan NFT",
                 tokenId: "3",
-                image: "https://img.tamago.finance/voucher/kovan/3.png"
+                image: "https://nftluckbox.xyz/images/mock/kovan/03.png"
             },
             {
-                name: "Tamago NFT",
+                name: "Tamago Kovan NFT",
                 tokenId: "4",
-                image: "https://img.tamago.finance/voucher/kovan/4.png"
+                image: "https://nftluckbox.xyz/images/mock/kovan/04.png"
             },
             {
-                name: "Tamago NFT",
+                name: "Tamago Kovan NFT",
                 tokenId: "5",
-                image: "https://img.tamago.finance/voucher/kovan/5.png"
+                image: "https://nftluckbox.xyz/images/mock/kovan/05.png"
             }
         ]
     },
@@ -48,27 +48,27 @@ export const MOCK_NFT = {
         address: "0x576430Ecadbd9729B32a4cA9Fed9F38331273924",
         list: [
             {
-                name: "Tamago Mock NFT",
+                name: "Tamago Mumbai NFT",
                 tokenId: "1",
                 image: "https://nftluckbox.xyz/images/mock/kovan/01.png"
             },
             {
-                name: "Tamago Mock NFT",
+                name: "Tamago Mumbai NFT",
                 tokenId: "2",
                 image: "https://nftluckbox.xyz/images/mock/kovan/02.png"
             },
             {
-                name: "Tamago Mock NFT",
+                name: "Tamago Mumbai NFT",
                 tokenId: "3",
                 image: "https://nftluckbox.xyz/images/mock/kovan/03.png"
             },
             {
-                name: "Tamago Mock NFT",
+                name: "Tamago Mumbai NFT",
                 tokenId: "4",
                 image: "https://nftluckbox.xyz/images/mock/kovan/04.png"
             },
             {
-                name: "Tamago Mock NFT",
+                name: "Tamago Mumbai NFT",
                 tokenId: "5",
                 image: "https://nftluckbox.xyz/images/mock/kovan/05.png"
             }

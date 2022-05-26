@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import NFTCard from "./nftCard"
 import Skeleton from "react-loading-skeleton"
 import useOrder from "../hooks/useOrder"
-
+import { Button } from "./buttons";
 
 const Header = styled.div`
   display: flex;
@@ -14,7 +14,21 @@ const Header = styled.div`
     font-weight: 600;
     font-size: 32px;
     color: #fff;
+
+    
+
   }
+
+  @media only screen and (max-width: 600px) {
+    .title {
+      font-weight: 600;
+      font-size: 18px;
+  
+      
+  
+    }
+  }
+
 `
 
 function blinkingEffect() {
@@ -36,9 +50,13 @@ const ListContainer = styled.div`
   justify-content: center;
 `
 
+const MAX_ITEMS = 4
+
 const Lists = () => {
 
   const [orders, setOrders] = useState([])
+
+  const [max, setMax] = useState(MAX_ITEMS)
 
   const { getAllOrders } = useOrder()
 
@@ -60,7 +78,7 @@ const Lists = () => {
         <div style={{ display: "flex" }}>
           <div style={{ marginTop: "auto", marginBottom: "auto" }}>
             <label>Chain:</label>
-            <select style={{width : "135px"}}>
+            <select style={{ width: "135px" }}>
               <option value="all">All</option>
               {/* <option value="polygon">Polygon</option>
               <option value="bnb">BNB Chain</option>
@@ -80,6 +98,9 @@ const Lists = () => {
 
         {
           orders.length > 0 && orders.map((order, index) => {
+            if (index > (max - 1)) {
+              return
+            }
             return (
               <Link to={`/order/${order.orderId}`}>
                 <NFTCard key={index} id={index} order={order} />
@@ -88,6 +109,16 @@ const Lists = () => {
           })
         }
       </ListContainer>
+
+      <div style={{ padding: "20px", marginTop: "1rem", textAlign: "center" }}>
+        {(orders.length > max) && (
+          <Button onClick={() => setMax(max + 4)}>
+            More...
+          </Button>
+        )}
+
+      </div>
+
     </div>
   )
 }

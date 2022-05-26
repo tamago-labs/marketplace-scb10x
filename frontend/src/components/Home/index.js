@@ -8,7 +8,10 @@ const Home = () => {
     <>
       <Jumbotron />
       <Lists />
-      <MintToken />
+      <div style={{padding : "20px"}}>
+ <MintToken />
+      </div>
+     
     </>
   )
 }

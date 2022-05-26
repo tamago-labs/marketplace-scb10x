@@ -2,6 +2,7 @@ import styled from "styled-components"
 import { useState, useContext } from "react"
 import { useWeb3React } from "@web3-react/core"
 import { Link } from "react-router-dom";
+import { Badge } from "reactstrap";
 
 import {
   shortAddress,
@@ -52,6 +53,11 @@ const NetworkBadge = styled(({ className, toggleSwitchChain, chainId }) => {
   > .btn-custom {
     background-color: #fff;
   }
+
+  @media only screen and (max-width: 600px) {
+    display: none;
+  }
+
 `
 
 const Navbar = styled.div.attrs(() => ({
@@ -62,6 +68,12 @@ const Navbar = styled.div.attrs(() => ({
   align-items: center;
   justify-content: space-between;
   padding: 12px;
+`
+
+const StyledBadge = styled(Badge)`
+@media only screen and (max-width: 600px) {
+  display: none;
+}
 `
 
 function Header() {
@@ -91,7 +103,7 @@ function Header() {
               {/* <!-- Website Logo --> */}
               <div
                 className="logo-header mostion logo-dark"
-                style={{ width: "225px" }}
+                style={{ width: "225px", display: "flex", flexDirection: "row" }}
               >
                 <Link to="/">
                   <img
@@ -101,7 +113,14 @@ function Header() {
                     height="45px"
                   />
                 </Link>
+                <div style={{ marginLeft: "10px", display : "flex" }}>
+                  <StyledBadge style={{ marginTop: "auto", marginBottom: "auto" }} color="warning">
+                    Testnet
+                  </StyledBadge>
+                </div>
+
               </div>
+
               {/* <!-- Extra Nav --> */}
               <div className="extra-nav" style={{ cursor: "pointer", display: "flex", alignItems: "center" }}>
                 {
