@@ -6,11 +6,13 @@ const logger = require('loglevel');
 const { ethers } = require("ethers")
 const { MerkleTree } = require('merkletreejs')
 const keccak256 = require("keccak256")
+const axios = require("axios")
 
 logger.enableAll()
 
-const { delay, getProviders, DUMMY, generateRelayMessages } = require("../helper")
-
+const { delay, getProviders, generateRelayMessages, getRelayerKey } = require("../helper")
+const { API_BASE, NFT_MARKETPLACE } = require("../constants")
+const { GATEWAY_ABI } = require("../abi")
 
 async function run({
     pollingDelay,
@@ -20,48 +22,92 @@ async function run({
 
     try {
 
-        await retry(
-            async () => {
+        while (true) {
 
-                const chainIds = DUMMY.filter(item => item.confirmed).reduce((output, item) => {
-                    const { chainId } = item
-                    if (chainId && output.indexOf(chainId) === -1) {
-                        output.push(chainId)
+            let retries = 0
+
+            await retry(
+                async () => {
+
+                    // fetch all orders from API
+                    const { data } = await axios.get(`${API_BASE}/orders`)
+
+                    const { orders } = data
+
+                    const chainIds = orders.filter(item => item.confirmed).reduce((output, item) => {
+                        const { chainId } = item
+                        if (chainId && output.indexOf(chainId) === -1) {
+                            output.push(chainId)
+                        }
+                        return output
+                    }, [])
+
+                    logger.debug(`Prepare providers for chain : ${chainIds}`)
+
+                    const providers = getProviders(chainIds)
+
+                    // Prepare the message
+                    const messages = generateRelayMessages(orders.filter(item => item.confirmed))
+
+                    logger.debug("Total orders : ", messages.length)
+
+                    // Construct the merkle 
+                    const leaves = messages.map(({ orderId, chainId, assetAddress, assetTokenIdOrAmount }) => ethers.utils.keccak256(ethers.utils.solidityPack(["uint256", "uint256", "address", "uint256"], [orderId, chainId, assetAddress, assetTokenIdOrAmount]))) // Order ID, Chain ID, Asset Address, Token ID
+                    const tree = new MerkleTree(leaves, keccak256, { sortPairs: true })
+                    const hexRoot = tree.getHexRoot()
+
+                    logger.debug("Merkle root to push : ", hexRoot)
+
+                    for (let obj of providers) {
+
+                        const { provider, chainId } = obj
+
+                        const currentBlock = await provider.getBlockNumber()
+
+                        logger.debug(`chain id : ${chainId} stamped at block : ${Number(currentBlock)}`)
+
+                        const wallet = new ethers.Wallet(getRelayerKey(), provider)
+                        const walletAddress = wallet.address
+
+                        const row = NFT_MARKETPLACE.find(item => item.chainId === chainId)
+                        const { gatewayAddress } = row
+                        const gatewayContract = new ethers.Contract(gatewayAddress, GATEWAY_ABI, wallet)
+
+                        const currentRoot = await gatewayContract.relayRoot()
+
+                        logger.debug("Current root : ", currentRoot)
+
+                        const BASE_GAS = 5 // 5 GWEI
+
+                        if (currentRoot !== hexRoot) {
+                            const tx = await gatewayContract.updateRelayMessage(hexRoot, {
+                                from: walletAddress,
+                                gasPrice: ethers.utils.parseUnits(`${BASE_GAS * (retries + 1)}`, 'gwei'),
+                                gasLimit: 100000 * (retries + 1)
+                            })
+                            logger.debug("tx is being processed...")
+                            await tx.wait()
+                        }
+
                     }
-                    return output
-                }, [])
 
-                const providers = getProviders(chainIds)
-
-                // Prepare the message
-                const messages = generateRelayMessages(DUMMY.filter(item => item.confirmed))
-
-                logger.debug("Total orders : ", messages.length)
-
-                // Construct the merkle 
-                const leaves = messages.map(({ orderId, chainId, assetAddress, assetTokenIdOrAmount }) => ethers.utils.keccak256(ethers.utils.solidityPack(["uint256", "uint256", "address", "uint256"], [orderId, chainId, assetAddress, assetTokenIdOrAmount]))) // Order ID, Chain ID, Asset Address, Token ID
-                const tree = new MerkleTree(leaves, keccak256, { sortPairs: true })
-                const hexRoot = tree.getHexRoot()
-
-                logger.debug("Merkle root to push : ", hexRoot)
-
-                // TODO : upload the hex root
-
-            },
-            {
-                retries: errorRetries,
-                minTimeout: errorRetriesTimeout * 1000, // delay between retries in ms
-                randomize: false,
-                onRetry: error => {
-                    console.log(error)
-                    logger.debug(error.message)
+                },
+                {
+                    retries: errorRetries,
+                    minTimeout: errorRetriesTimeout * 1000, // delay between retries in ms
+                    randomize: false,
+                    onRetry: error => {
+                        console.log(error)
+                        retries += 1
+                        logger.debug(error.message)
+                    }
                 }
-            }
-        );
+            );
 
 
-        logger.debug("End of execution loop ", (new Date()).toLocaleTimeString())
-        await delay(Number(pollingDelay));
+            logger.debug("End of execution loop ", (new Date()).toLocaleTimeString())
+            await delay(Number(pollingDelay));
+        }
     }
     catch (error) {
         // If any error is thrown, catch it and bubble up to the main try-catch for error processing in the Poll function.
@@ -77,7 +123,7 @@ async function Poll(callback) {
         console.log("Start of process", (new Date()).toLocaleTimeString())
 
         const executionParameters = {
-            pollingDelay: Number(process.env.POLLING_DELAY) || 60, // 10 minutes
+            pollingDelay: Number(process.env.POLLING_DELAY) || 600, // 10 minutes
             queryDelay: Number(process.env.QUERY_DELAY) || 40,
             queryInterval: { 137: 40000, 1: 4000 },
             errorRetries: Number(process.env.ERROR_RETRIES) || 5,

@@ -36,6 +36,13 @@ exports.getProviders = (chainIds = []) => {
     })
 }
 
+exports.getRelayerKey = () => {
+    return process.env.RELAYER_KEY
+}
+
+exports.getValidatorKey = () => {
+    return process.env.VALIDATOR_KEY
+}
 
 exports.generateRelayMessages = (items = []) => {
     return items.reduce((output, item) => {
