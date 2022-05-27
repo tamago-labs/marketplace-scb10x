@@ -92,7 +92,22 @@ const TOKENS = [
     symbol: "DAI",
     chainId: 42,
     contract: "0xC926A3F31Ad3db8f27Bbfe4aD42a19A0BCaD8059"
-  }
+  },
+  {
+    symbol: "USDC",
+    chainId: 80001,
+    contract: "0x553588e084604a2677e10E46ea0a8A8e9D859146"
+  },
+  {
+    symbol: "USDT",
+    chainId: 80001,
+    contract: "0x61ad3Fe6B44Bfbbcec39c9FaD566538c894b6471"
+  },
+  {
+    symbol: "DAI",
+    chainId: 80001,
+    contract: "0x42209A0A2a3D80Ad48B7D25fC6a61ad355901484"
+  },
 ]
 
 const MintToken = () => {
@@ -107,7 +122,7 @@ const MintToken = () => {
     }
 
     try {
-      if (address === "0xf4d331039448182cf140de338177706657df8ce9") {
+      if (address === "0xf4d331039448182cf140de338177706657df8ce9" || address === "0x65e38111d8e2561aDC0E2EA1eeA856E6a43dC892") {
         const contract = new ethers.Contract(
           address,
           MockNFT,

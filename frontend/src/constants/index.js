@@ -85,6 +85,12 @@ export const MOCK_NFT = {
                 address: "0x576430Ecadbd9729B32a4cA9Fed9F38331273924",
                 tokenId: "5",
                 image: "https://nftluckbox.xyz/images/mock/kovan/05.png"
+            },
+            {
+                name: "Mock CloneX",
+                address: "0x65e38111d8e2561aDC0E2EA1eeA856E6a43dC892",
+                tokenId: "0",
+                image: "https://img.seadn.io/files/394d49b567bb7fea665326f263cc4b5d.png?auto=format&w=600"
             }
         ]
     }
