@@ -27,8 +27,17 @@ const orderTrails = async () => {
         let rpcUrl
 
         switch (chainId) {
+          case 1:
+            rpcUrl = process.env.MAINNET_RPC_SERVER
+            break;
           case 42:
             rpcUrl = process.env.KOVAN_RPC_SERVER
+            break;
+          case 56:
+            rpcUrl = process.env.BNB_RPC_SERVER
+            break;
+          case 137:
+            rpcUrl = process.env.POLYGON_RPC_SERVER
             break;
           case 80001:
             rpcUrl = process.env.MUMBAI_RPC_SERVER
