@@ -6,5 +6,17 @@ exports.MARKETPLACES = [
     {
         chainId: 80001,
         contractAddress: "0xf2260B00250c772CB64606dBb88d9544F709308C"
-    }
+    },
+    // {
+    //     chainId: 1,
+    //     contractAddress: "0x00"
+    // },
+    // {
+    //     chainId: 56,
+    //     contractAddress: "0x00"
+    // },
+    // {
+    //     chainId: 137,
+    //     contractAddress: "0x00"
+    // },
 ]
