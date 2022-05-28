@@ -58,43 +58,59 @@ async function run({
                         const { ownerAddress, chainId, orderId } = orders.find(item => item.orderId === message.orderId)
 
                         // to prevent unnesssary checks
-                        const check = checks.find(item => item.orderId === orderId && item.chainId === chainId)
+                        const check = checks.find(item => item.orderId === orderId && item.chainId === message.chainId)
 
                         if (!check) {
                             checks.push({
-                                chainId,
+                                chainId: message.chainId,
                                 orderId
                             })
 
                             logger.debug("checking order : ", orderId)
 
-                            const { provider } = providers.find(item => item.chainId === chainId)
-                            const { marketplaceAddress } = NFT_MARKETPLACE.find(item => item.chainId === chainId)
+                            const row = providers.find(item => item.chainId === message.chainId)
 
-                            const marketplaceContract = new ethers.Contract(marketplaceAddress, MARKETPLACE_ABI, provider)
-                            const result = await marketplaceContract.partialOrders(orderId)
+                            if (row && row.provider) {
 
-                            if (result['active']) {
-                                // Buyer
-                                claims.push({
-                                    orderId: message.orderId,
-                                    chainId,
-                                    claimerAddress: result['buyer'],
-                                    isOrigin: true
-                                })
+                                const { provider } = row
+                                const { marketplaceAddress } = NFT_MARKETPLACE.find(item => item.chainId === message.chainId)
 
-                                // Seller
-                                claims.push({
-                                    orderId: message.orderId,
-                                    chainId: message.chainId,
-                                    claimerAddress: ownerAddress,
-                                    isOrigin: false
-                                })
+                                const marketplaceContract = new ethers.Contract(marketplaceAddress, MARKETPLACE_ABI, provider)
+                                const result = await marketplaceContract.partialOrders(orderId)
+
+                                if (result['active']) {
+                                    // Buyer
+                                    claims.push({
+                                        orderId: message.orderId,
+                                        chainId,
+                                        claimerAddress: result['buyer'],
+                                        isOrigin: true
+                                    })
+
+                                    // Seller
+                                    claims.push({
+                                        orderId: message.orderId,
+                                        chainId: message.chainId,
+                                        claimerAddress: ownerAddress,
+                                        isOrigin: false
+                                    })
+                                }
                             }
-
                         }
 
                     }
+
+                    // remove duplicates
+                    claims = claims.reduce((output, item) => {
+                        const existing = output.find( x => x.hash === (ethers.utils.hashMessage(JSON.stringify(item))))
+                        if (!existing) { 
+                            output.push({
+                                ...item,
+                                hash :  ethers.utils.hashMessage(JSON.stringify(item))
+                            })
+                        } 
+                        return output
+                    }, [])
 
                     logger.debug("Total claims : ", claims.length)
 

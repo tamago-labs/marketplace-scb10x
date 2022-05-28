@@ -161,10 +161,8 @@ const To = ({
 
   const onAdd = useCallback(() => {
 
-    console.log(currentToken, tokenAmount)
-
     if (tokenAmount && currentToken) {
-      const token = tokens.find(item => item.symbol === currentToken)
+      const token = tokens.find(item => item.symbol === currentToken && item.chainId === searchChain)
       setToTokens([
         ...toTokens
         ,
@@ -178,7 +176,7 @@ const To = ({
         }
       ])
     }
-  }, [tokens, currentToken, tokenAmount, toTokens])
+  }, [tokens, currentToken, tokenAmount, toTokens, searchChain])
 
   const onTokenRemove = useCallback((index) => {
     setToTokens( toTokens.filter( (item , i ) => index !== i) )

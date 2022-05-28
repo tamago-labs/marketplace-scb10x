@@ -103,7 +103,7 @@ const Lists = () => {
             }
             return (
               <Link to={`/order/${order.orderId}`}>
-                <NFTCard key={index} id={index} order={order} />
+                <NFTCard key={index} delay={index % MAX_ITEMS} order={order} />
               </Link>
             )
           })
