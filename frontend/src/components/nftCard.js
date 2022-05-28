@@ -26,7 +26,7 @@ const Container = styled.div`
   }
 `
 
-const NFTCard = ({ order, id }) => {
+const NFTCard = ({ order, delay }) => {
 
   const { resolveMetadata } = useOrder()
   const [data, setData] = useState()
@@ -41,11 +41,11 @@ const NFTCard = ({ order, id }) => {
           tokenId: order.baseAssetTokenId,
           chainId: order.chainId
         }).then(setData)
-      }, id * 3000)
+      }, delay * 1000)
 
     }
 
-  }, [order, id])
+  }, [order, delay])
 
   return (
     <Container>

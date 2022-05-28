@@ -85,6 +85,30 @@ const MOCKS = [
         symbol: "DAI",
         decimals: 18,
         tokens: []
+    },
+    {
+        chainId: 80001,
+        contract: "0x553588e084604a2677e10E46ea0a8A8e9D859146",
+        tokenType: 0,
+        symbol: "USDC",
+        decimals: 6,
+        tokens: []
+    },
+    {
+        chainId: 80001,
+        contract: "0x61ad3Fe6B44Bfbbcec39c9FaD566538c894b6471",
+        tokenType: 0,
+        symbol: "USDT",
+        decimals: 6,
+        tokens: []
+    },
+    {
+        chainId: 80001,
+        contract: "0x42209A0A2a3D80Ad48B7D25fC6a61ad355901484",
+        tokenType: 0,
+        symbol: "DAI",
+        decimals: 18,
+        tokens: []
     }
 ]
 

@@ -3,10 +3,11 @@ import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import useOrder from "../../hooks/useOrder"
 import styled from "styled-components";
-import { resolveNetworkName, shortAddress, resolveStatus } from "../../helper";
+import { resolveNetworkName, shortAddress } from "../../helper";
 import AssetCard from "./assetCard";
 import { AlertWarning } from "../alert";
 import Skeleton from "react-loading-skeleton";
+import { useWeb3React } from "@web3-react/core";
 
 const Container = styled.div.attrs(() => ({ className: "container" }))`
     margin-top: 2rem;
@@ -37,7 +38,7 @@ const Info = styled(
             <div className={className}>
                 <label>{name}</label>
                 <p>
-                    {value}
+                    {value || <Skeleton width="80px" />}
                 </p>
             </div>
         )
@@ -72,13 +73,22 @@ const HowTo = styled.div.attrs(() => ({ className: "col-sm-4" }))`
 
 `
 
+const ORDER_STATUS = {
+    UNKNOWN: 0,
+    NEW: 1,
+    SOLD: 2
+}
+
 const OrderDetails = () => {
 
-    const { getOrder, resolveMetadata } = useOrder()
+    const { account } = useWeb3React()
+
+    const { getOrder, resolveMetadata, resolveStatus } = useOrder()
 
     const [order, setOrder] = useState()
     const [crossChain, setCrosschain] = useState(false)
     const [data, setData] = useState()
+    const [status, setStatus] = useState(ORDER_STATUS.UNKNOWN)
 
     const { id } = useParams();
 
@@ -96,6 +106,12 @@ const OrderDetails = () => {
                 tokenId: order.baseAssetTokenId,
                 chainId: order.chainId
             }).then(setData)
+
+            resolveStatus({
+                chainId: order.chainId,
+                orderId: order.orderId
+            }).then(setStatus)
+
         }
 
     }, [order])
@@ -127,7 +143,7 @@ const OrderDetails = () => {
             </Container>
         )
     }
- 
+
 
     return (
         <Container>
@@ -139,14 +155,14 @@ const OrderDetails = () => {
                         {data ? <Image src={data.metadata && data.metadata.image ? data.metadata.image : "https://via.placeholder.com/200x200"} width="100%" height="220" />
                             : <Skeleton width="200px" height="220px" />
                         }
- 
+
                     </div>
                     <div style={{ marginLeft: "2rem", flexGrow: 1 }}>
                         <h4>
-                        {data ? `${data.metadata.name} #${order.baseAssetTokenId} ` : <Skeleton  />}
+                            {data ? `${data.metadata.name} #${order.baseAssetTokenId} ` : <Skeleton />}
                         </h4>
                         <p>
-                        {data ? `${data.metadata.description} ` : <Skeleton  />}
+                            {data ? `${data.metadata.description} ` : <Skeleton />}
                         </p>
                         <div>
                             <Info
@@ -155,7 +171,8 @@ const OrderDetails = () => {
                             />
                             <Info
                                 name={"Status"}
-                                value={resolveStatus(order)}
+                                value={status === 0 ? null : status === 2 ? "Sold" : "New"}
+                                color={status === 2 ? "red" : "white"}
                             />
                             {/* <Info
                                 name={"Token Type"}
@@ -196,11 +213,18 @@ const OrderDetails = () => {
 
             <div style={{ marginTop: "1rem", marginBottom: "1rem", height: "40px" }}>
 
-                {crossChain &&
+                {(account && crossChain) &&
                     <AlertWarning>
                         You would be facing delays of up to 10 minutes for cross-chain swaps
                     </AlertWarning>
                 }
+
+                {!account && (
+                    <AlertWarning>
+                        Connect your wallet to continue
+                    </AlertWarning>
+                )}
+
                 {/* {!crossChain &&
                     <AlertWarning>
                         Metamask/Web3 Wallet may popup twice for approving
@@ -214,7 +238,7 @@ const OrderDetails = () => {
             <div style={{ display: "flex", flexWrap: "wrap", marginTop: "1rem", justifyContent: "center" }}>
                 {items.map((item, index) => {
                     return (
-                        <AssetCard id={index} order={order} crossChain={crossChain} item={item} key={index} />
+                        <AssetCard id={index} order={order} crossChain={crossChain} item={item} key={index} account={account} />
                     )
                 })
                 }
