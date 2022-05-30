@@ -58,8 +58,9 @@ const NFTCard = styled.div`
   }
 
   a {
-    cursor: pointer;
+    
     text-decoration: underline;
+    cursor: pointer; 
     :hover {
       text-decoration: underline;
     }
@@ -110,15 +111,21 @@ const TOKENS = [
   },
 ]
 
+const Link = styled.a`
+
+`
+
 const MintToken = () => {
   const { chainId, account, library } = useWeb3React()
 
   const [chain, setChain] = useState(42)
+  const [isNFT, setNFT] = useState(true)
 
   const onMint = useCallback(async (address, id) => {
 
     if (chain !== chainId) {
       alert("Incorrect chain!")
+      return
     }
 
     try {
@@ -147,6 +154,7 @@ const MintToken = () => {
 
     if (chain !== chainId) {
       alert("Incorrect chain!")
+      return
     }
 
     const row = TOKENS.find(item => item.symbol === symbol)
@@ -174,6 +182,8 @@ const MintToken = () => {
 
   const tokens = TOKENS.filter(item => item.chainId === chain)
 
+  const disabled = chain !== chainId
+
   return (
     <Container>
       <Header>
@@ -192,24 +202,35 @@ const MintToken = () => {
             <option value={42}>Kovan</option>
             <option value={80001}>Mumbai</option>
           </select>
+          {` `}
+          <label>Token Type:</label>
+          <select onChange={(e) => {
+            setNFT((e.target.value) === "true" ? true : false)
+          }}
+            value={isNFT} style={{ width: "135px" }}>
+            <option value={true}>NFT</option>
+            <option value={false}>ERC-20</option>
+          </select>
         </div>
       </div>
       <ListContainer>
         {
-          mocks.map((nft) => (
-            <NFTCard>
+          isNFT && mocks.map((nft, index) => (
+            <NFTCard key={`${index}-nft`}>
               <img src={nft.image} width="100%" height="120px" />
-              <a onClick={() => onMint(nft.address, nft.tokenId)}>
+              <a onClick={() => {
+                onMint(nft.address, nft.tokenId)
+              }}>
                 <div className="name text-center">Mint{` `}{nft.name}{` `}#{nft.tokenId}</div>
               </a>
             </NFTCard>
           ))}
 
 
-        {tokens.map((token, index) => {
+        {!isNFT && tokens.map((token, index) => {
           return (
-            <NFTCard key={index}>
-              <div style={{ display: "flex", height: "120px", width: "100%", border :"1px solid white"}}>
+            <NFTCard key={`${index}-token`}>
+              <div style={{ display: "flex", height: "120px", width: "100%", border: "1px solid white" }}>
                 <div style={{ margin: "auto" }}>
                   ERC-20
                 </div>
