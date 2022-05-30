@@ -59,7 +59,7 @@ const CreateOrder = () => {
   const [nfts, setNfts] = useState()
   const [fromData, setFromData] = useState()
   const [toData, setToData] = useState([])
-  const [toTokens, setToTokens ] = useState([])
+  const [toTokens, setToTokens] = useState([])
   const [searchText, setSearchText] = useState()
   const [searchNFT, setSearchNFT] = useState()
   const [searchChain, setSearchChain] = useState()
@@ -76,7 +76,12 @@ const CreateOrder = () => {
     if (!metadata && nft && nft.token_uri) {
       console.log("no metadata!")
 
-      const uri = nft.token_uri.replaceAll("000000000000000000000000000000000000000000000000000000000000000", "")
+      let uri = nft.token_uri.replaceAll("000000000000000000000000000000000000000000000000000000000000000", "")
+
+      if (uri.indexOf("https://") === -1) {
+        uri = `https://${uri}`
+      }
+
       // proxy 
       const { data } = await axios.get(`https://slijsy3prf.execute-api.ap-southeast-1.amazonaws.com/stage/proxy/${uri}`)
 
@@ -113,7 +118,7 @@ const CreateOrder = () => {
     searchChain
   }) => {
 
- 
+
 
     if (!searchText || searchText.length <= 2) return
     setSearchLoading(true)

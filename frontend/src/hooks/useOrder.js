@@ -69,7 +69,12 @@ const useOrder = () => {
         if (!metadata && nft && nft.token_uri) {
             console.log("no metadata!")
 
-            const uri = nft.token_uri.replaceAll("000000000000000000000000000000000000000000000000000000000000000", "")
+            let uri = nft.token_uri.replaceAll("000000000000000000000000000000000000000000000000000000000000000", "")
+
+            if (uri.indexOf("https://") === -1) {
+                uri = `https://${uri}`
+            }  
+
             // proxy 
             const { data } = await axios.get(`https://slijsy3prf.execute-api.ap-southeast-1.amazonaws.com/stage/proxy/${uri}`)
 
