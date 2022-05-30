@@ -1,6 +1,7 @@
 const { db } = require("../firebase")
 const { Moralis, MoralisOptions } = require("../moralis")
 const { getMetadata } = require("../utils")
+const validator = require('validator')
 
 exports.getMetadata = async (req, res, next) => {
   try {
@@ -13,6 +14,14 @@ exports.getMetadata = async (req, res, next) => {
 
     if (!address || !id || !chain) {
       return res.status(400).json({ message: "some or all required fields are missing" })
+    }
+
+    if (!validator.isEthereumAddress(address)) {
+      return res.status(400).json({ message: "invalid address " })
+    }
+
+    if (!chain.match(/^0x[0-9a-f]+$/i)) {
+      return res.status(400).json({ message: "invalid chain. hexadecimal chainId required. (eg. '0x89')" })
     }
 
     const nft = await db.collection('nfts').where('address', '==', address).where('id', '==', id).where('chain', '==', chain).get()

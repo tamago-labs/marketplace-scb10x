@@ -22,7 +22,8 @@
     "firebase-functions": "^3.18.0",
     "fs": "0.0.1-security",
     "moralis": "^1.7.0",
-    "morgan": "^1.10.0"
+    "morgan": "^1.10.0",
+    "validator": "^13.7.0"
   },
   "devDependencies": {
     "firebase-functions-test": "^0.2.0"
