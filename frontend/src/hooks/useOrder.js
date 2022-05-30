@@ -487,7 +487,7 @@ const useOrder = () => {
 
     const claim = useCallback(async (order, token) => {
 
-        console.log("partial swap  ", order.orderId, token, chainId)
+        console.log("claiming  ", order.orderId, token, chainId)
 
         if (!account) {
             throw new Error("Wallet not connected")
