@@ -215,7 +215,7 @@ const OrderDetails = () => {
 
                 {(account && crossChain) &&
                     <AlertWarning>
-                        You would be facing delays of up to 10 minutes for cross-chain swaps
+                        You would be facing delays of up to 3 minutes for cross-chain swaps
                     </AlertWarning>
                 }
 

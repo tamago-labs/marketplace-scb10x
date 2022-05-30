@@ -33,6 +33,8 @@ export const CROSSCHAIN_SWAP_PROCESS = {
     COMPLETE: 4
 }
 
+const MAX_WAITING_TIME = 180
+
 const shorterName = (name) => {
     return name.length > 28 ? `${name.slice(0, 15)}...${name.slice(-4)}` : name
 }
@@ -101,14 +103,10 @@ const AssetCard = ({ order, item, crossChain, id, account }) => {
 
     const onWaiting = useCallback(async () => {
 
-        const max = 10
+        let timer = 0
 
-        let count = 0
-
-        while (max > count) {
-
-            count += 1
-
+        while (MAX_WAITING_TIME > timer) {
+            timer += 1
             await delay(1)
         }
 
@@ -166,6 +164,7 @@ const AssetCard = ({ order, item, crossChain, id, account }) => {
                 onPartialSwap={onPartialSwap}
                 onClaim={onClaim}
                 loading={loading}
+                max={MAX_WAITING_TIME}
             />
 
             <Container>
@@ -221,7 +220,7 @@ const AssetCard = ({ order, item, crossChain, id, account }) => {
                                 width: "100%"
                             }}
                             className="btn btn-primary shadow"
-                            disabled={loading || !account}
+                            disabled={loading || !account || (item.chainId !== chainId)}
                             onClick={() => setCrosschainProcess(CROSSCHAIN_SWAP_PROCESS.PREPARE)}
                         >
                             Swap
