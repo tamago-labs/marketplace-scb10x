@@ -1,10 +1,11 @@
-import React, { useState, useEffect, useCallback, useContext } from "react"
+import React, { useState, useEffect, useCallback, useContext, useId } from "react"
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap"
 import { useWeb3React } from "@web3-react/core"
 import styled from "styled-components"
 import { X, Check } from "react-feather"
 import { Puff } from 'react-loading-icons'
 import { resolveNetworkName } from "../../helper"
+import useInterval from "../../hooks/useInterval"
 
 
 const CloseIcon = styled(X)`
@@ -33,9 +34,29 @@ const TableContainer = styled.div`
 `
 
 
-const CrosschainSwapModal = ({ loading, toggle, visible, process = 0, order, item, onPartialSwap, onClaim }) => {
+const CountContainer = styled.div`
+  text-align: center;
+  font-size: 12px;
+  color: blue;
+
+
+`
+
+const CrosschainSwapModal = ({ loading, toggle, visible, process = 0, order, item, onPartialSwap, onClaim, max }) => {
 
     const { chainId } = useWeb3React()
+
+    const [count, setCount] = useState(0)
+
+    useInterval(() => {
+
+        if (process === 2) {
+            setCount(count + 1)
+        } else {
+            setCount(0)
+        }
+
+    }, 1000)
 
     return (
         <Modal style={{ top: '10%' }} isOpen={visible} toggle={toggle}>
@@ -49,7 +70,7 @@ const CrosschainSwapModal = ({ loading, toggle, visible, process = 0, order, ite
                     style={{ textAlign: "center", color: "grey", fontSize: "12px", lineHeight: "16px" }}
                 >You must complete 3 steps below in order to swap your NFT / tokens across the chain</p>
                 {(process === 3 && order.chainId !== chainId) && (
-                    <p style={{ fontSize: "12px", color: "red", textAlign: "center"  }}>
+                    <p style={{ fontSize: "12px", color: "red", textAlign: "center" }}>
                         Please switch to {resolveNetworkName(order.chainId)}
                     </p>
                 )}
@@ -75,7 +96,13 @@ const CrosschainSwapModal = ({ loading, toggle, visible, process = 0, order, ite
                         </tbody>
                     </table>
                 </TableContainer>
-                
+
+                {process === 2 &&
+                    <CountContainer>
+                        Elapsed : {`${count}s`}/{`${max}s`}
+                    </CountContainer>
+                }
+
             </ModalBody>
 
             <ModalFooter style={{ display: "flex" }}>
