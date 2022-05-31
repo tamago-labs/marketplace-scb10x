@@ -73,14 +73,19 @@ const useOrder = () => {
 
             if (uri.indexOf("https://") === -1) {
                 uri = `https://${uri}`
-            }  
-
-            // proxy 
-            const { data } = await axios.get(`https://slijsy3prf.execute-api.ap-southeast-1.amazonaws.com/stage/proxy/${uri}`)
-
-            if (data && data.data) {
-                metadata = data.data
             }
+
+            try {
+                // proxy
+                const { data } = await axios.get(`https://slijsy3prf.execute-api.ap-southeast-1.amazonaws.com/stage/proxy/${uri}`)
+
+                if (data && data.data) {
+                    metadata = data.data
+                }
+            } catch (e) {
+
+            }
+
         }
 
         return {
@@ -536,7 +541,8 @@ const useOrder = () => {
         swap,
         partialSwap,
         claim,
-        resolveStatus
+        resolveStatus,
+        getMetadata
     }
 }
 
