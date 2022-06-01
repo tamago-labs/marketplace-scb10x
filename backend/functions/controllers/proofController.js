@@ -89,7 +89,7 @@ exports.generateClaimProof = async (req, res, next) => {
 
     const proof = tree.getHexProof(ethers.utils.keccak256(ethers.utils.solidityPack(["uint256", "uint256", "address", "bool"], [order.orderId, order.chainId, account, true])))
 
-    res.status(200).json({ status: "ok", proof })
+    res.status(200).json({ status: "ok", order, account, proof })
   } catch (error) {
     next(error)
   }
