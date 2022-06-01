@@ -139,12 +139,14 @@ function Header() {
                           chainId={chainId}
                           toggleSwitchChain={toggleSwitchChain}
                         />
-                        <a
-                          style={{ color: "white", backgroundImage: "linear-gradient(to right, #f55f8d 0, #f8ae56 51%, #f55f8d 100%)", borderRadius: "32px", padding: 12 }}
-                          className="btn btn-primary shadow mx-4"
-                        >
-                          {shortAddress(account)}
-                        </a>
+                        <Link to="/account">
+                          <a
+                            style={{ color: "white", backgroundImage: "linear-gradient(to right, #f55f8d 0, #f8ae56 51%, #f55f8d 100%)", borderRadius: "32px", padding: 12 }}
+                            className="btn btn-primary shadow mx-4"
+                          >
+                            {shortAddress(account)}
+                          </a>
+                        </Link>
                       </>
                     )}
                   </>
