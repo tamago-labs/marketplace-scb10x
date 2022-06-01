@@ -23,7 +23,9 @@
     "fs": "0.0.1-security",
     "moralis": "^1.7.0",
     "morgan": "^1.10.0",
-    "validator": "^13.7.0"
+    "validator": "^13.7.0",
+    "keccak256": "^1.0.6",
+    "merkletreejs": "^0.2.31"
   },
   "devDependencies": {
     "firebase-functions-test": "^0.2.0"
