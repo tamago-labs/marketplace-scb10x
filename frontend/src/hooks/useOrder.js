@@ -213,12 +213,16 @@ const useOrder = () => {
             chain: `0x${chainId.toString(16)}`,
         };
 
-        const { data } = await axios.get(`${API_BASE}/nft/metadata/${assetAddress}/${tokenId}/0x${chainId.toString(16)}`)
+        try {
+            const { data } = await axios.get(`${API_BASE}/nft/metadata/${assetAddress}/${tokenId}/0x${chainId.toString(16)}`)
 
-        if (data && data.metadata) {
-            return data
+            if (data && data.metadata) {
+                return data
+            }
+        } catch (e) {
+
         }
-
+        
         const tokenIdMetadata = await Web3Api.token.getTokenIdMetadata(options);
         return await getMetadata(tokenIdMetadata)
     }
