@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useCallback } from "react"
 import styled from "styled-components"
 import { useWeb3React } from "@web3-react/core"
 import { useMoralisWeb3Api } from "react-moralis"
@@ -71,7 +71,7 @@ const CreateOrder = () => {
 
   const [process, setProcess] = useState(PROCESS.FILL)
 
-  const fetchNFTBalance = async ({ chainId, account }) => {
+  const fetchNFTBalance = useCallback(async ({ chainId, account }) => {
     const options = {
       chain: `0x${chainId.toString(16)}`,
       address: account,
@@ -82,18 +82,16 @@ const CreateOrder = () => {
 
     const filteredData = data.filter((nft) => nft.metadata)
     setNfts(filteredData)
-  }
+  }, [account, chainId])
 
   useEffect(() => {
     setSearchNFT([])
   }, [searchChain])
 
-  const fetchSearchNFTs = async ({
+  const fetchSearchNFTs = useCallback(async ({
     searchText,
     searchChain
   }) => {
-
-
 
     if (!searchText || searchText.length <= 2) return
     setSearchLoading(true)
@@ -115,7 +113,7 @@ const CreateOrder = () => {
 
     setSearchNFT(filteredData)
     setSearchLoading(false)
-  }
+  }, [account, chainId, searchChain, searchText])
 
   useEffect(() => {
     if (!account && !chainId) return
