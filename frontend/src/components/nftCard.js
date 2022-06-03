@@ -1,29 +1,40 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useState, useMemo } from "react"
 import styled from "styled-components"
-import { resolveNetworkName } from "../helper"
+import { resolveBlockexplorerLink, resolveNetworkName } from "../helper"
 import useOrder from "../hooks/useOrder"
 import Skeleton from "react-loading-skeleton"
+import { Link } from "react-router-dom";
+import { BaseAssetCard } from "./cards"
+import { ethers } from "ethers"
 
-const Container = styled.div`
-  background-color: rgba(38, 38, 38, 0.6);
-  width: 260px;
-  min-height: 380px;
-  border-radius: 12px;
-  padding: 12px;
+const BuyButton = styled.a.attrs(() => ({ className: "btn btn-primary shadow" }))`
+  color: white;
+  border-radius: 32px;
+  margin-top: 12px;
+  width: 100%;
   cursor: pointer;
-  border: 1px solid transparent;
-  margin-left: 3px;
-  margin-right: 3px;
-  margin-bottom: 10px;
+`
 
-  &:hover {
-    border: 1px solid pink;
-  }
+const SecondaryDataRow = styled.div`
+  display: flex;
+  flex-direction: row;
 
-  .name {
-    color: #fff;
-    margin-top: 12px;
+`
+
+const SellerCol = styled.div`
+  flex: 1;
+  a {
+    color: inherit;
+    text-decoration: none;
+    :hover {
+      text-decoration: underline;
+    }
   }
+`
+
+const PriceCol = styled.div`
+  flex: 1;
+  text-align: right;
 `
 
 const NFTCard = ({ order, delay }) => {
@@ -47,30 +58,49 @@ const NFTCard = ({ order, delay }) => {
 
   }, [order, delay])
 
-  return (
-    <Container>
+  const sellerLink = resolveBlockexplorerLink(order.chainId, order.ownerAddress)
 
-      {data ? <img src={data.metadata && data.metadata.image ? data.metadata.image : "https://via.placeholder.com/200x200"} width="100%" height="220" />
-        : <Skeleton height="220px" />
+  const price = useMemo(() => {
+
+    if (order && order.barterList) {
+      const anyToken = order.barterList.find(item => item.tokenType === 0)
+      if (anyToken) {
+        return `${ethers.utils.formatUnits(anyToken.assetTokenIdOrAmount, anyToken.decimals)} ${anyToken.symbol}`
       }
+    }
 
+    return
 
+  }, [order])
+
+  return (
+    <BaseAssetCard
+      image={data && data.metadata.image}
+      chainId={order && order.chainId}
+      assetAddress={order && order.baseAssetAddress}
+      tokenId={order && order.baseAssetTokenId}
+    >
       <div className="name">
-        {data ? `${data.metadata.name} #${order.baseAssetTokenId} ` : <Skeleton height="16px"/>}
+        {data ? `${data.metadata.name} #${order.baseAssetTokenId} ` : <Skeleton height="16px" />}
       </div>
-      <div className="name">Chain: {resolveNetworkName(order.chainId)}</div>
-      <a
-        style={{
-          color: "white",
-          borderRadius: "32px",
-          marginTop: "12px",
-          width: "100%"
-        }}
-        className="btn btn-primary shadow"
-      >
-        Buy
-      </a>
-    </Container>
+      {/* <div className="name">Chain: {resolveNetworkName(order.chainId)}</div> */}
+      <SecondaryDataRow>
+        <SellerCol>
+          <a href={sellerLink} target="_blank">
+            @Unknown
+          </a>
+        </SellerCol>
+        {price &&
+          <PriceCol>
+            {price}
+          </PriceCol> }
+      </SecondaryDataRow>
+      <Link to={`/order/${order.orderId}`}>
+        <BuyButton>
+          Buy
+        </BuyButton>
+      </Link>
+    </BaseAssetCard>
   )
 }
 
