@@ -7,6 +7,7 @@ import To from "./to"
 import Confirm from "./confirm"
 import { AlertWarning } from "../alert"
 import axios from "axios"
+import useOrder from "../../hooks/useOrder"
 
 
 export const PROCESS = {
@@ -66,35 +67,9 @@ const CreateOrder = () => {
   const [step, setStep] = useState(1)
   const [searchLoading, setSearchLoading] = useState(false)
   const Web3Api = useMoralisWeb3Api()
+  const { getMetadata } = useOrder()
 
   const [process, setProcess] = useState(PROCESS.FILL)
-
-  const getMetadata = async (nft) => {
-    let metadata = JSON.parse(nft.metadata)
-
-    // fetch from token uri
-    if (!metadata && nft && nft.token_uri) {
-      console.log("no metadata!")
-
-      let uri = nft.token_uri.replaceAll("000000000000000000000000000000000000000000000000000000000000000", "")
-
-      if (uri.indexOf("https://") === -1) {
-        uri = `https://${uri}`
-      }
-
-      // proxy 
-      const { data } = await axios.get(`https://slijsy3prf.execute-api.ap-southeast-1.amazonaws.com/stage/proxy/${uri}`)
-
-      if (data && data.data) {
-        metadata = data.data
-      }
-    }
-
-    return {
-      ...nft,
-      metadata,
-    }
-  }
 
   const fetchNFTBalance = useCallback(async ({ chainId, account }) => {
     const options = {
