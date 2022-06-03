@@ -19,6 +19,17 @@ export const resolveNetworkName = (networkId) => {
   }
 }
 
+export const resolveBlockexplorerLink = (networkId, assetAddress, tokenId) => {
+  switch (networkId) {
+    case 42:
+      return `https://kovan.etherscan.io/address/${assetAddress}`
+    case 80001:
+      return `https://mumbai.polygonscan.com/address/${assetAddress}`
+    default:
+      return "#"
+  }
+}
+
 export const resolveNetworkIconUrl = (networkId) => {
   switch (networkId) {
     case 1:

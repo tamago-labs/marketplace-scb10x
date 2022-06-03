@@ -7,23 +7,8 @@ import { Puff } from "react-loading-icons"
 import { ethers } from "ethers"
 import { useWeb3React } from "@web3-react/core"
 import CrosschainSwapModal from "../Modal/CrosschainSwapModal"
+import { PairAssetCard } from "../cards"
 
-const Container = styled.div`
-  background-color: rgba(38, 38, 38, 0.6);
-  width: 260px;
-  min-height: 380px;
-  border-radius: 12px;
-  padding: 12px; 
-  border: 1px solid transparent;
-  margin-left: 3px;
-  margin-right: 3px;
-  margin-bottom: 10px;
-
-  .name {
-    color: #fff;
-    margin-top: 12px;
-  }
-`
 
 export const CROSSCHAIN_SWAP_PROCESS = {
     NONE: 0,
@@ -167,13 +152,19 @@ const AssetCard = ({ order, item, crossChain, id, account }) => {
                 max={MAX_WAITING_TIME}
             />
 
-            <Container>
+            <PairAssetCard
+                chainId={item && item.chainId}
+                image={data && data.metadata.image}
+                assetAddress={item && item.assetAddress}
+                tokenId={item && item.assetTokenIdOrAmount}
+                isERC20={item && item.tokenType === 0}
+            >
 
                 {item.tokenType !== 0 &&
                     <>
-                        {data ? <img src={data.metadata && data.metadata.image ? data.metadata.image : "https://via.placeholder.com/200x200"} width="100%" height="220" />
+                        {/* {data ? <img src={data.metadata && data.metadata.image ? data.metadata.image : "https://via.placeholder.com/200x200"} width="100%" height="220" />
                             : <Skeleton height="220px" />
-                        }
+                        } */}
                         <div className="name">
                             {data ? `${shorterName(data.metadata.name)} #${shorterName(item.assetTokenIdOrAmount)} ` : <Skeleton height="16px" />}
                         </div>
@@ -182,16 +173,16 @@ const AssetCard = ({ order, item, crossChain, id, account }) => {
 
                 {item.tokenType === 0 &&
                     <>
-                        <div style={{ display: "flex", height: "220px" }}>
+                        {/* <div style={{ display: "flex", height: "220px" }}>
                             <div style={{ margin: "auto", fontSize: "24px" }}>
                                 ERC-20
                             </div>
-                        </div>
+                        </div> */}
                         <div className="name"> {ethers.utils.formatUnits(item.assetTokenIdOrAmount, item.decimals)}{` `}{item.symbol}</div>
                     </>
                 }
 
-                <div className="name">Chain: {resolveNetworkName(item.chainId)}</div>
+                {/* <div className="name">Chain: {resolveNetworkName(item.chainId)}</div> */}
 
                 {!crossChain &&
                     <button
@@ -225,9 +216,6 @@ const AssetCard = ({ order, item, crossChain, id, account }) => {
                         >
                             Swap
                         </button>
-                        {/* <p style={{ fontSize: "12px", color: "red", textAlign: "center", marginTop: "10px" }}>
-                            Validator is Temporarily Stopped
-                        </p> */}
                     </>
                 }
                 {item.chainId !== chainId && (
@@ -235,7 +223,7 @@ const AssetCard = ({ order, item, crossChain, id, account }) => {
                         Incorrect chain
                     </p>
                 )}
-            </Container>
+            </PairAssetCard>
         </>
     )
 }

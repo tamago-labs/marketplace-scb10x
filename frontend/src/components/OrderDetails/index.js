@@ -1,9 +1,10 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
-import useOrder from "../../hooks/useOrder"
 import styled from "styled-components";
-import { resolveNetworkName, shortAddress } from "../../helper";
+import { FileText } from "react-feather"
+import useOrder from "../../hooks/useOrder"
+import { resolveNetworkName, shortAddress, resolveBlockexplorerLink } from "../../helper";
 import AssetCard from "./assetCard";
 import { AlertWarning } from "../alert";
 import Skeleton from "react-loading-skeleton";
@@ -56,22 +57,76 @@ const Info = styled(
     margin-right: 10px;
     `
 
-const HowTo = styled.div.attrs(() => ({ className: "col-sm-4" }))`
- 
+const Metadata = styled(
+    ({ className, metadata }) => {
 
-    .box {
-        border: 1px solid white;
-        padding: 20px;
-        padding-top: 10px;
-        min-height: 200px; 
+        const { attributes } = metadata
 
-        >h6 {
-            text-decoration: underline;
-        }
+        return (
+            <div className={`${className} col-sm-4`}>
+                <h4>Attributes</h4>
+                {attributes.map((attribute, index) => {
+                    return (
+                        <div className="--attribute" key={index}>
+                            <h4>{attribute['trait_type']}</h4>
+                            <p> {attribute['value']}</p>
+                        </div>
+                    )
+                })
 
+                }
+            </div>
+        )
+    }
+)`
+
+    h4 {
+        font-size: 20px;
+    }
+
+    background: blue;
+    padding: 20px;
+    border-radius: 12px;
+    display: block;
+
+    .--attribute { 
+        border-radius: 12px; 
+        display: inline-block;  
+        margin-right: 2rem;
+    text-align: left;
+    >h4 {
+        font-size: 16px;
+    }
+    >p {
+        font-size: 14px;
+    }
     }
 
 `
+
+const SmartContractLink = styled(
+    ({ className, chainId, assetAddress }) => {
+
+        const contractLink = resolveBlockexplorerLink(chainId, assetAddress)
+
+        return (
+            <div className={className}>
+                <a href={contractLink} target="_blank">
+                    <FileText width={24} height={18} color="white" />
+                </a>
+            </div>
+        )
+    })`
+    display: inline;
+    >a {
+        border-radius: 50%;
+        background: blue;
+        padding-left: 2px;
+        padding-right: 2px;
+        padding-bottom: 2px;
+        border: 0px; 
+    }
+    `
 
 const ORDER_STATUS = {
     UNKNOWN: 0,
@@ -134,8 +189,6 @@ const OrderDetails = () => {
 
     }, [order, crossChain])
 
-
-
     if (!order) {
         return (
             <Container>
@@ -160,6 +213,11 @@ const OrderDetails = () => {
                     <div style={{ marginLeft: "2rem", flexGrow: 1 }}>
                         <h4>
                             {data ? `${data.metadata.name} #${order.baseAssetTokenId} ` : <Skeleton />}
+                            {` `}
+                            {data && <SmartContractLink
+                                chainId={order && order.chainId}
+                                assetAddress={order && order.baseAssetAddress}
+                            />}
                         </h4>
                         <p>
                             {data ? `${data.metadata.description} ` : <Skeleton />}
@@ -179,9 +237,14 @@ const OrderDetails = () => {
                                 value={(order.baseAssetIs1155 ? "ERC-1155" : "ERC-721")}
                             /> */}
                             <Info
+                                name={"Created"}
+                                value={(new Date(Number(order.timestamp) * 1000)).toLocaleDateString()}
+                            />
+                            <Info
                                 name={"Added By"}
                                 value={shortAddress(order.ownerAddress)}
                             />
+
                             {/* <p style={{ fontSize: "12px" }}>Contract Address : {order.baseAssetAddress}</p> */}
                         </div>
                     </div>
@@ -191,6 +254,7 @@ const OrderDetails = () => {
                         <h6>How To Swap</h6>
                     </div>
                 </HowTo> */}
+                {/* {data ? <Metadata metadata={data.metadata} /> : <div className="col-sm-4"><Skeleton height="100%" /></div>} */}
             </div>
 
             <hr style={{ marginTop: "2rem", marginBottom: "2rem" }} />
