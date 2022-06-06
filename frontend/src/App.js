@@ -1,10 +1,11 @@
-import { createGlobalStyle } from "styled-components"
-import { Routes, Route, Link } from "react-router-dom"
-import Header from "./components/header"
-import Home from "./components/Home"
-import Footer from "./components/footer"
-import OrderDetails from "./components/OrderDetails"
-import CreateOrder from "./components/CreateOrder"
+import { createGlobalStyle } from "styled-components";
+import { Routes, Route, Link } from "react-router-dom";
+import Header from "./components/header";
+import Home from "./components/Home";
+import Footer from "./components/footer";
+import OrderDetails from "./components/OrderDetails";
+import CreateOrder from "./components/CreateOrder";
+import Collection from "./components/Collection";
 
 const GlobalStyle = createGlobalStyle`
   * {
@@ -24,7 +25,7 @@ const GlobalStyle = createGlobalStyle`
     background-size: cover;
     background: linear-gradient(to right, #896eff 0, #5f3bff 51%, #896eff 100%);
   }
-`
+`;
 
 function App() {
   return (
@@ -35,10 +36,11 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/order/:id" element={<OrderDetails />} />
         <Route path="/createOrder" element={<CreateOrder />} />
+        <Route path="/orders/collection/:address" element={<Collection />} />
       </Routes>
-      <Footer/>
+      <Footer />
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
