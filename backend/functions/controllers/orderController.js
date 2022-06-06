@@ -18,10 +18,10 @@ exports.getOrders = async (req, res, next) => {
         chains[index] = +chain
       })
       // console.log(chains)
-      allOrders = await db.collection("orders").where("chainId", "in", chains).where('version', '==', 1).where('visible', '==', true).limit(+limit || 50).offset(+offset || 0).get();
+      allOrders = await db.collection("orders").where("chainId", "in", chains).where('version', '==', 1).where('visible', '==', true).limit(+limit || 500).offset(+offset || 0).get();
 
     } else {
-      allOrders = await db.collection("orders").where('version', '==', 1).where('visible', '==', true).limit(+limit || 50).offset(+offset || 0).get();
+      allOrders = await db.collection("orders").where('version', '==', 1).where('visible', '==', true).limit(+limit || 500).offset(+offset || 0).get();
     }
     const result = allOrders.docs.map((doc) => ({
       ...doc.data(),

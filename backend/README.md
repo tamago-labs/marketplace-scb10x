@@ -12,16 +12,16 @@
 
 ## Orders
 
-| HTTP Method | path                                    | RequestBody                 | Response                                                | Notes                                                          |
-| ----------- | --------------------------------------- | --------------------------- | ------------------------------------------------------- | -------------------------------------------------------------- |
-| GET         | /orders                                 | none                        | { "status": "ok", "orders": [{...},{...},{...}]}        |                                                                |
-| GET         | /orders?chain=42&limit=20&offset=60     | none                        | { "status": "ok", "orders": [{...},{...},{...}]}        | All queries are optional. default values : limit:50, offset: 0 |
-| GET         | /orders/{id}                            | none                        | { "status": "ok", "order": {...}}                       |                                                                |
-| GET         | /orders/collection/{collection_address} | none                        | { "status": "ok", "orders": [{...},{...},{...}]}        |                                                                |
-| GET         | /orders/owner/{owner_address}           | none                        | { "status": "ok", "orders": [{...},{...},{...}]}        |                                                                |
-| POST        | /orders                                 | \*required                  | { "status": "ok", "body": {...req.body} , "orderId": 1} |                                                                |
-| POST        | /orders/confirm                         | {orderId,message,signature} | { "status": "ok", "orderId": 1}                         |                                                                |
-| POST        | /orders/cancel                          | {orderId,message,signature} | { "status": "ok", "orderId": 1}                         |                                                                |
+| HTTP Method | path                                    | RequestBody                 | Response                                                | Notes                                                                                                         |
+| ----------- | --------------------------------------- | --------------------------- | ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| GET         | /orders                                 | none                        | { "status": "ok", "orders": [{...},{...},{...}]}        |                                                                                                               |
+| GET         | /orders?chain=42&limit=20&offset=10     | none                        | { "status": "ok", "orders": [{...},{...},{...}]}        | All queries are optional. default values : limit:500 (this will soon be changed to a lower number), offset: 0 |
+| GET         | /orders/{id}                            | none                        | { "status": "ok", "order": {...}}                       |                                                                                                               |
+| GET         | /orders/collection/{collection_address} | none                        | { "status": "ok", "orders": [{...},{...},{...}]}        |                                                                                                               |
+| GET         | /orders/owner/{owner_address}           | none                        | { "status": "ok", "orders": [{...},{...},{...}]}        |                                                                                                               |
+| POST        | /orders                                 | \*required                  | { "status": "ok", "body": {...req.body} , "orderId": 1} |                                                                                                               |
+| POST        | /orders/confirm                         | {orderId,message,signature} | { "status": "ok", "orderId": 1}                         |                                                                                                               |
+| POST        | /orders/cancel                          | {orderId,message,signature} | { "status": "ok", "orderId": 1}                         |                                                                                                               |
 
 ## Proofs
 
