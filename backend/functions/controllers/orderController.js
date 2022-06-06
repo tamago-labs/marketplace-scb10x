@@ -4,7 +4,22 @@ const { ethers } = require("ethers");
 exports.getAllOrders = async (req, res, next) => {
   console.log("get all orders...")
   try {
-    const allOrders = await db.collection("orders").where('version', '==', 1).get();
+    const chainQuery = req.query.chain
+    let allOrders
+    // console.log(queries)
+    if (chainQuery) {
+      // console.log(chainQuery)
+      const chains = chainQuery.split(',')
+      // console.log(chains)
+      chains.map((chain, index) => {
+        chains[index] = +chain
+      })
+      // console.log(chains)
+      allOrders = await db.collection("orders").where("chainId", "in", chains).where('version', '==', 1).get();
+
+    } else {
+      allOrders = await db.collection("orders").where('version', '==', 1).get();
+    }
     const result = allOrders.docs.map((doc) => ({
       ...doc.data(),
     })).filter(doc => doc.visible);
