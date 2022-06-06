@@ -1,10 +1,13 @@
 const { db } = require("../firebase")
 const { ethers } = require("ethers");
 
-exports.getAllOrders = async (req, res, next) => {
+exports.getOrders = async (req, res, next) => {
   console.log("get all orders...")
   try {
     const chainQuery = req.query.chain
+    const limit = req.query.limit
+    const offset = req.query.offset
+
     let allOrders
     // console.log(queries)
     if (chainQuery) {
@@ -15,15 +18,15 @@ exports.getAllOrders = async (req, res, next) => {
         chains[index] = +chain
       })
       // console.log(chains)
-      allOrders = await db.collection("orders").where("chainId", "in", chains).where('version', '==', 1).get();
+      allOrders = await db.collection("orders").where("chainId", "in", chains).where('version', '==', 1).where('visible', '==', true).limit(+limit || 50).offset(+offset || 0).get();
 
     } else {
-      allOrders = await db.collection("orders").where('version', '==', 1).get();
+      allOrders = await db.collection("orders").where('version', '==', 1).where('visible', '==', true).limit(+limit || 50).offset(+offset || 0).get();
     }
     const result = allOrders.docs.map((doc) => ({
       ...doc.data(),
-    })).filter(doc => doc.visible);
-    console.log(result)
+    }))
+    // console.log(result)
     res.status(200).json({ status: "ok", orders: result })
   } catch (error) {
     next(error)
@@ -231,3 +234,4 @@ exports.getOrdersByOwner = async (req, res, next) => {
     next(error)
   }
 }
+
