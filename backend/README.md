@@ -1,4 +1,4 @@
-# SCB10X - May 2022 - Hackatron
+# SCB10X - May 2022 - Hackathon
 
 ## Test
 
