@@ -20,6 +20,14 @@
 | POST        | /orders/confirm | {orderId,message,signature} | { "status": "ok", "orderId": 1}                         |
 | POST        | /orders/cancel  | {orderId,message,signature} | { "status": "ok", "orderId": 1}                         |
 
+## Proofs
+
+| HTTP Method | path                | RequestBody                | Response                                         |
+| ----------- | ------------------- | -------------------------- | ------------------------------------------------ |
+| POST        | /proof/swap/        | {order,chainId,tokenIndex} | { "status": "ok", order,chainId,tokenIndex,proof |
+| POST        | /proof/partial-swap | {order,token}              | { "status": "ok", order,token,proof}             |
+| POST        | /proof/claim        | {order,account,token}      | { "status": "ok", proof}                         |
+
 ## NFTs
 
 | HTTP Method | path                                 | RequestBody | Response                                 | Notes                                  |

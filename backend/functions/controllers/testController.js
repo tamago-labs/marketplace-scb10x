@@ -50,6 +50,9 @@ exports.testMoralisNFTMetadata = async (req, res, next) => {
     };
 
     const tokenIdMetadata = await Moralis.Web3API.token.getTokenIdMetadata(options);
+
+    console.log(tokenIdMetadata)
+
     const result = await getMetadata(tokenIdMetadata)
     res.status(200).json({ status: "ok", metadata: result.metadata })
 

@@ -35,7 +35,12 @@ exports.getMetadata = async (req, res, next) => {
         token_id: id,
         chain: chain,
       };
+      console.log("datatype of token_id:", typeof id)
       const tokenIdMetadata = await Moralis.Web3API.token.getTokenIdMetadata(options);
+      console.log({ tokenIdMetadata })
+      if (!tokenIdMetadata.metadata) {
+        return res.status(400).json({ message: "the API returns metadata as null" })
+      }
       const result = await getMetadata(tokenIdMetadata)
       const metadata = result.metadata
       // console.log("saving nft to firestore database...")
