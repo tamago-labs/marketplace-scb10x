@@ -66,9 +66,17 @@ const useOrder = () => {
     const { data } = await axios.get(
       `${API_BASE}/orders/collection/${address}`
     );
-    // console.log(`${API_BASE}/orders/collection/${address}`);
-    // console.log("data = " + data.orders);
     if (data.status !== "ok") {
+      return;
+    }
+    return data.orders;
+  }, []);
+
+  const getOrdersByOwner = useCallback(async (ownerAddress) => {
+    const { data } = await axios.get(
+      `${API_BASE}/orders/owner/${ownerAddress}`
+    );
+    if (data.status != "ok") {
       return;
     }
     return data.orders;
@@ -713,6 +721,7 @@ const useOrder = () => {
     getAllOrders,
     getOrder,
     getOrdersByCollection,
+    getOrdersByOwner,
     resolveMetadata,
     createOrder,
     confirmOrder,

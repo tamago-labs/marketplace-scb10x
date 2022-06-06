@@ -6,6 +6,7 @@ import Footer from "./components/footer";
 import OrderDetails from "./components/OrderDetails";
 import CreateOrder from "./components/CreateOrder";
 import Collection from "./components/Collection";
+import SortByOwner from "./components/SortByOwner";
 
 const GlobalStyle = createGlobalStyle`
   * {
@@ -37,6 +38,7 @@ function App() {
         <Route path="/order/:id" element={<OrderDetails />} />
         <Route path="/createOrder" element={<CreateOrder />} />
         <Route path="/orders/collection/:address" element={<Collection />} />
+        <Route path="/orders/owner/:ownerAddress" element={<SortByOwner />} />
       </Routes>
       <Footer />
     </div>

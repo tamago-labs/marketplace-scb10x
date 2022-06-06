@@ -1,11 +1,15 @@
 import React, { useEffect, useState, useMemo } from "react";
 import styled from "styled-components";
-import { resolveBlockexplorerLink, resolveNetworkName } from "../helper";
 import useOrder from "../hooks/useOrder";
 import Skeleton from "react-loading-skeleton";
 import { Link } from "react-router-dom";
 import { BaseAssetCard } from "./cards";
 import { ethers } from "ethers";
+import {
+  shortAddress,
+  resolveBlockexplorerLink,
+  resolveNetworkName,
+} from "../helper";
 
 const BuyButton = styled.a.attrs(() => ({
   className: "btn btn-primary shadow",
@@ -92,9 +96,9 @@ const NFTCard = ({ order, delay }) => {
       {/* <div className="name">Chain: {resolveNetworkName(order.chainId)}</div> */}
       <SecondaryDataRow>
         <SellerCol>
-          <a href={sellerLink} target="_blank">
-            @Unknown
-          </a>
+          <Link to={`/orders/owner/${order.ownerAddress}`}>
+            @{shortAddress(order.ownerAddress)}
+          </Link>
         </SellerCol>
         {price && <PriceCol>{price}</PriceCol>}
       </SecondaryDataRow>

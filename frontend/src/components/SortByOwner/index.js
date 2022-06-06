@@ -16,16 +16,15 @@ const ListContainer = styled.div`
 /** CONSTANT */
 const MAX_ITEMS = 4;
 
-/** Component */
-const Collection = () => {
+const SortByOwner = () => {
   const [max, setMax] = useState(MAX_ITEMS);
   const [orders, setOrders] = useState([]);
-  const { getOrdersByCollection } = useOrder();
-  let { address } = useParams();
+  const { getOrdersByOwner } = useOrder();
+  let { ownerAddress } = useParams();
 
   useEffect(() => {
-    address && getOrdersByCollection(address).then(setOrders);
-  }, [address, getOrdersByCollection]);
+    ownerAddress && getOrdersByOwner(ownerAddress).then(setOrders);
+  }, [ownerAddress, getOrdersByOwner]);
 
   return (
     <div style={{ marginTop: 32, paddingBottom: 32 }} className="container">
@@ -56,4 +55,4 @@ const Collection = () => {
   );
 };
 
-export default Collection;
+export default SortByOwner;
