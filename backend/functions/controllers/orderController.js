@@ -185,11 +185,13 @@ exports.getOrdersByCollection = async (req, res, next) => {
     const orders = await db.collection("orders")
       .where('version', '==', 1)
       .where('visible', '==', true)
+      .where('baseAssetAddress', '==', address.toLowerCase())
       .get()
+
     let result = orders.docs.map((doc) => ({
       ...doc.data(),
-    })).filter(doc => doc.barterList.filter(item => item.assetAddress === address).length !== 0);
-    console.log(result)
+    }))
+
 
     if (!result.length) {
       return res.status(400).json({ message: "orders with this collection address does not exist" })
