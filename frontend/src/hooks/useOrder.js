@@ -69,13 +69,23 @@ const useOrder = () => {
         if (!metadata && nft && nft.token_uri) {
             console.log("no metadata!")
 
-            const uri = nft.token_uri.replaceAll("000000000000000000000000000000000000000000000000000000000000000", "")
-            // proxy 
-            const { data } = await axios.get(`https://slijsy3prf.execute-api.ap-southeast-1.amazonaws.com/stage/proxy/${uri}`)
+            let uri = nft.token_uri.replaceAll("000000000000000000000000000000000000000000000000000000000000000", "")
 
-            if (data && data.data) {
-                metadata = data.data
+            if (uri.indexOf("https://") === -1) {
+                uri = `https://${uri}`
             }
+
+            try {
+                // proxy
+                const { data } = await axios.get(`https://slijsy3prf.execute-api.ap-southeast-1.amazonaws.com/stage/proxy/${uri}`)
+
+                if (data && data.data) {
+                    metadata = data.data
+                }
+            } catch (e) {
+
+            }
+
         }
 
         return {
@@ -203,12 +213,15 @@ const useOrder = () => {
             chain: `0x${chainId.toString(16)}`,
         };
 
-        const { data } = await axios.get(`${API_BASE}/nft/metadata/${assetAddress}/${tokenId}/0x${chainId.toString(16)}`)
+        try {
+            const { data } = await axios.get(`${API_BASE}/nft/metadata/${assetAddress}/${tokenId}/0x${chainId.toString(16)}`)
 
-        if (data && data.metadata) {
-            return data
+            if (data && data.metadata) {
+                return data
+            }
+        } catch (e) {
+
         }
-
         const tokenIdMetadata = await Web3Api.token.getTokenIdMetadata(options);
         return await getMetadata(tokenIdMetadata)
     }
@@ -531,7 +544,8 @@ const useOrder = () => {
         swap,
         partialSwap,
         claim,
-        resolveStatus
+        resolveStatus,
+        getMetadata
     }
 }
 

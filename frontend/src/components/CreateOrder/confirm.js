@@ -181,6 +181,10 @@ const Confirm = ({
   const onGenerateId = useCallback(async () => {
     console.log("creating --> ", values)
 
+    if (values.barterList.length === 0) {
+      return     
+    }
+
     setLoading(true)
 
     try {
@@ -382,7 +386,7 @@ const Confirm = ({
               padding: "12px 24px",
             }}
             className="btn shadow"
-            disabled={loading || process === PROCESS.CONFIRM}
+            disabled={loading || process === PROCESS.CONFIRM || values.barterList.length === 0}
             onClick={proceed}
           >
             {loading && (

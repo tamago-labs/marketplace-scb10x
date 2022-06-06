@@ -174,3 +174,60 @@ exports.cancelOrder = async (req, res, next) => {
     next(error)
   }
 }
+
+exports.getOrdersByCollection = async (req, res, next) => {
+  console.log("getting orders by collection...")
+  try {
+    if (!req || !req.params) {
+      return res.status(400).json({ message: "missing query params" })
+    }
+    const { address } = req.params
+    const orders = await db.collection("orders")
+      .where('version', '==', 1)
+      .where('visible', '==', true)
+      .get()
+    let result = orders.docs.map((doc) => ({
+      ...doc.data(),
+    })).filter(doc => doc.barterList.filter(item => item.assetAddress === address).length !== 0);
+    console.log(result)
+
+    if (!result.length) {
+      return res.status(400).json({ message: "orders with this collection address does not exist" })
+    }
+
+
+    res.status(200).json({ status: "ok", orders: result })
+
+
+  } catch (error) {
+    next(error)
+  }
+}
+
+exports.getOrdersByOwner = async (req, res, next) => {
+  console.log("getting orders by owner...")
+  try {
+    if (!req || !req.params) {
+      return res.status(400).json({ message: "missing query params" })
+    }
+    // console.log(req.params)
+    const { owner } = req.params
+    const orders = await db.collection("orders")
+      .where('version', '==', 1)
+      .where('visible', '==', true)
+      .where("ownerAddress", "==", owner)
+      .get()
+
+    if (orders.empty) {
+      return res.status(400).json({ message: "orders with this creator address does not exist" })
+    }
+    const result = orders.docs.map((doc) => ({
+      ...doc.data(),
+    }))
+    console.log(result)
+    res.status(200).json({ status: "ok", orders: result })
+
+  } catch (error) {
+    next(error)
+  }
+}
