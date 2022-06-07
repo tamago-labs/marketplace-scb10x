@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useCallback } from "react"
 import styled from "styled-components"
 import { useWeb3React } from "@web3-react/core"
 import { useMoralisWeb3Api } from "react-moralis"
@@ -7,6 +7,7 @@ import To from "./to"
 import Confirm from "./confirm"
 import { AlertWarning } from "../alert"
 import axios from "axios"
+import useOrder from "../../hooks/useOrder"
 
 
 export const PROCESS = {
@@ -59,39 +60,18 @@ const CreateOrder = () => {
   const [nfts, setNfts] = useState()
   const [fromData, setFromData] = useState()
   const [toData, setToData] = useState([])
-  const [toTokens, setToTokens ] = useState([])
+  const [toTokens, setToTokens] = useState([])
   const [searchText, setSearchText] = useState()
   const [searchNFT, setSearchNFT] = useState()
   const [searchChain, setSearchChain] = useState()
   const [step, setStep] = useState(1)
   const [searchLoading, setSearchLoading] = useState(false)
   const Web3Api = useMoralisWeb3Api()
+  const { getMetadata } = useOrder()
 
   const [process, setProcess] = useState(PROCESS.FILL)
 
-  const getMetadata = async (nft) => {
-    let metadata = JSON.parse(nft.metadata)
-
-    // fetch from token uri
-    if (!metadata && nft && nft.token_uri) {
-      console.log("no metadata!")
-
-      const uri = nft.token_uri.replaceAll("000000000000000000000000000000000000000000000000000000000000000", "")
-      // proxy 
-      const { data } = await axios.get(`https://slijsy3prf.execute-api.ap-southeast-1.amazonaws.com/stage/proxy/${uri}`)
-
-      if (data && data.data) {
-        metadata = data.data
-      }
-    }
-
-    return {
-      ...nft,
-      metadata,
-    }
-  }
-
-  const fetchNFTBalance = async ({ chainId, account }) => {
+  const fetchNFTBalance = useCallback(async ({ chainId, account }) => {
     const options = {
       chain: `0x${chainId.toString(16)}`,
       address: account,
@@ -102,18 +82,16 @@ const CreateOrder = () => {
 
     const filteredData = data.filter((nft) => nft.metadata)
     setNfts(filteredData)
-  }
+  }, [account, chainId])
 
   useEffect(() => {
     setSearchNFT([])
   }, [searchChain])
 
-  const fetchSearchNFTs = async ({
+  const fetchSearchNFTs = useCallback(async ({
     searchText,
     searchChain
   }) => {
-
- 
 
     if (!searchText || searchText.length <= 2) return
     setSearchLoading(true)
@@ -135,7 +113,7 @@ const CreateOrder = () => {
 
     setSearchNFT(filteredData)
     setSearchLoading(false)
-  }
+  }, [account, chainId, searchChain, searchText])
 
   useEffect(() => {
     if (!account && !chainId) return
