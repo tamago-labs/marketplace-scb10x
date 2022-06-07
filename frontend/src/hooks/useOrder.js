@@ -62,7 +62,7 @@ const useOrder = () => {
         const { orders } = data
 
         if (orders) {
-            result = orders.filter(item => (!item.fulfilled) && (item.confirmed) && (!item.canceled))
+            result = orders.filter(item => (!item.fulfilled) && (item.confirmed) && (!item.canceled) && (item.ownerAddress === account))
             result = result.sort(function (a, b) {
                 return b.orderId - a.orderId;
             });
@@ -565,7 +565,8 @@ const useOrder = () => {
         partialSwap,
         claim,
         resolveStatus,
-        getMetadata
+        getMetadata,
+        getAccountOrders
     }
 }
 

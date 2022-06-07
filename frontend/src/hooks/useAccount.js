@@ -8,6 +8,7 @@ import React, {
 } from "react"
 import { useWeb3React } from "@web3-react/core"
 import axios from "axios"
+import {ACCOUNT_API_BASE} from "../constants"
 
 export const AccountContext = createContext({})
 
@@ -46,12 +47,12 @@ const Provider = ({ children }) => {
   useEffect(() => {
     if (account) {
       axios
-        .get(`/api/account/${account}`)
-        .then(({ data }) => {
-          if (data.status === "ok") {
-            const { email } = data
-            dispatch({ type: "UPDATE_EMAIL", data: email })
-          }
+      .get(`${ACCOUNT_API_BASE}/account/${account}`)
+      .then(({ data }) => {
+        if (data.status === "ok") {
+          const { email } = data
+          dispatch({ type: "UPDATE_EMAIL", data: email })
+        }
           if (data.status === "error" && data.message === "Invalid ID") {
             dispatch({ type: "UPDATE_EMAIL", data: " " })
           }

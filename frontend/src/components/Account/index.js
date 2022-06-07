@@ -5,6 +5,7 @@ import Blockies from "react-blockies"
 import { Tabs, Tab } from "react-bootstrap"
 import { shortAddress } from "../../helper"
 import General from "./general"
+import Orders from "./orders"
 
 const Wrapper = styled.div.attrs(() => ({ className: "container" }))`
   padding-top: 2rem;
@@ -88,7 +89,7 @@ const AccountDetails = () => {
                   eventKey="orders"
                   title="Your Orders"
                 >
-                  gagn
+                  <Orders />
                 </Tab>
               </AccountTab>
             </div>

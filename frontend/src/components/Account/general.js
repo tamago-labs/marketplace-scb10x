@@ -48,8 +48,27 @@ const EmailInput = styled.input.attrs(() => ({
   }
 `
 
+const NameInput = styled.input.attrs(() => ({
+  type: "text",
+  placeholder: "Display Name",
+}))`
+  background: transparent;
+  border: 1px solid #fff;
+  padding: 12px;
+  border-radius: 32px;
+  font-size: 16px;
+  color: #fff;
+  width: 100%;
+  margin: 12px 0;
+
+  ::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+  }
+`
+
 const General = () => {
   const [email, setEmail] = useState()
+  const [displayName, setDisplayName] = useState()
   const [errorMessage, setErrorMessage] = useState()
   const [loading, setLoading] = useState()
   const accountContext = useContext(AccountContext)
@@ -93,6 +112,12 @@ const General = () => {
         closeOnClick
         rtl={false}
         draggable
+      />
+      <h4>Display Name</h4>
+      <NameInput
+        value={displayName}
+        onChange={(e) => setDisplayName(e.target.value)}
+        disabled={disabled}
       />
       <h4>Email Address</h4>
       <EmailInput
