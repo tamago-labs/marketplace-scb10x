@@ -15,16 +15,16 @@ const GlobalStyle = createGlobalStyle`
     box-sizing: border-box;
   }
   body {
-    font-family: 'VT323', monospace;
+    font-family: 'Poppins','VT323', monospace;
     color: white;
-    
+    font-weight: 400;
     /* Full height */
     height: 100vh;
     /* Center and scale the image nicely */
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
-    background: linear-gradient(to right, #896eff 0, #5f3bff 51%, #896eff 100%);
+    background: linear-gradient(to right, #FA58B6 31.12%, #7A0BC0 89.4%);
   }
 `;
 

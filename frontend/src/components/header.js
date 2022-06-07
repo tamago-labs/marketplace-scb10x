@@ -1,6 +1,6 @@
-import styled from "styled-components"
-import { useState, useContext } from "react"
-import { useWeb3React } from "@web3-react/core"
+import styled from "styled-components";
+import { useState, useContext } from "react";
+import { useWeb3React } from "@web3-react/core";
 import { Link } from "react-router-dom";
 import { Badge } from "reactstrap";
 
@@ -8,9 +8,9 @@ import {
   shortAddress,
   resolveNetworkName,
   resolveNetworkIconUrl,
-} from "../helper"
-import WalletsModal from "./Modal/WalletConnectModal"
-import SwitchChainModal from "./Modal/SwitchChainModal"
+} from "../helper";
+import WalletsModal from "./Modal/WalletConnectModal";
+import SwitchChainModal from "./Modal/SwitchChainModal";
 
 const NetworkBadge = styled(({ className, toggleSwitchChain, chainId }) => {
   return (
@@ -20,12 +20,17 @@ const NetworkBadge = styled(({ className, toggleSwitchChain, chainId }) => {
         onClick={toggleSwitchChain}
       >
         <div className="image-container">
-          <img style={{ height: "100%" }} src={resolveNetworkIconUrl(chainId)} />
+          <img
+            style={{ height: "100%" }}
+            src={resolveNetworkIconUrl(chainId)}
+          />
         </div>
-        <span className="ml-4">{resolveNetworkName(chainId)}</span>
+        <span style={{ color: "#7A0BC0" }} className="ml-4">
+          {resolveNetworkName(chainId)}
+        </span>
       </a>
     </div>
-  )
+  );
 })`
   position: relative;
 
@@ -45,9 +50,6 @@ const NetworkBadge = styled(({ className, toggleSwitchChain, chainId }) => {
     display: flex;
     align-items: center;
     justify-content: center;
-
-    
-
   }
 
   > .btn-custom {
@@ -57,8 +59,7 @@ const NetworkBadge = styled(({ className, toggleSwitchChain, chainId }) => {
   @media only screen and (max-width: 600px) {
     display: none;
   }
-
-`
+`;
 
 const Navbar = styled.div.attrs(() => ({
   className: "container",
@@ -68,22 +69,22 @@ const Navbar = styled.div.attrs(() => ({
   align-items: center;
   justify-content: space-between;
   padding: 12px;
-`
+`;
 
 const StyledBadge = styled(Badge)`
-@media only screen and (max-width: 600px) {
-  display: none;
-}
-`
+  @media only screen and (max-width: 600px) {
+    display: none;
+  }
+`;
 
 function Header() {
-  const { account, chainId, library } = useWeb3React()
+  const { account, chainId, library } = useWeb3React();
 
-  const [walletLoginVisible, setWalletLoginVisible] = useState(false)
-  const [switchChainVisible, setSwitchChainVisible] = useState(false)
+  const [walletLoginVisible, setWalletLoginVisible] = useState(false);
+  const [switchChainVisible, setSwitchChainVisible] = useState(false);
 
-  const toggleWalletConnect = () => setWalletLoginVisible(!walletLoginVisible)
-  const toggleSwitchChain = () => setSwitchChainVisible(!switchChainVisible)
+  const toggleWalletConnect = () => setWalletLoginVisible(!walletLoginVisible);
+  const toggleSwitchChain = () => setSwitchChainVisible(!switchChainVisible);
 
   return (
     <>
@@ -103,7 +104,11 @@ function Header() {
               {/* <!-- Website Logo --> */}
               <div
                 className="logo-header mostion logo-dark"
-                style={{ width: "225px", display: "flex", flexDirection: "row" }}
+                style={{
+                  width: "225px",
+                  display: "flex",
+                  flexDirection: "row",
+                }}
               >
                 <Link to="/">
                   <img
@@ -113,21 +118,37 @@ function Header() {
                     height="45px"
                   />
                 </Link>
-                <div style={{ marginLeft: "10px", display : "flex" }}>
-                  <StyledBadge style={{ marginTop: "auto", marginBottom: "auto" }} color="warning">
+                <div style={{ marginLeft: "10px", display: "flex" }}>
+                  <StyledBadge
+                    style={{ marginTop: "auto", marginBottom: "auto" }}
+                    color="warning"
+                  >
                     Testnet
                   </StyledBadge>
                 </div>
-
               </div>
 
               {/* <!-- Extra Nav --> */}
-              <div className="extra-nav" style={{ cursor: "pointer", display: "flex", alignItems: "center" }}>
+              <div
+                className="extra-nav"
+                style={{
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                }}
+              >
                 {
                   <>
                     {!account ? (
                       <a
-                        style={{ zIndex: 10, color: "white", backgroundImage: "linear-gradient(to right, #f55f8d 0, #f8ae56 51%, #f55f8d 100%)", borderRadius: "32px", padding: 12 }}
+                        style={{
+                          zIndex: 10,
+                          color: "white",
+                          backgroundColor: "#FA58B6",
+                          borderColor: "none",
+                          borderRadius: "32px",
+                          padding: 12,
+                        }}
                         className="btn btn-primary shadow"
                         onClick={toggleWalletConnect}
                       >
@@ -140,7 +161,13 @@ function Header() {
                           toggleSwitchChain={toggleSwitchChain}
                         />
                         <a
-                          style={{ color: "white", backgroundImage: "linear-gradient(to right, #f55f8d 0, #f8ae56 51%, #f55f8d 100%)", borderRadius: "32px", padding: 12 }}
+                          style={{
+                            color: "white",
+                            backgroundColor: "#7A0BC0",
+                            borderColor: "none",
+                            borderRadius: "32px",
+                            padding: 12,
+                          }}
                           className="btn btn-primary shadow mx-4"
                         >
                           {shortAddress(account)}
@@ -155,7 +182,7 @@ function Header() {
         </div>
       </header>
     </>
-  )
+  );
 }
 
-export default Header
+export default Header;

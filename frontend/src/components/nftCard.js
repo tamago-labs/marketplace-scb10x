@@ -11,14 +11,21 @@ import {
   resolveNetworkName,
 } from "../helper";
 
+/* Styled Component */
 const BuyButton = styled.a.attrs(() => ({
   className: "btn btn-primary shadow",
 }))`
-  color: white;
+  color: #7a0bc0;
+  background: #ffffff;
+  font-weight: 600;
   border-radius: 32px;
   margin-top: 12px;
   width: 100%;
   cursor: pointer;
+  :hover {
+    color: #ffffff;
+    background: #fa58b6;
+  }
 `;
 
 const SecondaryDataRow = styled.div`
@@ -42,6 +49,7 @@ const PriceCol = styled.div`
   text-align: right;
 `;
 
+/* Component */
 const NFTCard = ({ order, delay }) => {
   const { resolveMetadata } = useOrder();
   const [data, setData] = useState();
