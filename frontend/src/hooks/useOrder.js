@@ -41,6 +41,8 @@ const useOrder = () => {
 
         const { orders } = data
 
+        console.log(orders)
+
         if (orders) {
             result = orders.filter(item => (!item.fulfilled) && (item.confirmed) && (!item.canceled))
             result = result.sort(function (a, b) {
@@ -50,6 +52,24 @@ const useOrder = () => {
 
         return result
     }, [])
+
+    const getAccountOrders = useCallback(async () => {
+
+        let result = []
+
+        const { data } = await axios.get(`${API_BASE}/orders`)
+
+        const { orders } = data
+
+        if (orders) {
+            result = orders.filter(item => (!item.fulfilled) && (item.confirmed) && (!item.canceled))
+            result = result.sort(function (a, b) {
+                return b.orderId - a.orderId;
+            });
+        }
+
+        return result
+    }, [account])
 
     const getOrder = useCallback(async (id) => {
 
