@@ -549,7 +549,7 @@ const useOrder = () => {
 
         const tx = await contract.claim(order.orderId, true, proof)
 
-        await tx.wait()
+        return await tx.wait()
 
     }, [account, chainId, library])
 

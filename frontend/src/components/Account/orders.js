@@ -2,8 +2,13 @@ import React, { useState, useEffect, useCallback, useContext } from "react"
 import styled from "styled-components"
 import { ToastContainer, toast } from "react-toastify"
 import { Table } from "react-bootstrap"
+import { useWeb3React } from "@web3-react/core"
+import { ethers } from "ethers"
 import useOrder from "../../hooks/useOrder"
+import { useMarketplace } from "../../hooks/useMarketplace"
 import { resolveNetworkName } from "../../helper"
+import { NFT_MARKETPLACE } from "../../constants"
+import MarketplaceABI from "../../abi/marketplace.json"
 import "react-toastify/dist/ReactToastify.css"
 
 const Wrapper = styled.div.attrs(() => ({
@@ -39,13 +44,53 @@ const OrderTable = styled(Table)`
 const Orders = () => {
   const [loading, setLoading] = useState(false)
   const [orders, setOrders] = useState([])
-  const { getAccountOrders } = useOrder()
+  const { getAccountOrders, claim } = useOrder()
+  const { account, library } = useWeb3React()
 
   useEffect(() => {
     getAccountOrders().then(setOrders)
   }, [])
 
-  console.log(orders)
+  const onCancelOrder = useCallback(
+    async (order) => {
+      setLoading(true)
+      const { contractAddress } = NFT_MARKETPLACE.find(
+        (item) => item.chainId === order.chainId
+      )
+      const marketplaceContract = new ethers.Contract(
+        contractAddress,
+        MarketplaceABI,
+        library.getSigner()
+      )
+
+      try {
+        await marketplaceContract.cancel(order.orderId)
+      } catch (e) {
+        console.log(e)
+      } finally {
+        getAccountOrders().then(setOrders)
+        setLoading(false)
+      }
+    },
+    [orders, account]
+  )
+
+  const onClaim = useCallback(
+    async (order) => {
+      setLoading(true)
+
+      try {
+        const tx = await claim(order)
+
+        await tx.wait()
+      } catch (e) {
+        console.log(e)
+      }
+
+      setLoading(false)
+    },
+    [claim, orders, account]
+  )
 
   return (
     <Wrapper>
@@ -77,10 +122,11 @@ const Orders = () => {
                   <th>{data.title}</th>
                   <th>{resolveNetworkName(data.chainId)}</th>
                   <th>{new Date(data.timestamp).toLocaleString()}</th>
-                  <th>{data.confirmed ? "New" : "Sold"}</th>
+                  <th>{data.locked ? "Sold" : "New"}</th>
                   <th>
                     <a
                       disabled={loading}
+                      onClick={() => onCancelOrder(data)}
                       style={{
                         zIndex: 10,
                         color: "white",
@@ -94,6 +140,26 @@ const Orders = () => {
                       )}
                       Cancel
                     </a>
+
+                    {data.active && (
+                      <a
+                        disabled={loading}
+                        onClick={() => onClaim(data)}
+                        style={{
+                          zIndex: 10,
+                          color: "white",
+                          borderRadius: "32px",
+                          padding: "4px 8px",
+                          marginLeft: "8px",
+                        }}
+                        className="btn btn-success shadow"
+                      >
+                        {loading && (
+                          <span className="fa fa-spin fa-refresh mr-2" />
+                        )}
+                        Claim
+                      </a>
+                    )}
                   </th>
                 </tr>
               ))
