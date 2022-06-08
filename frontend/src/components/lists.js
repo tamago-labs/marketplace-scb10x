@@ -59,7 +59,7 @@ const Lists = () => {
   return (
     <div style={{ marginTop: 32, paddingBottom: 32 }} className="container">
       <Header>
-        <div className="title" style={{ fontFamily: "VT323" }}>
+        <div className="title">
           <AnimatedComponent height="50" width="50">
             <circle cx="25" cy="25" r="10" fill="red" />
           </AnimatedComponent>

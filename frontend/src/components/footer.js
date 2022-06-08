@@ -3,7 +3,7 @@ import styled from "styled-components";
 
 const TextLink = styled.a`
   color: inherit;
-  font-size: 18px;
+  font-size: 14px;
 
   :hover {
     cursor: pointer;
@@ -26,7 +26,7 @@ const Container = styled.div.attrs(() => ({ className: "container" }))`
 
 const Footer = () => {
   return (
-    <Container style={{ fontFamily: "VT323", fontSize: "20px" }}>
+    <Container>
       <div>Copyright © 2022 Tamago Finance</div>
       <div style={{ marginLeft: "auto", marginRight: "auto" }}>
         Made with love during SCB10x Metathon'22

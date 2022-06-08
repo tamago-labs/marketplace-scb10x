@@ -8,7 +8,7 @@ const Container = styled.div.attrs(() => ({ className: "container" }))`
 `;
 
 const WelcomeText = styled.div`
-  font-size: 20px;
+  font-size: 16px;
   max-width: 800px;
   margin-left: auto;
   margin-right: auto;
@@ -23,7 +23,7 @@ const Buttons = styled.div`
 
 const TextLink = styled.a`
   color: inherit;
-  font-size: 18px;
+  font-size: 14px;
 
   :hover {
     cursor: pointer;
@@ -33,7 +33,7 @@ const TextLink = styled.a`
 
 const Jumbotron = () => {
   return (
-    <Container style={{ fontFamily: "VT323" }}>
+    <Container>
       <WelcomeText>
         Welcome to Alpha version of Tamago multi-chain NFT marketplace allows
         anyone to list the NFT once and sell everywhere, supports
@@ -42,7 +42,7 @@ const Jumbotron = () => {
       <Buttons>
         <Link to="/createOrder">
           <Button
-            style={{ color: "#7A0BC0", marginBottom: "10px", fontSize: "20px" }}
+            style={{ color: "#7A0BC0", marginBottom: "10px", fontSize: "16px" }}
           >
             Create Order
           </Button>
