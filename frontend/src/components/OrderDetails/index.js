@@ -99,7 +99,7 @@ const SmartContractLink = styled(({ className, chainId, assetAddress }) => {
   return (
     <div className={className}>
       <a href={contractLink} target="_blank">
-        <FileText width={24} height={18} color="white" />
+        <FileText width={24} height={18} color="#4B4B4B" />
       </a>
     </div>
   );
@@ -107,7 +107,6 @@ const SmartContractLink = styled(({ className, chainId, assetAddress }) => {
   display: inline;
   > a {
     border-radius: 50%;
-    background: blue;
     padding-left: 2px;
     padding-right: 2px;
     padding-bottom: 2px;

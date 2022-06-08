@@ -141,15 +141,15 @@ function Header() {
                   <>
                     {!account ? (
                       <a
+                        className="btn btn-primary shadow"
                         style={{
                           zIndex: 10,
                           color: "white",
                           backgroundColor: "#FA58B6",
-                          borderColor: "none",
+                          borderColor: "transparent",
                           borderRadius: "32px",
                           padding: 12,
                         }}
-                        className="btn btn-primary shadow"
                         onClick={toggleWalletConnect}
                       >
                         Connect Wallet
@@ -164,7 +164,7 @@ function Header() {
                           style={{
                             color: "white",
                             backgroundColor: "#7A0BC0",
-                            borderColor: "none",
+                            borderColor: "transparent",
                             borderRadius: "32px",
                             padding: 12,
                           }}
