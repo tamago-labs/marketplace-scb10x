@@ -4,6 +4,7 @@ const morgan = require("morgan")
 const cors = require("cors")
 const fs = require("fs")
 const { orderTrails } = require("./services/order-trails")
+const { updateHistory } = require("./services/history-update")
 
 // initialize app
 const app = express();
@@ -43,9 +44,11 @@ app.use((err, req, res, next) => {
 // })
 //The invocation below for local order fulfillment update 
 // orderTrails()
+// updateHistory()
 
 exports.api = functions.region('asia-east2').https.onRequest(app)
-exports.orderTrails = functions.region('asia-east2').pubsub.schedule('every 10 minutes').onRun(() => {
+exports.pubsub = functions.region('asia-east2').pubsub.schedule('every 10 minutes').onRun(() => {
   orderTrails()
+  updateHistory()
   return null
 })
