@@ -46,6 +46,7 @@ app.use((err, req, res, next) => {
 // orderTrails()
 // updateHistory()
 
+//The lines below provision cloud infrastructures
 exports.api = functions.region('asia-east2').https.onRequest(app)
 exports.pubsub = functions.region('asia-east2').pubsub.schedule('every 10 minutes').onRun(() => {
   orderTrails()

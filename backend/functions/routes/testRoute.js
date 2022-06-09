@@ -6,6 +6,6 @@ const testController = require("../controllers/testController")
 router.get("/test/get", testController.getTestJSON)
 router.get("/test/ethers", testController.testEthers)
 router.get("/test/moralisNFTMETADATA", testController.testMoralisNFTMetadata)
-router.post("/test/createMock", testController.createMockData)
+
 
 module.exports = router;
