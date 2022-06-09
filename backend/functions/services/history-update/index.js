@@ -12,26 +12,34 @@ const updateHistory = async () => {
 
     // check completed order entries in the system 
     console.log("get all orders...")
-    const fulfilledOrders = await db.collection("orders").where('version', '==', 1).where('fulfilled', '==', true).get();
+    let orders = await db.collection("orders").where('version', '==', 1).get();
 
-    const orders = fulfilledOrders.docs.map((doc) => ({
+    orders = orders.docs.map((doc) => ({
       DocID: doc.id,
       ...doc.data(),
     }))
     console.log("total orders to be checked : ", orders.length)
 
-    for (const item of orders) {
+    for (const order of orders) {
 
       //COLLECTIONS
-      //creating or updating collections data
-      let collection = await db.collection("collections").where('address', '==', item.baseAssetAddress).where('chainId', '==', item.chainId).get()
+      //creating or updating collection doc
+      console.log(order)
+      let collection = await db.collection("collections").where('address', '==', order.baseAssetAddress).where('chainId', '==', order.chainId).get()
 
       if (collection.empty) {
         //creating new firestore collection doc
         const collectionDoc = {
-          address: item.baseAssetAddress,
-          chainId: item.chainId,
-          fulfilledOrders: [item.orderId]
+          address: order.baseAssetAddress,
+          chainId: order.chainId,
+          activeOrders: [],
+          fulfilledOrders: []
+        }
+        if (order.fulfilled) {
+          collectionDoc.fulfilledOrders.push(order.orderId)
+        }
+        else if (order.visible && !order.cancelled) {
+          collectionDoc.activeOrders.push(order.orderId)
         }
         await db.collection("collections").add(collectionDoc)
       } else {
@@ -41,11 +49,18 @@ const updateHistory = async () => {
           ...doc.data(),
         }))[0]
         console.log(collection)
-        await db.collection("collections").doc(collection.DocID).update({ fulfilledOrders: FieldValue.arrayUnion(item.orderId) })
+        if (order.fulfilled) {
+          await db.collection("collections").doc(collection.DocID).update({ fulfilledOrders: FieldValue.arrayUnion(order.orderId) })
+          await db.collection("collections").doc(collection.DocID).update({ activeOrders: FieldValue.arrayRemove(order.orderId) })
+
+        } else if (order.visible && !order.cancelled) {
+          await db.collection("collections").doc(collection.DocID).update({ activeOrders: FieldValue.arrayUnion(order.orderId) })
+        }
       }
 
       //SELLERS
-
+      //creating or updating user doc
+      // let user = await db.collection("users").where('address','==',order.)
     }
 
 
