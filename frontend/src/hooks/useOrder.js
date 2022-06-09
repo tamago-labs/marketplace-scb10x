@@ -82,6 +82,18 @@ const useOrder = () => {
     return data.orders;
   }, []);
 
+  const getOwnerName = useCallback(async (ownerAddress) => {
+    const { data } = await axios.get(
+      `https://api.tamago.finance/v2/account/${ownerAddress}`
+    );
+    if (data.status != "ok") {
+      return "Unknow";
+    }
+    const dataSplit = data.email.split("@");
+    let name = dataSplit[0];
+    return name;
+  }, []);
+
   const getMetadata = async (nft) => {
     let metadata = JSON.parse(nft.metadata);
 
@@ -722,6 +734,7 @@ const useOrder = () => {
     getOrder,
     getOrdersByCollection,
     getOrdersByOwner,
+    getOwnerName,
     resolveMetadata,
     createOrder,
     confirmOrder,

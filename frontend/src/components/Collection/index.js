@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import styled from "styled-components";
 import NFTCard from "../nftCard";
 import useOrder from "../../hooks/useOrder";
-import { Button } from "../../components/buttons";
+import { Button } from "../buttons";
 
 /** Styled Component */
 const ListContainer = styled.div`

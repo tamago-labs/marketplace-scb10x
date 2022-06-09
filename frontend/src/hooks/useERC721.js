@@ -81,5 +81,6 @@ export const useERC721 = (address, account, library) => {
     symbol,
     getIsApprovedForAll,
     setApproveForAll,
+    getBalance,
   };
 };

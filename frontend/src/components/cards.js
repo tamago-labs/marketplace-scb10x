@@ -2,7 +2,7 @@ import { useState } from "react";
 import styled from "styled-components";
 import Skeleton from "react-loading-skeleton";
 import { Badge } from "reactstrap";
-import { MoreVertical } from "react-feather";
+import { MoreVertical, ChevronDown } from "react-feather";
 import { resolveBlockexplorerLink, resolveNetworkName } from "../helper";
 
 const AssetCardContainer = styled.div`
@@ -75,7 +75,7 @@ const MoreInfo = styled(({ className, chainId, assetAddress }) => {
   return (
     <div className={className}>
       <button onClick={() => setMenuVisible(!menuVisible)}>
-        <MoreVertical color="white" />
+        <MoreVertical color="#7a0bc0" border="" />
       </button>
       {menuVisible && (
         <div className="--menu">

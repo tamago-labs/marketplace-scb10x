@@ -13,10 +13,11 @@ import {
 
 /* Styled Component */
 const BuyButton = styled.a.attrs(() => ({
-  className: "btn btn-primary shadow",
+  className: "btn shadow",
 }))`
   color: #7a0bc0;
   background: #ffffff;
+  /* border-color: "transparent"; */
   font-weight: 600;
   border-radius: 32px;
   margin-top: 12px;
@@ -49,12 +50,21 @@ const PriceCol = styled.div`
   text-align: right;
 `;
 
+const LinkName = styled(Link)`
+  text-decoration: none;
+  :hover {
+    text-decoration: underline;
+  }
+`;
+
 /* Component */
 const NFTCard = ({ order, delay }) => {
-  const { resolveMetadata } = useOrder();
+  const { resolveMetadata, getOwnerName } = useOrder();
   const [data, setData] = useState();
+  const [sellerName, setSellerName] = useState("");
 
   useEffect(() => {
+    // setSellerName(getOwnerName(order.ownerAddress));
     if (order) {
       setTimeout(() => {
         resolveMetadata({
@@ -64,7 +74,15 @@ const NFTCard = ({ order, delay }) => {
         }).then(setData);
       }, delay * 1000);
     }
+
+    const fetchOwnerName = async () => {
+      const name = await getOwnerName(order.ownerAddress);
+      setSellerName(name);
+    };
+    fetchOwnerName();
   }, [order, delay]);
+
+  // console.log("getOwnerName = " + getOwnerName(order.ownerAddress).then);
 
   const sellerLink = resolveBlockexplorerLink(
     order.chainId,
@@ -92,21 +110,21 @@ const NFTCard = ({ order, delay }) => {
       assetAddress={order && order.baseAssetAddress}
       tokenId={order && order.baseAssetTokenId}
     >
-      <Link to={`/orders/collection/${order.baseAssetAddress}`}>
-        <div className="name">
-          {data ? (
-            `${data.metadata.name} #${order.baseAssetTokenId} `
-          ) : (
-            <Skeleton height="16px" />
-          )}
-        </div>
-      </Link>
+      <SellerCol>
+        <Link to={`/orders/collection/${order.baseAssetAddress}`}>
+          <div className="name">
+            {data ? (
+              `${data.metadata.name} #${order.baseAssetTokenId} `
+            ) : (
+              <Skeleton height="16px" />
+            )}
+          </div>
+        </Link>
+      </SellerCol>
       {/* <div className="name">Chain: {resolveNetworkName(order.chainId)}</div> */}
       <SecondaryDataRow>
         <SellerCol>
-          <Link to={`/orders/owner/${order.ownerAddress}`}>
-            @{shortAddress(order.ownerAddress)}
-          </Link>
+          <Link to={`/orders/owner/${order.ownerAddress}`}>@{sellerName}</Link>
         </SellerCol>
         {price && <PriceCol>{price}</PriceCol>}
       </SecondaryDataRow>
