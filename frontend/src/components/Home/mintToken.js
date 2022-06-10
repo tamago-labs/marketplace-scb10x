@@ -157,7 +157,7 @@ const MintToken = () => {
       return
     }
 
-    const row = TOKENS.find(item => item.symbol === symbol)
+    const row = TOKENS.find(item => item.symbol === symbol && item.chainId === chainId)
 
     const contract = new ethers.Contract(
       row.contract,
