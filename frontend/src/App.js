@@ -5,6 +5,7 @@ import Home from "./components/Home"
 import Footer from "./components/footer"
 import OrderDetails from "./components/OrderDetails"
 import CreateOrder from "./components/CreateOrder"
+import Account from "./components/Account"
 
 const GlobalStyle = createGlobalStyle`
   * {
@@ -35,8 +36,9 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/order/:id" element={<OrderDetails />} />
         <Route path="/createOrder" element={<CreateOrder />} />
+        <Route path="/account" element={<Account />} />
       </Routes>
-      <Footer/>
+      <Footer />
     </div>
   )
 }

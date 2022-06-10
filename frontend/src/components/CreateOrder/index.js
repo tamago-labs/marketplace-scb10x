@@ -197,11 +197,11 @@ const CreateOrder = () => {
         />
       )}
 
-      <div style={{ maxWidth: "800px", marginLeft: "auto", marginRight: "auto", marginTop: "2rem" }}>
+      {/* <div style={{ maxWidth: "800px", marginLeft: "auto", marginRight: "auto", marginTop: "2rem" }}>
         <p style={{ fontSize: "14px", textAlign: "center" }}>
           Please be aware that the UI is being developed, contact us in case if you want to cancel your order or withdraw a dispute.
         </p>
-      </div>
+      </div> */}
     </div>
   )
 }

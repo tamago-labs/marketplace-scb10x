@@ -41,6 +41,8 @@ const useOrder = () => {
 
         const { orders } = data
 
+        console.log(orders)
+
         if (orders) {
             result = orders.filter(item => (!item.fulfilled) && (item.confirmed) && (!item.canceled))
             result = result.sort(function (a, b) {
@@ -50,6 +52,24 @@ const useOrder = () => {
 
         return result
     }, [])
+
+    const getAccountOrders = useCallback(async () => {
+
+        let result = []
+
+        const { data } = await axios.get(`${API_BASE}/orders`)
+
+        const { orders } = data
+
+        if (orders) {
+            result = orders.filter(item => (!item.fulfilled) && (item.confirmed) && (!item.canceled) && (item.ownerAddress === account))
+            result = result.sort(function (a, b) {
+                return b.orderId - a.orderId;
+            });
+        }
+
+        return result
+    }, [account])
 
     const getOrder = useCallback(async (id) => {
 
@@ -231,8 +251,6 @@ const useOrder = () => {
         chainId
     }) => {
 
-        console.log("resolving status : ", orderId, chainId)
-
         const providers = getProviders([42, 80001])
 
         const { provider } = providers.find(item => item.chainId === chainId)
@@ -242,6 +260,10 @@ const useOrder = () => {
         const marketplaceContract = new ethers.Contract(contractAddress, MarketplaceABI, provider)
 
         const result = await marketplaceContract.orders(orderId)
+
+        if (result["canceled"] === true) {
+            return 3
+        }
 
         if (result["ended"] === true) {
             return 2
@@ -529,7 +551,7 @@ const useOrder = () => {
 
         const tx = await contract.claim(order.orderId, true, proof)
 
-        await tx.wait()
+        return await tx.wait()
 
     }, [account, chainId, library])
 
@@ -545,7 +567,8 @@ const useOrder = () => {
         partialSwap,
         claim,
         resolveStatus,
-        getMetadata
+        getMetadata,
+        getAccountOrders
     }
 }
 
