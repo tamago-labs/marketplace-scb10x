@@ -123,7 +123,7 @@ async function Poll(callback) {
         console.log("Start of process", (new Date()).toLocaleTimeString())
 
         const executionParameters = {
-            pollingDelay: Number(process.env.POLLING_DELAY) || 600, // 10 minutes
+            pollingDelay: Number(process.env.POLLING_DELAY) || 180, // 3 minutes
             queryDelay: Number(process.env.QUERY_DELAY) || 40,
             queryInterval: { 137: 40000, 1: 4000 },
             errorRetries: Number(process.env.ERROR_RETRIES) || 5,
