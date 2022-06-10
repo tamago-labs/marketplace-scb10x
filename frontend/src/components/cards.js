@@ -80,7 +80,7 @@ const MoreInfo = styled(({ className, chainId, assetAddress }) => {
       {menuVisible && (
         <div className="--menu">
           <a href={blockExplorerLink} target="_blank" className="--menu-item">
-            Asset Address
+            Contract Address
           </a>
         </div>
       )}
@@ -91,7 +91,7 @@ const MoreInfo = styled(({ className, chainId, assetAddress }) => {
   top: 5px;
   right: 5px;
   z-index: 10;
-  width: 50%;
+  width: 60%;
   text-align: right;
 
   button {
