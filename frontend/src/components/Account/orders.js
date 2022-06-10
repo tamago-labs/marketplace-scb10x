@@ -60,6 +60,14 @@ const TableRow = styled.tr`
   }
 `
 
+const ColWithLink = styled.th.attrs((props) => ({ onClick: () => props.navigate(`/order/${props.orderId}`) }))`
+cursor: pointer;
+:hover {
+  text-decoration: underline;
+}
+
+`
+
 const OrderItem = ({
   disabled,
   index,
@@ -102,25 +110,23 @@ const OrderItem = ({
   }, [tick, data])
 
   return (
-    
-    <TableRow key={index} onClick={() => navigate(`/order/${data.orderId}`)}>
-      <th>{data.orderId}</th>
-      <th>{resolveNetworkName(data.chainId)}
-        {disabled && <AlertTriangle style={{marginLeft: "5px"}} size="18px"/>}
-      </th>
-      <th>{new Date(Number(data.timestamp) * 1000).toLocaleString()}</th>
-      <th>
-        {!status ? <Skeleton width="80px" /> : resolveStatusName(status)}
-      </th>
-      <th>
-        
 
+    <tr key={index} >
+      <ColWithLink navigate={navigate} orderId={data.orderId}>{data.orderId}</ColWithLink>
+      <ColWithLink navigate={navigate} orderId={data.orderId}>{resolveNetworkName(data.chainId)}
+        {disabled && <AlertTriangle style={{ marginLeft: "5px" }} size="18px" />}
+      </ColWithLink>
+      <ColWithLink navigate={navigate} orderId={data.orderId}>{new Date(Number(data.timestamp) * 1000).toLocaleString()}</ColWithLink>
+      <ColWithLink navigate={navigate} orderId={data.orderId}>
+        {!status ? <Skeleton width="80px" /> : resolveStatusName(status)}
+      </ColWithLink>
+      <th>
 
         <button
           disabled={loading === Number(data.orderId) || disabled || status !== 1}
           onClick={() => onCancelOrder(data)}
           style={{
-            zIndex: 10,
+            zIndex: 40,
             color: "white",
             borderRadius: "32px",
             padding: "4px 8px",
@@ -174,7 +180,7 @@ const OrderItem = ({
           </button>
         )} */}
       </th>
-    </TableRow>
+    </tr>
   )
 }
 
@@ -280,7 +286,7 @@ const Orders = () => {
             : ""}
         </tbody>
       </OrderTable>
-      <p style={{marginTop :"1.5rem"}}>You will be receiving the NFT back when cancel the order</p>
+      <p style={{ marginTop: "1.5rem" }}>You will be receiving the NFT back when cancel the order</p>
     </Wrapper>
   )
 }
