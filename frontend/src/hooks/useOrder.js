@@ -335,7 +335,7 @@ const useOrder = () => {
         const { data } = await axios.get(`${API_BASE}/orders`)
         const { orders } = data
 
-        const messages = orders.filter(item => item.confirmed).reduce((output, item) => {
+        const messages = orders.filter(item => ((item.confirmed) && (!item.fulfilled) && (!item.canceled))).reduce((output, item) => {
 
             const { barterList, chainId, orderId } = item
 
@@ -355,7 +355,6 @@ const useOrder = () => {
 
             return output
         }, [])
-
 
         return messages
     }
@@ -431,12 +430,12 @@ const useOrder = () => {
                         })
 
                         // Seller
-                        claims.push({
-                            orderId: message.orderId,
-                            chainId: message.chainId,
-                            claimerAddress: ownerAddress,
-                            isOrigin: false
-                        })
+                        // claims.push({
+                        //     orderId: message.orderId,
+                        //     chainId: message.chainId,
+                        //     claimerAddress: ownerAddress,
+                        //     isOrigin: false
+                        // })
                     }
                 }
             }
