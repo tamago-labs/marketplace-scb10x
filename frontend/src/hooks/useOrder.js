@@ -584,11 +584,11 @@ const useOrder = () => {
       `https://api.tamago.finance/v2/account/${ownerAddress}`
     );
     if (data.status != "ok") {
-      return "Unknow";
+      return "Unknown";
     }
-    const dataSplit = data.email.split("@");
-    let name = dataSplit[0];
-    return name;
+
+    return data.nickname || "Unknown"
+
   }, []);
 
   return {
