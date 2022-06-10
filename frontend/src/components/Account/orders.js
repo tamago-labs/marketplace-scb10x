@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useContext } from "react"
 import styled from "styled-components"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { ToastContainer, toast } from "react-toastify"
 import { Table } from "react-bootstrap"
 import { useWeb3React } from "@web3-react/core"
@@ -11,7 +11,7 @@ import useOrder from "../../hooks/useOrder"
 import { useMarketplace } from "../../hooks/useMarketplace"
 import { resolveNetworkName, resolveStatusName } from "../../helper"
 import { NFT_MARKETPLACE } from "../../constants"
-import { ExternalLink } from "react-feather"
+import { ExternalLink, AlertTriangle } from "react-feather"
 import MarketplaceABI from "../../abi/marketplace.json"
 import "react-toastify/dist/ReactToastify.css"
 
@@ -53,6 +53,13 @@ const ORDER_STATUS = {
 }
 
 
+const TableRow = styled.tr`
+  cursor: pointer;
+  :hover {
+    text-decoration: underline;
+  }
+`
+
 const OrderItem = ({
   disabled,
   index,
@@ -66,6 +73,8 @@ const OrderItem = ({
   const [status, setStatus] = useState()
   const { resolveStatus } = useOrder()
 
+  const navigate = useNavigate();
+
   useEffect(() => {
 
     setTimeout(() => {
@@ -77,7 +86,7 @@ const OrderItem = ({
         }).then(setStatus)
       }
 
-    }, 1000 * index)
+    }, 300 * index)
 
   }, index, data)
 
@@ -93,10 +102,12 @@ const OrderItem = ({
   }, [tick, data])
 
   return (
-
-    <tr style={{ opacity: !disabled ? 1 : 0.6 }} >
+    
+    <TableRow key={index} onClick={() => navigate(`/order/${data.orderId}`)}>
       <th>{data.orderId}</th>
-      <th>{resolveNetworkName(data.chainId)}</th>
+      <th>{resolveNetworkName(data.chainId)}
+        {disabled && <AlertTriangle style={{marginLeft: "5px"}} size="18px"/>}
+      </th>
       <th>{new Date(Number(data.timestamp) * 1000).toLocaleString()}</th>
       <th>
         {!status ? <Skeleton width="80px" /> : resolveStatusName(status)}
@@ -125,7 +136,7 @@ const OrderItem = ({
 
         </button>
 
-        <Link key={index} to={`/order/${data.orderId}`}>
+        {/* <Link key={index} to={`/order/${data.orderId}`}>
           <button
             style={{
               zIndex: 10,
@@ -138,7 +149,7 @@ const OrderItem = ({
           >
             <ExternalLink size="16px" />
           </button>
-        </Link>
+        </Link> */}
 
         {/* {data.active && (
           <button
@@ -163,7 +174,7 @@ const OrderItem = ({
           </button>
         )} */}
       </th>
-    </tr>
+    </TableRow>
   )
 }
 

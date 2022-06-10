@@ -47,7 +47,7 @@ async function run({
                     const providers = getProviders(chainIds)
 
                     // get the original messages
-                    const messages = generateRelayMessages(orders.filter(item => item.confirmed))
+                    const messages = generateRelayMessages(orders.filter(item => ((item.confirmed) && (!item.fulfilled) && (!item.canceled))))
 
                     let claims = []
                     let checks = []
@@ -68,6 +68,7 @@ async function run({
 
                             logger.debug("checking order : ", orderId)
 
+                            // check pair chain first
                             const row = providers.find(item => item.chainId === message.chainId)
 
                             if (row && row.provider) {
@@ -88,27 +89,32 @@ async function run({
                                     })
 
                                     // Seller
-                                    claims.push({
-                                        orderId: message.orderId,
-                                        chainId: message.chainId,
-                                        claimerAddress: ownerAddress,
-                                        isOrigin: false
-                                    })
+                                    // claims.push({
+                                    //     orderId: message.orderId,
+                                    //     chainId: message.chainId,
+                                    //     claimerAddress: ownerAddress,
+                                    //     isOrigin: false
+                                    // })
                                 }
                             }
+
+                            // TODO : check origin chain 
+
+
+
                         }
 
                     }
 
                     // remove duplicates
                     claims = claims.reduce((output, item) => {
-                        const existing = output.find( x => x.hash === (ethers.utils.hashMessage(JSON.stringify(item))))
-                        if (!existing) { 
+                        const existing = output.find(x => x.hash === (ethers.utils.hashMessage(JSON.stringify(item))))
+                        if (!existing) {
                             output.push({
                                 ...item,
-                                hash :  ethers.utils.hashMessage(JSON.stringify(item))
+                                hash: ethers.utils.hashMessage(JSON.stringify(item))
                             })
-                        } 
+                        }
                         return output
                     }, [])
 
@@ -129,7 +135,7 @@ async function run({
 
                     logger.debug("Merkle root to push : ", hexRoot)
 
-                    for (let obj of providers) {
+                    const push = async (obj) => {
 
                         const { provider, chainId } = obj
 
@@ -146,7 +152,7 @@ async function run({
 
                         const currentRoot = await gatewayContract.claimRoot()
 
-                        logger.debug("Current root : ", currentRoot)
+                        logger.debug("Current root on chain id :", chainId ," is : ", currentRoot)
 
                         const BASE_GAS = 5 // 5 GWEI
 
@@ -156,12 +162,13 @@ async function run({
                                 gasPrice: ethers.utils.parseUnits(`${BASE_GAS * (retries + 1)}`, 'gwei'),
                                 gasLimit: 100000 * (retries + 1)
                             })
-                            logger.debug("tx is being processed...")
+                            logger.debug("tx on chain id : ", chainId ," is being processed...")
                             await tx.wait()
                         }
 
                     }
 
+                    await Promise.all(providers.map(item => push(item)))
                 },
                 {
                     retries: errorRetries,
@@ -194,7 +201,7 @@ async function Poll(callback) {
         console.log("Start of process", (new Date()).toLocaleTimeString())
 
         const executionParameters = {
-            pollingDelay: Number(process.env.POLLING_DELAY) || 600, // 10 minutes
+            pollingDelay: Number(process.env.POLLING_DELAY) || 180, // 3 minutes
             queryDelay: Number(process.env.QUERY_DELAY) || 40,
             queryInterval: { 137: 40000, 1: 4000 },
             errorRetries: Number(process.env.ERROR_RETRIES) || 5,
