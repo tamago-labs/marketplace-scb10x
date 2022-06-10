@@ -8,9 +8,15 @@ import {
   shortAddress,
   resolveNetworkName,
   resolveNetworkIconUrl,
+<<<<<<< HEAD
 } from "../helper";
 import WalletsModal from "./Modal/WalletConnectModal";
 import SwitchChainModal from "./Modal/SwitchChainModal";
+=======
+} from "../helper"
+// import WalletsModal from "./Modal/WalletConnectModal"
+import SwitchChainModal from "./Modal/SwitchChainModal"
+>>>>>>> 2edf9c36b733b9f819fe8f1f84f749de7e268c95
 
 const NetworkBadge = styled(({ className, toggleSwitchChain, chainId }) => {
   return (
@@ -77,7 +83,17 @@ const StyledBadge = styled(Badge)`
   }
 `;
 
+const ConnectWalletButton = styled(Link).attrs(() => ({ className: "btn btn-primary shadow", to: "/account" }))`
+  z-index: 10;
+  color: white;
+  background-image: linear-gradient(to right, #f55f8d 0, #f8ae56 51%, #f55f8d 100%);
+  border-radius: 32px;
+  padding: 12px;
+
+`
+
 function Header() {
+<<<<<<< HEAD
   const { account, chainId, library } = useWeb3React();
 
   const [walletLoginVisible, setWalletLoginVisible] = useState(false);
@@ -85,13 +101,24 @@ function Header() {
 
   const toggleWalletConnect = () => setWalletLoginVisible(!walletLoginVisible);
   const toggleSwitchChain = () => setSwitchChainVisible(!switchChainVisible);
+=======
+
+
+  const { account, chainId, library } = useWeb3React()
+
+  // const [walletLoginVisible, setWalletLoginVisible] = useState(false)
+  const [switchChainVisible, setSwitchChainVisible] = useState(false)
+
+  // const toggleWalletConnect = () => setWalletLoginVisible(!walletLoginVisible)
+  const toggleSwitchChain = () => setSwitchChainVisible(!switchChainVisible)
+>>>>>>> 2edf9c36b733b9f819fe8f1f84f749de7e268c95
 
   return (
     <>
-      <WalletsModal
+      {/* <WalletsModal
         toggleWalletConnect={toggleWalletConnect}
         walletLoginVisible={walletLoginVisible}
-      />
+      /> */}
       <SwitchChainModal
         toggleModal={toggleSwitchChain}
         modalVisible={switchChainVisible}
@@ -119,10 +146,14 @@ function Header() {
                   />
                 </Link>
                 <div style={{ marginLeft: "10px", display: "flex" }}>
+<<<<<<< HEAD
                   <StyledBadge
                     style={{ marginTop: "auto", marginBottom: "auto" }}
                     color="warning"
                   >
+=======
+                  <StyledBadge style={{ marginTop: "auto", marginBottom: "auto" }} color="warning">
+>>>>>>> 2edf9c36b733b9f819fe8f1f84f749de7e268c95
                     Testnet
                   </StyledBadge>
                 </div>
@@ -140,6 +171,7 @@ function Header() {
                 {
                   <>
                     {!account ? (
+<<<<<<< HEAD
                       <a
                         className="btn btn-primary shadow"
                         style={{
@@ -152,14 +184,18 @@ function Header() {
                         }}
                         onClick={toggleWalletConnect}
                       >
+=======
+                      <ConnectWalletButton  >
+>>>>>>> 2edf9c36b733b9f819fe8f1f84f749de7e268c95
                         Connect Wallet
-                      </a>
+                      </ConnectWalletButton>
                     ) : (
                       <>
                         <NetworkBadge
                           chainId={chainId}
                           toggleSwitchChain={toggleSwitchChain}
                         />
+<<<<<<< HEAD
                         <a
                           style={{
                             color: "white",
@@ -172,6 +208,16 @@ function Header() {
                         >
                           {shortAddress(account)}
                         </a>
+=======
+                        <Link to="/account">
+                          <a
+                            style={{ color: "white", backgroundImage: "linear-gradient(to right, #f55f8d 0, #f8ae56 51%, #f55f8d 100%)", borderRadius: "32px", padding: 12 }}
+                            className="btn btn-primary shadow mx-4"
+                          >
+                            {shortAddress(account)}
+                          </a>
+                        </Link>
+>>>>>>> 2edf9c36b733b9f819fe8f1f84f749de7e268c95
                       </>
                     )}
                   </>

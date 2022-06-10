@@ -123,7 +123,43 @@ const ORDER_STATUS = {
 const OrderDetails = () => {
   const { account, library } = useWeb3React();
 
+<<<<<<< HEAD
   const { getOrder, resolveMetadata, resolveStatus } = useOrder();
+=======
+    const { account } = useWeb3React()
+
+    const { getOrder, resolveMetadata, resolveStatus } = useOrder()
+
+    const [order, setOrder] = useState()
+    const [crossChain, setCrosschain] = useState(false)
+    const [data, setData] = useState()
+    const [status, setStatus] = useState(ORDER_STATUS.UNKNOWN)
+    const { id } = useParams();
+
+    useEffect(() => {
+
+        id && getOrder(id).then(setOrder)
+
+    }, [id, getOrder])
+
+    useEffect(() => {
+
+        if (order) {
+            resolveMetadata({
+                assetAddress: order.baseAssetAddress,
+                tokenId: order.baseAssetTokenId,
+                chainId: order.chainId
+            }).then(setData)
+
+            resolveStatus({
+                chainId: order.chainId,
+                orderId: order.orderId
+            }).then(setStatus)
+
+        }
+
+    }, [order])
+>>>>>>> 2edf9c36b733b9f819fe8f1f84f749de7e268c95
 
   const [order, setOrder] = useState();
   const [crossChain, setCrosschain] = useState(false);
@@ -167,6 +203,7 @@ const OrderDetails = () => {
       );
     }
 
+<<<<<<< HEAD
     return [];
   }, [order, crossChain]);
 
@@ -217,6 +254,44 @@ const OrderDetails = () => {
                 color={status === 2 ? "red" : "white"}
               />
               {/* <Info
+=======
+
+    return (
+        <Container>
+            <div className="row">
+
+                <Details>
+                    <div>
+
+                        {data ? <Image src={data.metadata && data.metadata.image ? data.metadata.image : "https://via.placeholder.com/200x200"} width="100%" height="220" />
+                            : <Skeleton width="200px" height="220px" />
+                        }
+
+                    </div>
+                    <div style={{ marginLeft: "2rem", flexGrow: 1 }}>
+                        <h4>
+                            {data ? `${data.metadata.name} #${order.baseAssetTokenId} ` : <Skeleton />}
+                            {` `}
+                            {data && <SmartContractLink
+                                chainId={order && order.chainId}
+                                assetAddress={order && order.baseAssetAddress}
+                            />}
+                        </h4>
+                        <p>
+                            {data ? `${data.metadata.description} ` : <Skeleton />}
+                        </p>
+                        <div>
+                            <Info
+                                name={"Chain"}
+                                value={resolveNetworkName(order.chainId)}
+                            />
+                            <Info
+                                name={"Status"}
+                                value={status === 0 ? null : status === 2 ? "Sold" : status === 3 ? "Canceled" : "New"}
+                                color={status === 2 ? "red" : "white"}
+                            />
+                            {/* <Info
+>>>>>>> 2edf9c36b733b9f819fe8f1f84f749de7e268c95
                                 name={"Token Type"}
                                 value={(order.baseAssetIs1155 ? "ERC-1155" : "ERC-721")}
                             /> */}

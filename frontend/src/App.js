@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { createGlobalStyle } from "styled-components";
 import { Routes, Route, Link } from "react-router-dom";
 import Header from "./components/header";
@@ -7,6 +8,16 @@ import OrderDetails from "./components/OrderDetails";
 import CreateOrder from "./components/CreateOrder";
 import Collection from "./components/Collection";
 import CreatorPage from "./components/CreatorPage";
+=======
+import { createGlobalStyle } from "styled-components"
+import { Routes, Route, Link } from "react-router-dom"
+import Header from "./components/header"
+import Home from "./components/Home"
+import Footer from "./components/footer"
+import OrderDetails from "./components/OrderDetails"
+import CreateOrder from "./components/CreateOrder"
+import Account from "./components/Account"
+>>>>>>> 2edf9c36b733b9f819fe8f1f84f749de7e268c95
 
 const GlobalStyle = createGlobalStyle`
   * {
@@ -36,8 +47,12 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/order/:id" element={<OrderDetails />} />
         <Route path="/createOrder" element={<CreateOrder />} />
+<<<<<<< HEAD
         <Route path="/orders/collection/:address" element={<Collection />} />
         <Route path="/orders/owner/:ownerAddress" element={<CreatorPage />} />
+=======
+        <Route path="/account" element={<Account />} />
+>>>>>>> 2edf9c36b733b9f819fe8f1f84f749de7e268c95
       </Routes>
       <Footer />
     </div>
