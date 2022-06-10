@@ -14,6 +14,7 @@ exports.getOrders = async (req, res, next) => {
       // console.log(chainQuery)
       const chains = chainQuery.split(',')
       // console.log(chains)
+      // converting strings to number
       chains.map((chain, index) => {
         chains[index] = +chain
       })

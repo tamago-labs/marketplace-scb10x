@@ -1,4 +1,4 @@
-# SCB10X - May 2022 - Hackathon
+# MARKETPLACE-APIS
 
 ## Test
 
@@ -8,7 +8,8 @@
 | GET         | /test/get                | none        | { "message": "TESTGETJSON" }                           |
 | GET         | /test/ethers             | none        | {"status":"ok","blocknumber":14834871}                 |
 | GET         | /test/moralisNFTMETADATA | none        | {"status":"ok","metadata":{...metadata}}               |
-| POST        | /test/createMock         | none        | { message: "new collection added to database" }        |
+
+---
 
 ## Orders
 
@@ -23,6 +24,8 @@
 | POST        | /orders/confirm                         | {orderId,message,signature} | { "status": "ok", "orderId": 1}                         |               |
 | POST        | /orders/cancel                          | {orderId,message,signature} | { "status": "ok", "orderId": 1}                         |               |
 
+---
+
 ## Proofs
 
 | HTTP Method | path                | RequestBody                | Response                                          |
@@ -31,11 +34,15 @@
 | POST        | /proof/partial-swap | {order,token}              | { "status": "ok", order,token,proof}              |
 | POST        | /proof/claim        | {order,account,token}      | { "status": "ok", order,account,proof}            |
 
+---
+
 ## NFTs
 
 | HTTP Method | path                                 | RequestBody | Response                                 | Notes                                  |
 | ----------- | ------------------------------------ | ----------- | ---------------------------------------- | -------------------------------------- |
 | GET         | /nft/metadata/{address}/{id}/{chain} | none        | {"status":"ok","metadata":{...metadata}} | chainId is in hexadecimal (eg. "0x89") |
+
+---
 
 ## Disputes
 
@@ -46,8 +53,34 @@
 | POST        | /disputes/            | { email, address, orderLink, type, comments } | { "status": "ok", body: req.body, disputeId } |               |
 | POST        | /disputes/update/{id} | { resolved (boolean), adminComment (string) } | { "status": "ok", dispute(updated) }          | See Notes \*2 |
 
+---
+
+## Collections
+
+| HTTP Method | path                        | RequestBody | Response                     | Notes         |
+| ----------- | --------------------------- | ----------- | ---------------------------- | ------------- |
+| GET         | /collections?chain=80001,42 | none        | { "status": "ok", disputes } | See Notes \*3 |
+| GET         | /collections/{address}      | none        | { "status": "ok", disputes } |               |
+
+---
+
+## Users
+
+| HTTP Method | path             | RequestBody | Response                     | Notes         |
+| ----------- | ---------------- | ----------- | ---------------------------- | ------------- |
+| GET         | /users/          | none        | { "status": "ok", disputes } | See Notes \*4 |
+| GET         | /users/{address} | none        | { "status": "ok", disputes } |               |
+
+---
+
 ### Notes
 
-\*1 : All queries are optional. default values : limit:500 (this will soon be changed to a lower number), offset: 0
+\*1 : all queries are optional. default values : limit:500 (this will soon be changed to a lower number), offset: 0
 
 \*2 : this API endpoint for admin to manage and keep track of disputes.
+
+\*3 : chain is required in query params, multiple chains can be passed as argument separated by **comma**. This endpoint supports pagination with **offsets** and **limits**.
+
+\*4 : This endpoint supports pagination with **offsets** and **limits**.
+
+#### Development Starting From SCB10X - May 2022 - Hackathon
