@@ -99,13 +99,14 @@ const SmartContractLink = styled(({ className, chainId, assetAddress }) => {
   return (
     <div className={className}>
       <a href={contractLink} target="_blank">
-        <FileText width={24} height={18} color="#4B4B4B" />
+        <FileText width={24} height={18} color="#fff" />
       </a>
     </div>
   );
 })`
   display: inline;
   > a {
+    background: #7a0bc0;
     border-radius: 50%;
     padding-left: 2px;
     padding-right: 2px;
@@ -125,36 +126,6 @@ const OrderDetails = () => {
   const { account, library } = useWeb3React();
 
   const { getOrder, resolveMetadata, resolveStatus } = useOrder()
-
-  const [order, setOrder] = useState()
-  const [crossChain, setCrosschain] = useState(false)
-  const [data, setData] = useState()
-  const [status, setStatus] = useState(ORDER_STATUS.UNKNOWN)
-  const { id } = useParams();
-
-  useEffect(() => {
-
-    id && getOrder(id).then(setOrder)
-
-  }, [id, getOrder])
-
-  useEffect(() => {
-
-    if (order) {
-      resolveMetadata({
-        assetAddress: order.baseAssetAddress,
-        tokenId: order.baseAssetTokenId,
-        chainId: order.chainId
-      }).then(setData)
-
-      resolveStatus({
-        chainId: order.chainId,
-        orderId: order.orderId
-      }).then(setStatus)
-
-    }
-
-  }, [order])
 
   const [order, setOrder] = useState();
   const [crossChain, setCrosschain] = useState(false);
