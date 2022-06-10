@@ -40,95 +40,78 @@ const useOrder = () => {
 
     const { orders } = data;
 
-<<<<<<< HEAD
     if (orders) {
-      result = orders.filter(
-        (item) => !item.fulfilled && item.confirmed && !item.canceled
-      );
+      result = orders.filter(item => (!item.fulfilled) && (item.confirmed) && (!item.canceled))
       result = result.sort(function (a, b) {
         return b.orderId - a.orderId;
       });
-=======
-        const { data } = await axios.get(`${API_BASE}/orders`)
-
-        const { orders } = data
-
-        console.log(orders)
-
-        if (orders) {
-            result = orders.filter(item => (!item.fulfilled) && (item.confirmed) && (!item.canceled))
-            result = result.sort(function (a, b) {
-                return b.orderId - a.orderId;
-            });
-        }
-
-        return result
-    }, [])
-
-    const getAccountOrders = useCallback(async () => {
-
-        let result = []
-
-        const { data } = await axios.get(`${API_BASE}/orders`)
-
-        const { orders } = data
-
-        if (orders) {
-            result = orders.filter(item => (!item.fulfilled) && (item.confirmed) && (!item.canceled) && (item.ownerAddress === account))
-            result = result.sort(function (a, b) {
-                return b.orderId - a.orderId;
-            });
-        }
-
-        return result
-    }, [account])
-
-    const getOrder = useCallback(async (id) => {
-
-        const { data } = await axios.get(`${API_BASE}/orders/${id}`)
-
-        if (data.status !== "ok") {
-            return
-        }
-
-        return data.order
-    }, [])
-
-    const getMetadata = async (nft) => {
-        let metadata = JSON.parse(nft.metadata)
-
-        // fetch from token uri
-        if (!metadata && nft && nft.token_uri) {
-            console.log("no metadata!")
-
-            let uri = nft.token_uri.replaceAll("000000000000000000000000000000000000000000000000000000000000000", "")
-
-            if (uri.indexOf("https://") === -1) {
-                uri = `https://${uri}`
-            }
-
-            try {
-                // proxy
-                const { data } = await axios.get(`https://slijsy3prf.execute-api.ap-southeast-1.amazonaws.com/stage/proxy/${uri}`)
-
-                if (data && data.data) {
-                    metadata = data.data
-                }
-            } catch (e) {
-
-            }
-
-        }
-
-        return {
-            ...nft,
-            metadata,
-        }
->>>>>>> 2edf9c36b733b9f819fe8f1f84f749de7e268c95
     }
 
-    return result;
-  }, []);
+    return result
+  }, [])
+
+  const getAccountOrders = useCallback(async () => {
+
+    let result = []
+
+    const { data } = await axios.get(`${API_BASE}/orders`)
+
+    const { orders } = data
+
+    if (orders) {
+      result = orders.filter(item => (!item.fulfilled) && (item.confirmed) && (!item.canceled) && (item.ownerAddress === account))
+      result = result.sort(function (a, b) {
+        return b.orderId - a.orderId;
+      });
+    }
+
+    return result
+  }, [account])
+
+  const getOrder = useCallback(async (id) => {
+
+    const { data } = await axios.get(`${API_BASE}/orders/${id}`)
+
+    if (data.status !== "ok") {
+      return
+    }
+
+    return data.order
+  }, [])
+
+  const getMetadata = async (nft) => {
+    let metadata = JSON.parse(nft.metadata)
+
+    // fetch from token uri
+    if (!metadata && nft && nft.token_uri) {
+      console.log("no metadata!")
+
+      let uri = nft.token_uri.replaceAll("000000000000000000000000000000000000000000000000000000000000000", "")
+
+      if (uri.indexOf("https://") === -1) {
+        uri = `https://${uri}`
+      }
+
+      try {
+        // proxy
+        const { data } = await axios.get(`https://slijsy3prf.execute-api.ap-southeast-1.amazonaws.com/stage/proxy/${uri}`)
+
+        if (data && data.data) {
+          metadata = data.data
+        }
+      } catch (e) {
+
+      }
+
+    }
+
+    return {
+      ...nft,
+      metadata,
+    }
+  }
+
+
 
   const getOrder = useCallback(async (id) => {
     const { data } = await axios.get(`${API_BASE}/orders/${id}`);
@@ -137,7 +120,6 @@ const useOrder = () => {
       return;
     }
 
-<<<<<<< HEAD
     return data.order;
   }, []);
 
@@ -147,39 +129,39 @@ const useOrder = () => {
     );
     if (data.status !== "ok") {
       return;
-=======
-    const resolveStatus = async ({
-        orderId,
-        chainId
-    }) => {
-
-        const providers = getProviders([42, 80001])
-
-        const { provider } = providers.find(item => item.chainId === chainId)
-
-        const { contractAddress } = NFT_MARKETPLACE.find(item => item.chainId === chainId)
-
-        const marketplaceContract = new ethers.Contract(contractAddress, MarketplaceABI, provider)
-
-        const result = await marketplaceContract.orders(orderId)
-
-        if (result["canceled"] === true) {
-            return 3
-        }
-
-        if (result["ended"] === true) {
-            return 2
-        }
-
-        if (result["active"] === true) {
-            return 1
-        }
-
-        return 0
->>>>>>> 2edf9c36b733b9f819fe8f1f84f749de7e268c95
     }
     return data.orders;
   }, []);
+
+  const resolveStatus = async ({
+    orderId,
+    chainId
+  }) => {
+
+    const providers = getProviders([42, 80001])
+
+    const { provider } = providers.find(item => item.chainId === chainId)
+
+    const { contractAddress } = NFT_MARKETPLACE.find(item => item.chainId === chainId)
+
+    const marketplaceContract = new ethers.Contract(contractAddress, MarketplaceABI, provider)
+
+    const result = await marketplaceContract.orders(orderId)
+
+    if (result["canceled"] === true) {
+      return 3
+    }
+
+    if (result["ended"] === true) {
+      return 2
+    }
+
+    if (result["active"] === true) {
+      return 1
+    }
+
+    return 0
+  }
 
   const getOrdersByOwner = useCallback(async (ownerAddress) => {
     const { data } = await axios.get(
@@ -228,7 +210,7 @@ const useOrder = () => {
         if (data && data.data) {
           metadata = data.data;
         }
-      } catch (e) {}
+      } catch (e) { }
     }
 
     return {
@@ -395,40 +377,40 @@ const useOrder = () => {
       if (data && data.metadata) {
         return data;
       }
-    } catch (e) {}
+    } catch (e) { }
     const tokenIdMetadata = await Web3Api.token.getTokenIdMetadata(options);
     return await getMetadata(tokenIdMetadata);
   };
 
-  const resolveStatus = async ({ orderId, chainId }) => {
-    console.log("resolving status : ", orderId, chainId);
+  // const resolveStatus = async ({ orderId, chainId }) => {
+  //   console.log("resolving status : ", orderId, chainId);
 
-    const providers = getProviders([42, 80001]);
+  //   const providers = getProviders([42, 80001]);
 
-    const { provider } = providers.find((item) => item.chainId === chainId);
+  //   const { provider } = providers.find((item) => item.chainId === chainId);
 
-    const { contractAddress } = NFT_MARKETPLACE.find(
-      (item) => item.chainId === chainId
-    );
+  //   const { contractAddress } = NFT_MARKETPLACE.find(
+  //     (item) => item.chainId === chainId
+  //   );
 
-    const marketplaceContract = new ethers.Contract(
-      contractAddress,
-      MarketplaceABI,
-      provider
-    );
+  //   const marketplaceContract = new ethers.Contract(
+  //     contractAddress,
+  //     MarketplaceABI,
+  //     provider
+  //   );
 
-    const result = await marketplaceContract.orders(orderId);
+  //   const result = await marketplaceContract.orders(orderId);
 
-    if (result["ended"] === true) {
-      return 2;
-    }
+  //   if (result["ended"] === true) {
+  //     return 2;
+  //   }
 
-    if (result["active"] === true) {
-      return 1;
-    }
+  //   if (result["active"] === true) {
+  //     return 1;
+  //   }
 
-    return 0;
-  };
+  //   return 0;
+  // };
 
   const swap = useCallback(
     async (order, tokenIndex) => {
@@ -729,7 +711,6 @@ const useOrder = () => {
           const tx = await nftContract.setApprovalForAll(contractAddress, true);
           await tx.wait();
         }
-<<<<<<< HEAD
       }
 
       const currentData = await contract.partialOrders(order.orderId);
@@ -859,43 +840,3 @@ const useOrder = () => {
 };
 
 export default useOrder;
-=======
-
-        const { contractAddress } = NFT_MARKETPLACE.find(item => item.chainId === order.chainId)
-
-        const contract = new ethers.Contract(contractAddress, MarketplaceABI, library.getSigner())
-
-        const messages = await generateValidatorMessages()
-
-        console.log("validator messages length : ", messages.length)
-
-        const leaves = messages.map(({ orderId, chainId, claimerAddress, isOrigin }) => ethers.utils.keccak256(ethers.utils.solidityPack(["uint256", "uint256", "address", "bool"], [orderId, chainId, claimerAddress, isOrigin]))) // Order ID, Chain ID, Claimer Address, Is Origin Chain
-        const tree = new MerkleTree(leaves, keccak256, { sortPairs: true })
-
-        const proof = tree.getHexProof(ethers.utils.keccak256(ethers.utils.solidityPack(["uint256", "uint256", "address", "bool"], [order.orderId, order.chainId, account, true])))
-
-        const tx = await contract.claim(order.orderId, true, proof)
-
-        return await tx.wait()
-
-    }, [account, chainId, library])
-
-    return {
-        getAllOrders,
-        getOrder,
-        resolveMetadata,
-        createOrder,
-        confirmOrder,
-        depositNft,
-        signMessage,
-        swap,
-        partialSwap,
-        claim,
-        resolveStatus,
-        getMetadata,
-        getAccountOrders
-    }
-}
-
-export default useOrder
->>>>>>> 2edf9c36b733b9f819fe8f1f84f749de7e268c95
