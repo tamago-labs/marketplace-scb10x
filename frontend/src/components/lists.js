@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react"
-import styled, { keyframes } from "styled-components"
+import React, { useEffect, useState } from "react";
+import styled, { keyframes } from "styled-components";
 import { Link } from "react-router-dom";
-import NFTCard from "./nftCard"
-import Skeleton from "react-loading-skeleton"
-import useOrder from "../hooks/useOrder"
+import NFTCard from "./nftCard";
+import Skeleton from "react-loading-skeleton";
+import useOrder from "../hooks/useOrder";
 import { Button } from "./buttons";
 
 const Header = styled.div`
@@ -20,48 +20,41 @@ const Header = styled.div`
     .title {
       font-weight: 600;
       font-size: 18px;
-  
-      
-  
     }
   }
-
-`
+`;
 
 function blinkingEffect() {
   return keyframes`
 	50% {
 		opacity: 0;
 	}
-`
+`;
 }
 
 const AnimatedComponent = styled.svg`
   animation: ${blinkingEffect} 1s linear infinite;
-`
+`;
 
 const ListContainer = styled.div`
   display: flex;
   flex-wrap: wrap;
   margin-top: 32px;
   justify-content: center;
-`
+`;
 
-const MAX_ITEMS = 4
+const MAX_ITEMS = 4;
 
 const Lists = () => {
+  const [orders, setOrders] = useState([]);
 
-  const [orders, setOrders] = useState([])
+  const [max, setMax] = useState(MAX_ITEMS);
 
-  const [max, setMax] = useState(MAX_ITEMS)
-
-  const { getAllOrders } = useOrder()
+  const { getAllOrders } = useOrder();
 
   useEffect(() => {
-
-    getAllOrders().then(setOrders)
-
-  }, [])
+    getAllOrders().then(setOrders);
+  }, []);
 
   return (
     <div style={{ marginTop: 32, paddingBottom: 32 }} className="container">
@@ -86,35 +79,26 @@ const Lists = () => {
         </div>
       </Header>
       <ListContainer>
-        {orders.length === 0 &&
-          <>
-            Loading...
-          </>
-        }
+        {orders.length === 0 && <>Loading...</>}
 
-        {
-          orders.length > 0 && orders.map((order, index) => {
-            if (index > (max - 1)) {
-              return
+        {orders.length > 0 &&
+          orders.map((order, index) => {
+            if (index > max - 1) {
+              return;
             }
             return (
               <NFTCard key={index} delay={index % MAX_ITEMS} order={order} />
-            )
-          })
-        }
+            );
+          })}
       </ListContainer>
 
       <div style={{ padding: "20px", marginTop: "1rem", textAlign: "center" }}>
-        {(orders.length > max) && (
-          <Button onClick={() => setMax(max + 4)}>
-            More...
-          </Button>
+        {orders.length > max && (
+          <Button onClick={() => setMax(max + 4)}>More...</Button>
         )}
-
       </div>
-
     </div>
-  )
-}
+  );
+};
 
-export default Lists
+export default Lists;

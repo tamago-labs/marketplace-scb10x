@@ -1,6 +1,6 @@
-import styled from "styled-components"
-import { useState, useContext } from "react"
-import { useWeb3React } from "@web3-react/core"
+import styled from "styled-components";
+import { useState, useContext } from "react";
+import { useWeb3React } from "@web3-react/core";
 import { Link } from "react-router-dom";
 import { Badge } from "reactstrap";
 
@@ -20,12 +20,17 @@ const NetworkBadge = styled(({ className, toggleSwitchChain, chainId }) => {
         onClick={toggleSwitchChain}
       >
         <div className="image-container">
-          <img style={{ height: "100%" }} src={resolveNetworkIconUrl(chainId)} />
+          <img
+            style={{ height: "100%" }}
+            src={resolveNetworkIconUrl(chainId)}
+          />
         </div>
-        <span className="ml-4">{resolveNetworkName(chainId)}</span>
+        <span style={{ color: "#7A0BC0" }} className="ml-4">
+          {resolveNetworkName(chainId)}
+        </span>
       </a>
     </div>
-  )
+  );
 })`
   position: relative;
 
@@ -45,9 +50,6 @@ const NetworkBadge = styled(({ className, toggleSwitchChain, chainId }) => {
     display: flex;
     align-items: center;
     justify-content: center;
-
-    
-
   }
 
   > .btn-custom {
@@ -57,8 +59,7 @@ const NetworkBadge = styled(({ className, toggleSwitchChain, chainId }) => {
   @media only screen and (max-width: 600px) {
     display: none;
   }
-
-`
+`;
 
 const Navbar = styled.div.attrs(() => ({
   className: "container",
@@ -68,13 +69,13 @@ const Navbar = styled.div.attrs(() => ({
   align-items: center;
   justify-content: space-between;
   padding: 12px;
-`
+`;
 
 const StyledBadge = styled(Badge)`
-@media only screen and (max-width: 600px) {
-  display: none;
-}
-`
+  @media only screen and (max-width: 600px) {
+    display: none;
+  }
+`;
 
 const ConnectWalletButton = styled(Link).attrs(() => ({ className: "btn btn-primary shadow", to: "/account" }))`
   z-index: 10;
@@ -86,9 +87,7 @@ const ConnectWalletButton = styled(Link).attrs(() => ({ className: "btn btn-prim
 `
 
 function Header() {
-
-
-  const { account, chainId, library } = useWeb3React()
+  const { account, chainId, library } = useWeb3React();
 
   // const [walletLoginVisible, setWalletLoginVisible] = useState(false)
   const [switchChainVisible, setSwitchChainVisible] = useState(false)
@@ -114,7 +113,11 @@ function Header() {
               {/* <!-- Website Logo --> */}
               <div
                 className="logo-header mostion logo-dark"
-                style={{ width: "225px", display: "flex", flexDirection: "row" }}
+                style={{
+                  width: "225px",
+                  display: "flex",
+                  flexDirection: "row",
+                }}
               >
                 <Link to="/">
                   <img
@@ -129,11 +132,17 @@ function Header() {
                     Testnet
                   </StyledBadge>
                 </div>
-
               </div>
 
               {/* <!-- Extra Nav --> */}
-              <div className="extra-nav" style={{ cursor: "pointer", display: "flex", alignItems: "center" }}>
+              <div
+                className="extra-nav"
+                style={{
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                }}
+              >
                 {
                   <>
                     {!account ? (
@@ -164,7 +173,7 @@ function Header() {
         </div>
       </header>
     </>
-  )
+  );
 }
 
-export default Header
+export default Header;
