@@ -114,7 +114,7 @@ const OrderItem = ({
             borderRadius: "32px",
             padding: "4px 8px",
           }}
-          className="btn btn-primary shadow"
+          className="btn btn-danger shadow"
         >
           <div style={{ display: "flex", flexDirection: "row" }}>
             {loading === Number(data.orderId) && (
@@ -269,6 +269,7 @@ const Orders = () => {
             : ""}
         </tbody>
       </OrderTable>
+      <p style={{marginTop :"1.5rem"}}>You will be receiving the NFT back when cancel the order</p>
     </Wrapper>
   )
 }
