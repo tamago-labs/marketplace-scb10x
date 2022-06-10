@@ -33,15 +33,17 @@ const useOrder = () => {
         setTick(tick + 1)
     }, [tick])
 
-    const getAllOrders = useCallback(async () => {
+    const getAllOrders = useCallback(async (
+        limit = 200,
+        offset = 0
+    ) => {
 
         let result = []
 
-        const { data } = await axios.get(`${API_BASE}/orders`)
+        const { data } = await axios.get(`${API_BASE}/orders?limit=${limit}&offset=${offset}`)
 
         const { orders } = data
 
-        console.log(orders)
 
         if (orders) {
             result = orders.filter(item => (!item.fulfilled) && (item.confirmed) && (!item.canceled))
@@ -57,14 +59,15 @@ const useOrder = () => {
 
         let result = []
 
-        const { data } = await axios.get(`${API_BASE}/orders`)
+        const { data } = await axios.get(`${API_BASE}/orders/owner/${account}`)
 
         const { orders } = data
 
         if (orders) {
-            result = orders.filter(item => (!item.fulfilled) && (item.confirmed) && (!item.canceled) && (item.ownerAddress === account))
+            // result = orders.filter(item => (!item.fulfilled) && (item.confirmed) && (!item.canceled) && (item.ownerAddress === account))
+            result = orders
             result = result.sort(function (a, b) {
-                return b.orderId - a.orderId;
+                return a.orderId - b.orderId;
             });
         }
 
