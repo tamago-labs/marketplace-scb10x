@@ -47,7 +47,7 @@ async function run({
                     const providers = getProviders(chainIds)
 
                     // Prepare the message
-                    const messages = generateRelayMessages(orders.filter(item => item.confirmed))
+                    const messages = generateRelayMessages(orders.filter(item => ((item.confirmed) && (!item.fulfilled) && (!item.canceled))))
 
                     logger.debug("Total orders : ", messages.length)
 
@@ -58,8 +58,7 @@ async function run({
 
                     logger.debug("Merkle root to push : ", hexRoot)
 
-                    for (let obj of providers) {
-
+                    const push = async (obj) => {
                         const { provider, chainId } = obj
 
                         const currentBlock = await provider.getBlockNumber()
@@ -75,7 +74,7 @@ async function run({
 
                         const currentRoot = await gatewayContract.relayRoot()
 
-                        logger.debug("Current root : ", currentRoot)
+                        logger.debug("Current root on chain : ", chainId , " is : ", currentRoot)
 
                         const BASE_GAS = 5 // 5 GWEI
 
@@ -85,11 +84,12 @@ async function run({
                                 gasPrice: ethers.utils.parseUnits(`${BASE_GAS * (retries + 1)}`, 'gwei'),
                                 gasLimit: 100000 * (retries + 1)
                             })
-                            logger.debug("tx is being processed...")
+                            logger.debug("tx on chain : ", chainId ," is being processed...")
                             await tx.wait()
                         }
-
                     }
+
+                    await Promise.all(providers.map(item => push(item)))
 
                 },
                 {
