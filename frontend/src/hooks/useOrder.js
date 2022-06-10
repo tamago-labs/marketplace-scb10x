@@ -251,8 +251,6 @@ const useOrder = () => {
         chainId
     }) => {
 
-        console.log("resolving status : ", orderId, chainId)
-
         const providers = getProviders([42, 80001])
 
         const { provider } = providers.find(item => item.chainId === chainId)
@@ -262,6 +260,10 @@ const useOrder = () => {
         const marketplaceContract = new ethers.Contract(contractAddress, MarketplaceABI, provider)
 
         const result = await marketplaceContract.orders(orderId)
+
+        if (result["canceled"] === true) {
+            return 3
+        }
 
         if (result["ended"] === true) {
             return 2

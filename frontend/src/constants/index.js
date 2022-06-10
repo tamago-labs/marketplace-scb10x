@@ -1,5 +1,5 @@
-export const MORALIS_URL = "https://vro0mkhk2dyq.usemoralis.com:2053/server"
-export const MORALIS_ID = "BONAncwBVHaIrby6FNinUsd8fStgUE6tTJkeJby1"
+export const MORALIS_URL = "https://cybgqjtb97zb.usemoralis.com:2053/server"
+export const MORALIS_ID = "c5pJEepQAhugEYhT4xmn5FUvWRij5Rvbpn7yZGJ9"
 export const API_BASE = "https://asia-east2-sbc10x-hackatron-may2022.cloudfunctions.net/api"
 export const ACCOUNT_API_BASE = "https://api.tamago.finance/v2"
 

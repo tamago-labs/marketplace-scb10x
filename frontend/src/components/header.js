@@ -9,7 +9,7 @@ import {
   resolveNetworkName,
   resolveNetworkIconUrl,
 } from "../helper"
-import WalletsModal from "./Modal/WalletConnectModal"
+// import WalletsModal from "./Modal/WalletConnectModal"
 import SwitchChainModal from "./Modal/SwitchChainModal"
 
 const NetworkBadge = styled(({ className, toggleSwitchChain, chainId }) => {
@@ -76,21 +76,32 @@ const StyledBadge = styled(Badge)`
 }
 `
 
+const ConnectWalletButton = styled(Link).attrs(() => ({ className: "btn btn-primary shadow", to: "/account" }))`
+  z-index: 10;
+  color: white;
+  background-image: linear-gradient(to right, #f55f8d 0, #f8ae56 51%, #f55f8d 100%);
+  border-radius: 32px;
+  padding: 12px;
+
+`
+
 function Header() {
+
+
   const { account, chainId, library } = useWeb3React()
 
-  const [walletLoginVisible, setWalletLoginVisible] = useState(false)
+  // const [walletLoginVisible, setWalletLoginVisible] = useState(false)
   const [switchChainVisible, setSwitchChainVisible] = useState(false)
 
-  const toggleWalletConnect = () => setWalletLoginVisible(!walletLoginVisible)
+  // const toggleWalletConnect = () => setWalletLoginVisible(!walletLoginVisible)
   const toggleSwitchChain = () => setSwitchChainVisible(!switchChainVisible)
 
   return (
     <>
-      <WalletsModal
+      {/* <WalletsModal
         toggleWalletConnect={toggleWalletConnect}
         walletLoginVisible={walletLoginVisible}
-      />
+      /> */}
       <SwitchChainModal
         toggleModal={toggleSwitchChain}
         modalVisible={switchChainVisible}
@@ -113,7 +124,7 @@ function Header() {
                     height="45px"
                   />
                 </Link>
-                <div style={{ marginLeft: "10px", display : "flex" }}>
+                <div style={{ marginLeft: "10px", display: "flex" }}>
                   <StyledBadge style={{ marginTop: "auto", marginBottom: "auto" }} color="warning">
                     Testnet
                   </StyledBadge>
@@ -126,13 +137,9 @@ function Header() {
                 {
                   <>
                     {!account ? (
-                      <a
-                        style={{ zIndex: 10, color: "white", backgroundImage: "linear-gradient(to right, #f55f8d 0, #f8ae56 51%, #f55f8d 100%)", borderRadius: "32px", padding: 12 }}
-                        className="btn btn-primary shadow"
-                        onClick={toggleWalletConnect}
-                      >
+                      <ConnectWalletButton  >
                         Connect Wallet
-                      </a>
+                      </ConnectWalletButton>
                     ) : (
                       <>
                         <NetworkBadge

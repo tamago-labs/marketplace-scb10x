@@ -17,5 +17,5 @@ export const Connectors = [
     name: "MetaMask",
     connector: injected,
     imgSrc: "../images/wallet-provider/metamask.png"
-  },
+  }
 ]

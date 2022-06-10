@@ -8,7 +8,7 @@ import React, {
 } from "react"
 import { useWeb3React } from "@web3-react/core"
 import axios from "axios"
-import {ACCOUNT_API_BASE} from "../constants"
+import { ACCOUNT_API_BASE } from "../constants"
 
 export const AccountContext = createContext({})
 
@@ -17,9 +17,13 @@ const Provider = ({ children }) => {
     (prevState, action) => {
       switch (action.type) {
         case "UPDATE_EMAIL":
+
+          const { email, nickname } = action.data
+
           return {
             ...prevState,
-            email: action.data,
+            email,
+            nickname
           }
         default:
           return {
@@ -29,10 +33,11 @@ const Provider = ({ children }) => {
     },
     {
       email: null,
+      nickname: null
     }
   )
 
-  const { email } = state
+  const { email, nickname } = state
 
   const context = useWeb3React()
 
@@ -47,125 +52,76 @@ const Provider = ({ children }) => {
   useEffect(() => {
     if (account) {
       axios
-      .get(`${ACCOUNT_API_BASE}/account/${account}`)
-      .then(({ data }) => {
-        if (data.status === "ok") {
-          const { email } = data
-          dispatch({ type: "UPDATE_EMAIL", data: email })
-        }
+        .get(`${ACCOUNT_API_BASE}/account/${account}`)
+        .then(({ data }) => {
+          if (data.status === "ok") {
+            const { email } = data
+            dispatch({
+              type: "UPDATE_EMAIL", data: {
+                email,
+                nickname: data.nickname || ""
+              }
+            })
+          }
           if (data.status === "error" && data.message === "Invalid ID") {
-            dispatch({ type: "UPDATE_EMAIL", data: " " })
+            dispatch({
+              type: "UPDATE_EMAIL", data: {
+                email: "",
+                nickname
+              }
+            })
           }
         })
     }
   }, [account])
 
-  // useEffect(() => {
-
-  //     (async () => {
-  //         const { data } = await axios.get(`api/events`)
-  //         if (data && data.events && data.events.length > 0) {
-
-  //             const events = [{
-  //                 "eventId": 8,
-  //                 "visible": true,
-  //                 "participants": [3],
-  //                 "community": "Naga DAO",
-  //                 "slug": "naga-nft-mar-2022-2",
-  //                 "wallets": 168,
-  //                 "ended": true,
-  //                 "spots": 3,
-  //                 "imageUrl": "https://img.tamago.finance/luckbox/event/event-2.png",
-  //                 "claimStart": 1651042350,
-  //                 "claimEnd": 1651215150,
-  //                 "title": "Naga DAO NFT #TEST"
-  //             }].concat(data.events)
-
-  //             dispatch({ type: "UPDATE_EVENTS", data: events  })
-  //         }
-  //     })()
-  // }, [])
-
-  const getProof = useCallback(async (eventId) => {
-    let result
-    try {
-      const { data } = await axios.get(
-        `/api/events/proof/${eventId}`
-      )
-      result = data
-    } catch (e) {
-      console.error(e)
+  const signMessage = useCallback(async (message) => {
+    return {
+      message,
+      signature: await library.getSigner().signMessage(message)
     }
-    return result
-  }, [])
+  }, [account, library])
 
   const updateAccount = useCallback(
-    async (email) => {
+    async ({
+      email,
+      nickname
+    }) => {
       if (account) {
-        const buffer = btoa(
-          JSON.stringify({
-            username: account,
-            address: account,
-            disabled: false,
+
+        const { message, signature } = await signMessage("Please sign the message to update your account!")
+
+        const payload = {
+          username: account,
+          nickname,
+          address: account,
+          disabled: false,
+          email,
+          message,
+          signature
+        }
+
+        await axios.post(`${ACCOUNT_API_BASE}/account`, payload)
+
+        dispatch({
+          type: "UPDATE_EMAIL", data: {
             email,
-          })
-        )
-
-        await axios.get(`/api/createAccount/${buffer}`)
-        dispatch({ type: "UPDATE_EMAIL", data: email })
+            nickname
+          }
+        })
       }
     },
     [account]
   )
-
-  const createEvent = useCallback(async (form) => {
-    if (form) {
-      // const buffer = btoa(JSON.stringify({
-      //     ...form
-      // }))
-      // console.log(form)
-      // return await axios.get(`/api/createEvent/${buffer}`)
-      return await axios.post(`/api/events/create`, form)
-    }
-  }, [])
-
-  const register = useCallback(
-    async (eventId) => {
-      if (account) {
-        const buffer = btoa(
-          JSON.stringify({
-            walletAddress: account,
-            eventId,
-          })
-        )
-
-        await axios.get(`/api/register/${buffer}`)
-      }
-    },
-    [account]
-  )
-
-  const getRegistered = useCallback(async (eventId) => {
-    const response = await axios.get(
-      `/api/events/registered/${eventId}`
-    )
-    if (response && response.data && response.data.status === "ok") {
-      return response.data.registered
-    }
-    return []
-  }, [])
 
   const accountContext = useMemo(
     () => ({
       increaseTick,
       updateAccount,
-      createEvent,
       email,
-      getProof,
-      register,
-      getRegistered,
+      nickname
     }),
-    [increaseTick, updateAccount, createEvent, email, register]
+    [increaseTick, updateAccount, email, nickname]
   )
 
   return (

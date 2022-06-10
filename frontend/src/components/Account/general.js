@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useContext } from "react"
 import styled from "styled-components"
 import { ToastContainer, toast } from "react-toastify"
+import { TailSpin } from 'react-loader-spinner'
 import { AccountContext } from "../../hooks/useAccount"
 import "react-toastify/dist/ReactToastify.css"
 
@@ -75,6 +76,7 @@ const General = () => {
 
   useEffect(() => {
     if (accountContext) {
+      setDisplayName(accountContext.nickname)
       setEmail(accountContext.email)
     }
   }, [accountContext])
@@ -88,17 +90,22 @@ const General = () => {
         )
       ) {
         setLoading(true)
-        await toast.promise(accountContext.updateAccount(email), {
-          pending: "Saving Changes",
-          success: "Changes Successfully Saved",
-          error: "Something went wrong",
-        })
+        
+        try {
+          await accountContext.updateAccount({
+            email,
+            nickName: displayName
+          })
+        } catch (e) {
+          console.log(e)
+        }
+
         setLoading(false)
       } else {
         setErrorMessage("Email is not valid")
       }
     }
-  }, [email])
+  }, [email, displayName, accountContext])
 
   const disabled = !accountContext.email || loading
 
@@ -125,26 +132,29 @@ const General = () => {
         onChange={(e) => setEmail(e.target.value)}
         disabled={disabled}
       />
-      <p>
+      {/* <p style={{ marginTop: "2rem" }}>
         Register your email address with us to receive notification when there
-        are any updates to your subscription
-      </p>
+        are any updates to your orders
+      </p> */}
 
       <hr />
       <a
         onClick={onSave}
-        disabled={loading}
+        disabled={disabled}
         style={{
           zIndex: 10,
           color: "white",
           borderRadius: "32px",
           padding: "12px 24px",
-					marginRight: "8px"
+          marginRight: "8px",
         }}
         className="btn btn-primary shadow"
       >
-        {loading && <span className="fa fa-spin fa-refresh mr-2" />}
-        Save Changes
+        <div style={{ display: "flex", flexDirection: "row" }}>
+          {disabled && <span style={{ marginRight: "10px" }}><TailSpin color="#fff" height={24} width={24} /></span>}
+
+          Save Changes
+        </div>
       </a>
       {errorMessage && <span className="error-message">{errorMessage}</span>}
       {!accountContext.email && <span className="ml-2">Checking...</span>}

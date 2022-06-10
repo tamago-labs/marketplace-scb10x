@@ -144,7 +144,6 @@ const OrderDetails = () => {
     const [crossChain, setCrosschain] = useState(false)
     const [data, setData] = useState()
     const [status, setStatus] = useState(ORDER_STATUS.UNKNOWN)
-
     const { id } = useParams();
 
     useEffect(() => {
@@ -229,7 +228,7 @@ const OrderDetails = () => {
                             />
                             <Info
                                 name={"Status"}
-                                value={status === 0 ? null : status === 2 ? "Sold" : "New"}
+                                value={status === 0 ? null : status === 2 ? "Sold" : status === 3 ? "Canceled" : "New"}
                                 color={status === 2 ? "red" : "white"}
                             />
                             {/* <Info

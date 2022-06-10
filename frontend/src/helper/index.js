@@ -19,6 +19,19 @@ export const resolveNetworkName = (networkId) => {
   }
 }
 
+export const resolveStatusName = (statusCode) => {
+  switch (statusCode) {
+    case 1:
+      return "New"
+    case 2:
+      return "Sold"
+    case 3:
+      return "Canceled"
+    default:
+      return "Unknown"
+  }
+}
+
 export const resolveBlockexplorerLink = (networkId, assetAddress, tokenId) => {
   switch (networkId) {
     case 42:
@@ -78,15 +91,15 @@ export const countdown = (seconds) => {
   }
 }
 
-export const resolveStatus = ({
-  canceled,
-  fulfilled,
-}) => {
-  if (canceled) {
-    return "Canceled"
-  } else if (fulfilled) {
-    return "Sold"
-  } else {
-    return "New"
-  }
-}
+// export const resolveStatus = ({
+//   canceled,
+//   fulfilled,
+// }) => {
+//   if (canceled) {
+//     return "Canceled"
+//   } else if (fulfilled) {
+//     return "Sold"
+//   } else {
+//     return "New"
+//   }
+// }

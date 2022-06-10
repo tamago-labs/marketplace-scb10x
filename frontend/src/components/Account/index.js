@@ -6,6 +6,7 @@ import { Tabs, Tab } from "react-bootstrap"
 import { shortAddress } from "../../helper"
 import General from "./general"
 import Orders from "./orders"
+import ConnectPanel from "./connect"
 
 const Wrapper = styled.div.attrs(() => ({ className: "container" }))`
   padding-top: 2rem;
@@ -35,24 +36,17 @@ const AccountTab = styled(Tabs)`
 	}
 `
 
+
+
 const AccountDetails = () => {
   const { account, chainId, deactivate } = useWeb3React()
 
   return (
     <Wrapper>
       <div className="row">
-        <div className="col-sm-12">
+        <div className="col-sm-8">
           {!account && (
-            <div
-              style={{
-                maxWidth: "320px",
-                marginLeft: "auto",
-                marginRight: "auto",
-              }}
-            >
-              {/* <Skeleton height={32} />
-              <Skeleton height={32} /> */}
-            </div>
+            <ConnectPanel />
           )}
 
           {account && (
@@ -66,7 +60,10 @@ const AccountDetails = () => {
               </Avatar>
               <Address>{shortAddress(account, 10, -6)}</Address>
               <button
-                onClick={() => deactivate()}
+                onClick={() => {
+                  deactivate()
+                  window.location.reload()
+                }}
                 style={{
                   width: "200px",
                   marginLeft: "auto",
@@ -78,13 +75,13 @@ const AccountDetails = () => {
               >
                 Disconnect
               </button>
-              <AccountTab defaultActiveKey="general" className="mt-3 mb-3">
-                <Tab
+              <AccountTab defaultActiveKey="orders" className="mt-3 mb-3">
+                {/* <Tab
                   eventKey="general"
                   title="General"
                 >
                   <General />
-                </Tab>
+                </Tab> */}
                 <Tab
                   eventKey="orders"
                   title="Your Orders"

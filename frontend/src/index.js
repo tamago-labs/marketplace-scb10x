@@ -9,6 +9,7 @@ import App from "./App"
 import reportWebVitals from "./reportWebVitals"
 import "bootstrap/dist/css/bootstrap.min.css"
 import "react-loading-skeleton/dist/skeleton.css"
+import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
 import { SkeletonTheme } from "react-loading-skeleton"
 import { MORALIS_URL, MORALIS_ID } from "./constants"
 
