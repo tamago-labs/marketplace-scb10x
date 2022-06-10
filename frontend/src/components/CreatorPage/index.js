@@ -4,6 +4,8 @@ import styled from "styled-components";
 import NFTCard from "../nftCard";
 import useOrder from "../../hooks/useOrder";
 import { Button } from "../../components/buttons";
+import BlankProfile from "../../images/blank_profile.webp";
+import Skeleton from "react-loading-skeleton";
 
 /** Styled Component */
 const ListContainer = styled.div`
@@ -12,6 +14,33 @@ const ListContainer = styled.div`
   margin-top: 32px;
   justify-content: center;
 `;
+const NftNameBoard = styled.div`
+  background: #ffff;
+  color: #7a0bc0;
+  border-radius: 20px;
+  padding: 10px;
+  height: 100%;
+`;
+const RoundImg = styled.img`
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 50%;
+  width: 100px;
+  height: 100px;
+`;
+
+const BoardDetail = styled.div`
+  text-align: center;
+  padding: 0px 15px;
+
+  h6 {
+    font-weight: 600;
+  }
+  p {
+    margin-bottom: 0px;
+  }
+`;
 
 /** CONSTANT */
 const MAX_ITEMS = 4;
@@ -19,16 +48,65 @@ const MAX_ITEMS = 4;
 const SortByOwner = () => {
   const [max, setMax] = useState(MAX_ITEMS);
   const [orders, setOrders] = useState([]);
-  const { getOrdersByOwner } = useOrder();
+  const [data, setData] = useState();
+  const [sellerName, setSellerName] = useState("");
+  const { getOrdersByOwner, resolveMetadata, getOwnerName } = useOrder();
   let { ownerAddress } = useParams();
 
   useEffect(() => {
     ownerAddress && getOrdersByOwner(ownerAddress).then(setOrders);
   }, [ownerAddress, getOrdersByOwner]);
 
+  useEffect(() => {
+    if (orders.length !== 0) {
+      resolveMetadata({
+        assetAddress: orders[0].baseAssetAddress,
+        tokenId: orders[0].baseAssetTokenId,
+        chainId: orders[0].chainId,
+      }).then(setData);
+    }
+    const fetchOwnerName = async () => {
+      const name = await getOwnerName(orders[0].ownerAddress);
+      setSellerName(name);
+    };
+    fetchOwnerName();
+  }, [orders, resolveMetadata]);
+
   return (
     <div style={{ marginTop: 32, paddingBottom: 32 }} className="container">
       <div>
+        <NftNameBoard>
+          <div style={{ textAlign: "center" }}>
+            <RoundImg src={BlankProfile} />
+
+            {data ? (
+              <p>{sellerName}</p>
+            ) : (
+              <Skeleton height="10px" width="20px" />
+            )}
+          </div>
+          <div
+            style={{
+              position: "relative",
+              left: "30px",
+              display: "flex",
+              justifyContent: "center",
+            }}
+          >
+            <BoardDetail>
+              <h6>Items</h6>
+              <p>{orders.length}</p>
+            </BoardDetail>
+            <BoardDetail>
+              <h6>Traded</h6>
+              <p>-</p>
+            </BoardDetail>
+            <BoardDetail>
+              <h6>Fulfilled</h6>
+              <p>-</p>
+            </BoardDetail>
+          </div>
+        </NftNameBoard>
         <ListContainer>
           {orders.length === 0 && <>Loading...</>}
 

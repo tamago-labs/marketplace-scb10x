@@ -53,24 +53,8 @@ const AssetCard = ({ order, item, crossChain, id, account, library }) => {
     account,
     library
   );
-  // console.log("item token id " + item.assetTokenIdOrAmount);
-  // console.log("account : " + account);
-  // console.log("assetAdress: " + item.assetAddress);
-
-  // const onGetBalanceId = useCallback(async () => {
-  //   try {
-  //     if (item.tokenType != 0) {
-  //       const balance = await assetAddressContractErc721.getBalance();
-  //       console.log("balance = " + balance);
-  //       setOwnedItems(balance.toString());
-  //     }
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // }, [account]);
 
   useEffect(() => {
-    console.log("TYPE " + item.tokenType);
     const fetchItem = async () => {
       if (item.tokenType === 1) {
         const balance = await assetAddressContractErc721.getBalance();

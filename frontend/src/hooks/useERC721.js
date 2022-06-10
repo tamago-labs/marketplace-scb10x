@@ -20,7 +20,7 @@ export const useERC721 = (address, account, library) => {
         const result = await erc721Contract.isApprovedForAll(account, address);
         return result;
       } catch (e) {
-        console.log(e);
+        // console.log(e);
         return 0;
       }
     },
@@ -32,7 +32,7 @@ export const useERC721 = (address, account, library) => {
       try {
         await erc721Contract.setApprovalForAll(address, true);
       } catch (e) {
-        console.log(e);
+        // console.log(e);
         return 0;
       }
     },
@@ -44,7 +44,7 @@ export const useERC721 = (address, account, library) => {
       const result = await erc721Contract.balanceOf(account);
       return result.toString();
     } catch (e) {
-      console.log(e);
+      // console.log(e);
       return 0;
     }
   }, [erc721Contract, account]);
@@ -54,7 +54,7 @@ export const useERC721 = (address, account, library) => {
       const result = await erc721Contract.name();
       return result;
     } catch (e) {
-      console.log(e);
+      // console.log(e);
       return "";
     }
   }, [erc721Contract, account]);
@@ -64,7 +64,7 @@ export const useERC721 = (address, account, library) => {
       const result = await erc721Contract.symbol();
       return result;
     } catch (e) {
-      console.log(e);
+      // console.log(e);
       return "";
     }
   }, [erc721Contract, account]);

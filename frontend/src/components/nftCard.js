@@ -64,7 +64,6 @@ const NFTCard = ({ order, delay }) => {
   const [sellerName, setSellerName] = useState("");
 
   useEffect(() => {
-    // setSellerName(getOwnerName(order.ownerAddress));
     if (order) {
       setTimeout(() => {
         resolveMetadata({
@@ -81,8 +80,6 @@ const NFTCard = ({ order, delay }) => {
     };
     fetchOwnerName();
   }, [order, delay]);
-
-  // console.log("getOwnerName = " + getOwnerName(order.ownerAddress).then);
 
   const sellerLink = resolveBlockexplorerLink(
     order.chainId,
