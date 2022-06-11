@@ -59,6 +59,30 @@ export const NETWORK = [
     },
     rpcUrls: ["https://matic-mainnet.chainstacklabs.com/"],
     blockExplorerUrls: ["https://polygonscan.com"],
+  },
+  {
+    chainId: '0x61',
+    chainName: 'BNB Testnet',
+    icon: 'https://raw.githubusercontent.com/sushiswap/icons/master/network/bsc.jpg',
+    nativeCurrency: {
+      name: 'Binance Coin',
+      symbol: 'BNB',
+      decimals: 18,
+    },
+    rpcUrls: ['https://kovan.poa.network'],
+    blockExplorerUrls: ['https://kovan.etherscan.io/'],
+  },
+  {
+    chainId: "0xa869",
+    chainName: "Avalanche Fuji Testnet",
+    icon: "https://raw.githubusercontent.com/sushiswap/icons/master/network/avalanche.jpg",
+    nativeCurrency: {
+      name: "AVAX",
+      symbol: "AVAX",
+      decimals: 18,
+    },
+    rpcUrls: ["https://matic-mainnet.chainstacklabs.com/"],
+    blockExplorerUrls: ["https://polygonscan.com"],
   }
   // {
   //   chainId: '0x63564C40',

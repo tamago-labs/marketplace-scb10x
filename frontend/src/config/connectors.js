@@ -8,7 +8,7 @@ const RPC = {
   80001: "https://rpc-mumbai.matic.today",
 }
 
-const supportedChainIds = [80001, 42]
+const supportedChainIds = [80001, 42, 43113, 97]
 
 export const injected = new InjectedConnector({ supportedChainIds })
 
