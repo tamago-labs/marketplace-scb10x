@@ -8,6 +8,7 @@ import CreateOrder from "./components/CreateOrder";
 import Collection from "./components/Collection";
 import CreatorPage from "./components/CreatorPage";
 import Account from "./components/Account"
+import Faucet from "./components/Faucet"
 
 const GlobalStyle = createGlobalStyle`
   * {
@@ -40,6 +41,7 @@ function App() {
         <Route path="/orders/collection/:address" element={<Collection />} />
         <Route path="/orders/owner/:ownerAddress" element={<CreatorPage />} />
         <Route path="/account" element={<Account />} />
+        <Route path="/faucet" element={<Faucet />} />
       </Routes>
       <Footer />
     </div>
