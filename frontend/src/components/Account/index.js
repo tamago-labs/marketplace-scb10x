@@ -43,8 +43,8 @@ const AccountDetails = () => {
 
   return (
     <Wrapper>
-      <div className="row">
-        <div className="col-sm-8">
+      <div style={{ display: "flex" }}>
+        <div style={{ width: "800px" , marginLeft : "auto", marginRight : "auto"}}>
           {!account && (
             <ConnectPanel />
           )}

@@ -6,10 +6,17 @@ import useEagerConnect from "../../hooks/useEagerConnect"
 import useInactiveListener from "../../hooks/useInactiveListener"
 
 const ConnectPanelWrapper = styled.div`
-    padding: 20px;
-    >h4 {
+    padding: 60px 20px 60px 20px;
+    border: 1px solid white;
+    border-radius: 24px;
+    .title {
         text-align: center;
         margin-bottom: 2rem;
+        max-width: 500px;
+        margin-left: auto;
+        font-size: 24px;
+        font-weight: 600;
+        margin-right: auto;
     }
     >p {
         margin-top: 2rem;
@@ -87,7 +94,7 @@ const ConnectPanel = () => {
 
     return (
         <ConnectPanelWrapper>
-            <h4>Connect with one of available wallet providers </h4>
+            <div className="title">💪Connect with one of available wallet providers </div>
 
             {Connectors.map((item, index) => {
                 const { connector, name, imgSrc } = item
@@ -106,13 +113,46 @@ const ConnectPanel = () => {
                     </Connector>
                 )
             })}
-            
+
             {errorMessage && (
                 <div style={{ fontSize: "14px", color: "red", fontWeight: "600", textAlign: "center", marginTop: "1rem" }}>
                     {errorMessage}
                 </div>
             )}
-            <p>We currently support Kovan, Mumbai.<br />Make sure you're connect to the right network.</p>
+            <p>We currently support following networks:</p>
+
+            <table style={{ maxWidth: "600px", marginLeft: "auto", marginRight: "auto", color: "white" }} className="table">
+                <thead>
+                    <tr>
+                        <td width={"40%"}> </td>
+                        <td width={"60%"}>Chains</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Ethereum</td>
+                        <td>Kovan Testnet</td> 
+
+                    </tr>
+                    <tr>
+                        <td>Polygon</td>
+                        <td>Mumbai Testnet</td> 
+
+                    </tr>
+                    <tr>
+                        <td>BNB Smart Chain</td>
+                        <td>Testnet</td>
+
+                    </tr>
+                    <tr>
+                        <td>Avalanche</td>
+                        <td>Fuji Testnet</td>
+
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>Make sure you're connect to the right network</p>
 
         </ConnectPanelWrapper>
     )

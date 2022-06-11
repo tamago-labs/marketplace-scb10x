@@ -86,6 +86,31 @@ const ConnectWalletButton = styled(Link).attrs(() => ({ className: "btn btn-prim
 
 `
 
+const Wrapper = styled.header.attrs(() => ({ className: "site-header mo-left header-transparent" }))`
+   
+`
+
+const MobileHidden = styled.span`
+@media only screen and (max-width: 600px) {
+  display: none;
+}
+`
+
+const Menu = styled.div`
+
+  a {
+    color: inherit;
+    text-decoration: none;
+    :hover {
+      text-decoration: underline;
+    }
+  }
+
+@media only screen and (max-width: 600px) {
+  display: none;
+}
+`
+
 function Header() {
   const { account, chainId, library } = useWeb3React();
 
@@ -105,7 +130,7 @@ function Header() {
         toggleModal={toggleSwitchChain}
         modalVisible={switchChainVisible}
       />
-      <header className="site-header mo-left header-transparent">
+      <Wrapper>
         {/* <!-- Main Header --> */}
         <div className="sticky-header main-bar-wraper navbar-expand-lg">
           <div className="d-flex">
@@ -134,6 +159,13 @@ function Header() {
                 </div>
               </div>
 
+              <Menu>
+                <Link to="/faucet">
+                  Faucet
+                </Link>
+
+              </Menu>
+
               {/* <!-- Extra Nav --> */}
               <div
                 className="extra-nav"
@@ -146,9 +178,11 @@ function Header() {
                 {
                   <>
                     {!account ? (
-                      <ConnectWalletButton  >
-                        Connect Wallet
-                      </ConnectWalletButton>
+                      <>
+                        <ConnectWalletButton  >
+                          Connect{` `}<MobileHidden>Wallet</MobileHidden>
+                        </ConnectWalletButton>
+                      </>
                     ) : (
                       <>
                         <NetworkBadge
@@ -171,7 +205,7 @@ function Header() {
             </Navbar>
           </div>
         </div>
-      </header>
+      </Wrapper>
     </>
   );
 }

@@ -2,6 +2,7 @@ import { useState } from "react";
 import styled from "styled-components";
 import Skeleton from "react-loading-skeleton";
 import { Badge } from "reactstrap";
+import { Link } from "react-router-dom";
 import { MoreVertical, ChevronDown } from "react-feather";
 import { resolveBlockexplorerLink, resolveNetworkName } from "../helper";
 
@@ -129,10 +130,11 @@ export const BaseAssetCard = ({
   chainId,
   assetAddress,
   tokenId,
+  orderId
 }) => (
   <BaseAssetCardContainer>
     <PreviewContainer>
-      {image ? <Image src={image} /> : <Skeleton height="220px" />}
+      {image ? <Link to={`/order/${orderId}`}><Image src={image} /></Link> : <Link to={`/order/${orderId}`}><Skeleton height="220px" /></Link>}
       {chainId && (
         <ChainInfo>
           <div>{resolveNetworkName(chainId)}</div>

@@ -1,8 +1,7 @@
 import React from "react";
 import Jumbotron from "../jumbotron";
 import Lists from "../lists";
-import RankBoard from "../rankBoard";
-import MintToken from "./mintToken";
+import RankBoard from "../rankBoard"; 
 
 const Home = () => {
   return (
@@ -10,9 +9,7 @@ const Home = () => {
       <Jumbotron />
       {/* <RankBoard /> */}
       <Lists />
-      <div style={{ padding: "20px" }}>
-        <MintToken />
-      </div>
+       
     </>
   );
 };

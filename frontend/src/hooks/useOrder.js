@@ -17,6 +17,7 @@ import MarketplaceABI from "../abi/marketplace.json";
 import NFTABI from "../abi/nft.json";
 import ERC20ABI from "../abi/erc20.json";
 import collection from "../components/Collection";
+import { getProviders } from "../helper"
 
 window.Buffer = window.Buffer || require("buffer").Buffer;
 
@@ -359,30 +360,6 @@ const useOrder = () => {
 
 
     return messages
-  }
-
-  const getProviders = (chainIds = []) => {
-    return chainIds.map(chainId => {
-
-      let url
-
-      if (chainId === 42) {
-        url = "https://kovan.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161"
-      } else if (chainId === 80001) {
-        url = "https://nd-546-345-588.p2pify.com/8947d77065859cda88213b612a0f8679"
-      }
-
-      if (!url) {
-        return
-      }
-
-      const provider = new ethers.providers.JsonRpcProvider(url)
-
-      return {
-        chainId,
-        provider
-      }
-    })
   }
 
   const generateValidatorMessages = async () => {
