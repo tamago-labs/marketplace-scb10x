@@ -57,7 +57,7 @@ Gateway | 0x16EE94e3C07B24EbA6067eb9394BA70178aAc4c0
 Marketplace | 0xf2260B00250c772CB64606dBb88d9544F709308C
 Mock NFT | 0x576430Ecadbd9729B32a4cA9Fed9F38331273924
 
-### Avalanche Fuji Testnet
+### Avalanche Fuji Testnet (Chain Id : 43113)
 
 Contract Name | Contract Address 
 --- | --- 
