@@ -11,6 +11,8 @@ import {
 } from "../helper"
 // import WalletsModal from "./Modal/WalletConnectModal"
 import SwitchChainModal from "./Modal/SwitchChainModal"
+import useEagerConnect from "../hooks/useEagerConnect"
+import useInactiveListener from "../hooks/useInactiveListener"
 
 const NetworkBadge = styled(({ className, toggleSwitchChain, chainId }) => {
   return (
@@ -114,11 +116,16 @@ const Menu = styled.div`
 function Header() {
   const { account, chainId, library } = useWeb3React();
 
-  // const [walletLoginVisible, setWalletLoginVisible] = useState(false)
+
   const [switchChainVisible, setSwitchChainVisible] = useState(false)
 
-  // const toggleWalletConnect = () => setWalletLoginVisible(!walletLoginVisible)
   const toggleSwitchChain = () => setSwitchChainVisible(!switchChainVisible)
+
+  // handle logic to eagerly connect to the injected ethereum provider, if it exists and has granted access already
+  const triedEager = useEagerConnect()
+
+  // handle logic to connect in reaction to certain events on the injected ethereum provider, if it exists
+  useInactiveListener(!triedEager)
 
   return (
     <>
