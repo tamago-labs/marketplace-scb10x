@@ -94,14 +94,14 @@ const MOCKS = [
         decimals: 6,
         tokens: []
     },
-    {
-        chainId: 80001,
-        contractAddress: "0x61ad3Fe6B44Bfbbcec39c9FaD566538c894b6471",
-        tokenType: 0,
-        symbol: "USDT",
-        decimals: 6,
-        tokens: []
-    },
+    // {
+    //     chainId: 80001,
+    //     contractAddress: "0x61ad3Fe6B44Bfbbcec39c9FaD566538c894b6471",
+    //     tokenType: 0,
+    //     symbol: "USDT",
+    //     decimals: 6,
+    //     tokens: []
+    // },
     {
         chainId: 80001,
         contractAddress: "0x42209A0A2a3D80Ad48B7D25fC6a61ad355901484",

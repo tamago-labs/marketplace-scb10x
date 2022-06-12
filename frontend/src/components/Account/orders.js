@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useContext } from "react"
 import styled from "styled-components"
 import { Link, useNavigate } from "react-router-dom"
-import { ToastContainer, toast } from "react-toastify"
+import { toast } from "react-toastify"
 import { Table } from "react-bootstrap"
 import { useWeb3React } from "@web3-react/core"
 import { ethers } from "ethers"
@@ -13,7 +13,6 @@ import { resolveNetworkName, resolveStatusName } from "../../helper"
 import { NFT_MARKETPLACE } from "../../constants"
 import { ExternalLink, AlertTriangle } from "react-feather"
 import MarketplaceABI from "../../abi/marketplace.json"
-import "react-toastify/dist/ReactToastify.css"
 
 const Wrapper = styled.div.attrs(() => ({
   className: "rounded-md",
@@ -245,15 +244,7 @@ const Orders = () => {
 
   return (
     <Wrapper>
-      <ToastContainer
-        position="top-left"
-        autoClose={3000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        draggable
-      />
+      
       <OrderTable>
         <thead>
           <tr>

@@ -68,7 +68,7 @@ const ChainBadge = styled(Badge).attrs(() => ({ color: "success" }))`
   margin-right: auto;
 `;
 
-const MoreInfo = styled(({ className, chainId, assetAddress }) => {
+const MoreInfo = styled(({ className, chainId, assetAddress, isERC20 }) => {
   const [menuVisible, setMenuVisible] = useState(false);
 
   const blockExplorerLink = resolveBlockexplorerLink(chainId, assetAddress);
@@ -76,7 +76,7 @@ const MoreInfo = styled(({ className, chainId, assetAddress }) => {
   return (
     <div className={className}>
       <button onClick={() => setMenuVisible(!menuVisible)}>
-        <MoreVertical color="#7a0bc0" border="" />
+        <MoreVertical color={ !isERC20 ? "#7a0bc0" : "white" } border="" />
       </button>
       {menuVisible && (
         <div className="--menu">
@@ -171,7 +171,8 @@ export const PairAssetCard = ({
             style={{
               display: "flex",
               height: "220px",
-              border: "1px solid blue",
+              border: "1px solid #fa58b6",
+              borderRadius: "20px"
             }}
           >
             <div style={{ margin: "auto", fontSize: "24px" }}>ERC-20</div>
@@ -187,6 +188,7 @@ export const PairAssetCard = ({
         chainId={chainId}
         assetAddress={assetAddress}
         tokenId={tokenId}
+        isERC20={isERC20}
       />
     </PreviewContainer>
     {children}

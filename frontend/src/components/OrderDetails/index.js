@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import styled from "styled-components";
 import { FileText } from "react-feather";
@@ -9,7 +9,7 @@ import {
   resolveBlockexplorerLink,
 } from "../../helper";
 import AssetCard from "./assetCard";
-import { AlertWarning } from "../alert";
+import { AlertWarning, AlertError } from "../alert";
 import Skeleton from "react-loading-skeleton";
 import { useWeb3React } from "@web3-react/core";
 
@@ -131,6 +131,7 @@ const OrderDetails = () => {
   const [crossChain, setCrosschain] = useState(false);
   const [data, setData] = useState();
   const [status, setStatus] = useState(ORDER_STATUS.UNKNOWN);
+  const [tick, setTick] = useState(0)
 
   const { id } = useParams();
 
@@ -151,7 +152,11 @@ const OrderDetails = () => {
         orderId: order.orderId,
       }).then(setStatus);
     }
-  }, [order]);
+  }, [order, tick]);
+
+  const increaseTick = useCallback(() => {
+    setTick(tick + 1)
+  }, [tick])
 
   const items = useMemo(() => {
     if (order && order.barterList.length > 0) {
@@ -281,9 +286,19 @@ const OrderDetails = () => {
         {/* {data ? <Metadata metadata={data.metadata} /> : <div className="col-sm-4"><Skeleton height="100%" /></div>} */}
       </div>
 
+     
+
       <hr style={{ marginTop: "2rem", marginBottom: "2rem" }} />
 
       {/* CROSSCHAIN SWITCHER */}
+
+      {status !== 1 && (
+        <AlertError>
+          Please be aware that the order is already fulfilled or canceled
+        </AlertError>
+      )
+
+      }
 
       <div>
         <div
@@ -318,11 +333,6 @@ const OrderDetails = () => {
           <AlertWarning>Connect your wallet to continue</AlertWarning>
         )}
 
-        {/* {!crossChain &&
-                    <AlertWarning>
-                        Metamask/Web3 Wallet may popup twice for approving
-                    </AlertWarning>
-                } */}
       </div>
 
       {/* ITEMS */}
@@ -345,6 +355,8 @@ const OrderDetails = () => {
               key={index}
               account={account}
               library={library}
+              baseMetadata={data}
+              increaseTick={increaseTick}
             />
           );
         })}

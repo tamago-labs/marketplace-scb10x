@@ -10,9 +10,9 @@ import MockNFT from "../../abi/mockNFT.json"
 
 const ListContainer = styled.div`
   display: flex;
-  flex-wrap: wrap;
-  margin-top: 32px;
+  flex-wrap: wrap; 
   justify-content: center;
+  border: 1px solid white;
 `
 
 const Header = styled.div`
@@ -223,6 +223,7 @@ const Container2 = styled.div.attrs(() => ({ className: "container" }))`
 
 const Title = styled.div`
   text-align :center; 
+  margin-top: 1rem;
   p {
     font-size: 14px;
     margin-top: 10px;
@@ -238,13 +239,11 @@ const Title = styled.div`
   }
 `
 
-const MainPanel = styled.div`
-  margin-top: 2rem; 
-  max-width: 800px;
-  border: 1px solid white;
+const MainPanel = styled.div` 
+  max-width: 800px; 
   margin-left: auto;
   margin-right: auto;
-  padding: 2rem 1rem; 
+  padding: 1rem; 
   border-radius: 24px;
   min-height: 250px;
 `
@@ -371,15 +370,18 @@ const Faucet = () => {
   return (
     <Container2>
 
+      <Title>
+        <div className="title">🏭Faucet</div>
+        <p>
+          Allows mint mock NFTs and tokens for testing on testnet before taking any action with your real tokens
+        </p>
+      </Title>
+
+      
 
       <MainPanel>
 
-        <Title>
-          <div className="title">🏭Faucet</div>
-          <p>
-            Allows mint mock NFTs and tokens for testing on testnet before taking any action with your real tokens
-          </p>
-        </Title>
+
         <Label>
           Chain
         </Label>
@@ -408,6 +410,9 @@ const Faucet = () => {
             ERC-20
           </Button>
         </ButtonGroup>
+        <Label>
+          Available Tokens
+        </Label>
         <ListContainer>
           {
             isNFT && mocks.map((nft, index) => (
@@ -445,7 +450,7 @@ const Faucet = () => {
 
         </ListContainer>
         {disabled &&
-          (<div style={{ textAlign: "center", color: "red", fontWeight: "600", marginTop: "0.5rem" }}>
+          (<div style={{ textAlign: "center",  fontWeight: "600", marginTop: "0.5rem" }}>
             Invalid chain!
           </div>)
 

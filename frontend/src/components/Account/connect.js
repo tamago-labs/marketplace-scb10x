@@ -7,8 +7,7 @@ import useInactiveListener from "../../hooks/useInactiveListener"
 
 const ConnectPanelWrapper = styled.div`
     padding: 60px 20px 60px 20px;
-    border: 1px solid white;
-    border-radius: 24px;
+    border: 1px solid white; 
     .title {
         text-align: center;
         margin-bottom: 2rem;
