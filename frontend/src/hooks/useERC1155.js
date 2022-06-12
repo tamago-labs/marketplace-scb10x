@@ -1,8 +1,13 @@
 import { useMemo, useEffect, useState, useCallback } from "react";
 import { ethers } from "ethers";
 import ERC1155ABI from "../abi/ERC1155.json";
+import { NFT_MARKETPLACE } from "../constants";
+import { useWeb3React } from "@web3-react/core";
 
 export const useERC1155 = (address, account, library) => {
+
+  const { chainId } = useWeb3React()
+
   const erc1155Contract = useMemo(() => {
     if (!account || !address || !library) {
       return;
@@ -49,7 +54,32 @@ export const useERC1155 = (address, account, library) => {
     [erc1155Contract, account]
   );
 
-  useEffect(() => {}, [account, erc1155Contract]);
+  const isApproved = useCallback(async () => {
+    try {
+      const { contractAddress } = NFT_MARKETPLACE.find(item => item.chainId === chainId)
+      console.log((await erc1155Contract.isApprovedForAll(account, contractAddress)))
+      return (await erc1155Contract.isApprovedForAll(account, contractAddress))
+    } catch (e) {
+      return false;
+    }
+  }, [erc1155Contract, account, chainId]);
 
-  return { allowance, setApproval, getTokenBalanceId, safeTransferNFT };
+  const approve = useCallback(async () => {
+    try {
+
+      if (await isApproved()) {
+        return
+      }
+
+      const { contractAddress } = NFT_MARKETPLACE.find(item => item.chainId === chainId)
+      const tx = await erc1155Contract.setApprovalForAll(contractAddress, true)
+      await tx.wait()
+    } catch (e) {
+      return false;
+    }
+  }, [erc1155Contract, account, chainId]);
+
+  useEffect(() => { }, [account, erc1155Contract]);
+
+  return { isApproved, approve, allowance, setApproval, getTokenBalanceId, safeTransferNFT };
 };
