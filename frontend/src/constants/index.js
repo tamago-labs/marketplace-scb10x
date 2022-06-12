@@ -198,11 +198,11 @@ export const MOCK_TOKEN = [
         chainId: 80001,
         contract: "0x553588e084604a2677e10E46ea0a8A8e9D859146"
     },
-    {
-        symbol: "USDT",
-        chainId: 80001,
-        contract: "0x61ad3Fe6B44Bfbbcec39c9FaD566538c894b6471"
-    },
+    // {
+    //     symbol: "USDT",
+    //     chainId: 80001,
+    //     contract: "0x61ad3Fe6B44Bfbbcec39c9FaD566538c894b6471"
+    // },
     {
         symbol: "DAI",
         chainId: 80001,
