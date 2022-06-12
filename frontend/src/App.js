@@ -1,5 +1,6 @@
 import { createGlobalStyle } from "styled-components";
 import { Routes, Route, Link } from "react-router-dom";
+import { ToastContainer } from "react-toastify"
 import Header from "./components/header";
 import Home from "./components/Home";
 import Footer from "./components/footer";
@@ -9,6 +10,8 @@ import Collection from "./components/Collection";
 import CreatorPage from "./components/CreatorPage";
 import Account from "./components/Account"
 import Faucet from "./components/Faucet"
+
+import "react-toastify/dist/ReactToastify.css"
 
 const GlobalStyle = createGlobalStyle`
   * {
@@ -33,6 +36,15 @@ function App() {
   return (
     <div className="App">
       <GlobalStyle />
+      <ToastContainer
+        position="top-left"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        draggable
+      />
       <Header />
       <Routes>
         <Route path="/" element={<Home />} />

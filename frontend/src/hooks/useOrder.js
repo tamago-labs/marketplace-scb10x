@@ -293,8 +293,6 @@ const useOrder = () => {
 
     const token = order.barterList[tokenIndex]
 
-    console.log("current token : ", token)
-
     if (chainId !== order.chainId) {
       throw new Error("Invalid chain")
     }
@@ -337,7 +335,7 @@ const useOrder = () => {
     const { data } = await axios.get(`${API_BASE}/orders`)
     const { orders } = data
 
-    const messages = orders.filter(item => item.confirmed).reduce((output, item) => {
+    const messages = orders.filter(item => ((item.confirmed) && (!item.fulfilled) && (!item.canceled))).reduce((output, item) => {
 
       const { barterList, chainId, orderId } = item
 
@@ -409,12 +407,12 @@ const useOrder = () => {
             })
 
             // Seller
-            claims.push({
-              orderId: message.orderId,
-              chainId: message.chainId,
-              claimerAddress: ownerAddress,
-              isOrigin: false
-            })
+            // claims.push({
+            //   orderId: message.orderId,
+            //   chainId: message.chainId,
+            //   claimerAddress: ownerAddress,
+            //   isOrigin: false
+            // })
           }
         }
       }
@@ -501,6 +499,47 @@ const useOrder = () => {
 
   }, [account, chainId, library])
 
+  const generateClaimProof = useCallback(async (order) => {
+
+    const messages = await generateValidatorMessages()
+
+    console.log("validator messages length : ", messages.length, messages)
+
+    const leaves = messages.map(({ orderId, chainId, claimerAddress, isOrigin }) => ethers.utils.keccak256(ethers.utils.solidityPack(["uint256", "uint256", "address", "bool"], [orderId, chainId, claimerAddress, isOrigin]))) // Order ID, Chain ID, Claimer Address, Is Origin Chain
+    
+    const tree = new MerkleTree(leaves, keccak256, { sortPairs: true })
+
+    const proof = tree.getHexProof(ethers.utils.keccak256(ethers.utils.solidityPack(["uint256", "uint256", "address", "bool"], [order.orderId, order.chainId, account, true])))
+
+    console.log("claim proof : ", proof)
+
+    return proof
+  }, [account])
+
+  const eligibleToClaim = useCallback(async (order, proof) => {
+
+    console.log("checking  ", order.orderId, chainId)
+
+    if (!account) {
+      return
+    }
+
+    if ((NFT_MARKETPLACE.filter(item => item.chainId === order.chainId)).length === 0) {
+      return
+    }
+
+    const providers = getProviders([42, 80001])
+
+    const { provider } = providers.find(item => item.chainId === order.chainId)
+    const { contractAddress } = NFT_MARKETPLACE.find(item => item.chainId === order.chainId)
+
+    const contract = new ethers.Contract(contractAddress, MarketplaceABI, provider)
+
+    const output = await contract.eligibleToClaim(order.orderId, account, true, proof)
+    return output
+
+  }, [account, chainId])
+
   const claim = useCallback(async (order, token) => {
 
     console.log("claiming  ", order.orderId, token, chainId)
@@ -521,14 +560,9 @@ const useOrder = () => {
 
     const contract = new ethers.Contract(contractAddress, MarketplaceABI, library.getSigner())
 
-    const messages = await generateValidatorMessages()
+    const proof = await generateClaimProof(order)
 
-    console.log("validator messages length : ", messages.length)
-
-    const leaves = messages.map(({ orderId, chainId, claimerAddress, isOrigin }) => ethers.utils.keccak256(ethers.utils.solidityPack(["uint256", "uint256", "address", "bool"], [orderId, chainId, claimerAddress, isOrigin]))) // Order ID, Chain ID, Claimer Address, Is Origin Chain
-    const tree = new MerkleTree(leaves, keccak256, { sortPairs: true })
-
-    const proof = tree.getHexProof(ethers.utils.keccak256(ethers.utils.solidityPack(["uint256", "uint256", "address", "bool"], [order.orderId, order.chainId, account, true])))
+    console.log("proof --> ", proof)
 
     const tx = await contract.claim(order.orderId, true, proof)
 
@@ -584,7 +618,9 @@ const useOrder = () => {
     claim,
     resolveStatus,
     getMetadata,
-    getAccountOrders
+    getAccountOrders,
+    eligibleToClaim,
+    generateClaimProof
   }
 }
 
