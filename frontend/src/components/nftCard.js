@@ -122,7 +122,7 @@ const NFTCard = ({ order, delay }) => {
       {/* <div className="name">Chain: {resolveNetworkName(order.chainId)}</div> */}
       <SecondaryDataRow>
         <SellerCol>
-          <Link to={`/orders/owner/${order.ownerAddress}`}>@{sellerName}</Link>
+          <Link to={`/orders/owner/${order.ownerAddress}`}>@{sellerName ||<Skeleton style={{marginLeft: "5px"}} width={60}/>}</Link>
         </SellerCol>
         {price && <PriceCol>{price}</PriceCol>}
       </SecondaryDataRow>
