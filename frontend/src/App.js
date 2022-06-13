@@ -1,6 +1,6 @@
 import { createGlobalStyle } from "styled-components";
 import { Routes, Route, Link } from "react-router-dom";
-import { ToastContainer } from "react-toastify"
+import { ToastContainer } from "react-toastify";
 import Header from "./components/header";
 import Home from "./components/Home";
 import Footer from "./components/footer";
@@ -8,10 +8,12 @@ import OrderDetails from "./components/OrderDetails";
 import CreateOrder from "./components/CreateOrder";
 import Collection from "./components/Collection";
 import CreatorPage from "./components/CreatorPage";
-import Account from "./components/Account"
-import Faucet from "./components/Faucet"
+import Account from "./components/Account";
+import Faucet from "./components/Faucet";
+import AllCollectionPage from "./components/AllCollectionPage";
+import AllSellerPage from "./components/AllSellerPage";
 
-import "react-toastify/dist/ReactToastify.css"
+import "react-toastify/dist/ReactToastify.css";
 
 const GlobalStyle = createGlobalStyle`
   * {
@@ -54,6 +56,8 @@ function App() {
         <Route path="/orders/owner/:ownerAddress" element={<CreatorPage />} />
         <Route path="/account" element={<Account />} />
         <Route path="/faucet" element={<Faucet />} />
+        <Route path="/all-collection" element={<AllCollectionPage />} />
+        <Route path="/all-sellers" element={<AllSellerPage />} />
       </Routes>
       <Footer />
     </div>

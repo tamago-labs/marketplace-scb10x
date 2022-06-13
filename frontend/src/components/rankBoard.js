@@ -1,16 +1,15 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { Table } from "react-bootstrap"
-import { Link } from "react-router-dom"
+import { Table } from "react-bootstrap";
+import { Link } from "react-router-dom";
 import useOrder from "../hooks/useOrder";
-
+import { ChevronsRight } from "react-feather";
 import { shortAddress } from "../helper";
 
 /* Styled Component */
-
 const Container = styled.div.attrs(() => ({ className: "container" }))`
   margin-top: 2rem;
-  display: flex; 
+  display: flex;
   max-width: 900px;
 
   min-height: 250px;
@@ -19,53 +18,47 @@ const Container = styled.div.attrs(() => ({ className: "container" }))`
     flex: 1;
     text-align: left;
   }
-
 `;
 
 const Row = styled.div`
-     
-    display: flex;
-    overflow-y: auto;
-    
-    div {
-      flex: 1;
-      text-align: left;
-       padding: 10px;
-    }
-`
+  display: flex;
+  overflow-y: auto;
+
+  div {
+    flex: 1;
+    text-align: left;
+    padding: 10px;
+  }
+`;
 
 const RankTable = styled(Table)`
-  color: #fff; 
-`
+  color: #fff;
+`;
 
-const TH = styled.th.attrs(() => ({ width: "15%" }))`
-
-`
-
+const TH = styled.th.attrs(() => ({ width: "15%" }))``;
 
 const TR = styled.tr.attrs(() => ({}))`
-    td {
-      a {
-        color: inherit;
-        text-decoration: none;
-      }
-      :last-child {
-        text-align: right;
-      }
+  td {
+    a {
+      color: inherit;
+      text-decoration: none;
     }
-`
+    :last-child {
+      text-align: right;
+    }
+  }
+`;
 
 const RankBoard = () => {
+  const [sellers, setSellers] = useState([]);
+  const [collections, setCollections] = useState([]);
 
-  const [sellers, setSellers] = useState([])
-  const [collections, setCollections] = useState([])
-
-  const { getTopSellers, getTopCollections } = useOrder()
+  const { getTopSellers, getTopCollections } = useOrder();
 
   useEffect(() => {
-    getTopCollections().then(setCollections)
-    getTopSellers().then(setSellers)
-  }, [])
+    getTopCollections(5).then(setCollections);
+    getTopSellers(5).then(setSellers);
+  }, []);
 
   return (
     <Container>
@@ -76,61 +69,57 @@ const RankBoard = () => {
             <tbody>
               {collections.map((item, index) => {
                 if (index >= 5) {
-                  return
+                  return;
                 }
                 return (
                   <TR key={`collection-${index}`}>
-                    <TH>
-                      #{index + 1}
-                    </TH>
+                    <TH>#{index + 1}</TH>
                     <td>
                       <Link to={`/orders/collection/${item.address}`}>
                         {shortAddress(item.address, 10, -6)}
                       </Link>
                     </td>
                     <td>
-                      {item.activeCount}{` `}Items
+                      {item.activeCount}
+                      {` `}Items
                     </td>
                   </TR>
-                )
-              })
-
-              }
+                );
+              })}
             </tbody>
-
           </RankTable>
+          <Link to={`/all-collection`} style={{ color: "#ffff" }}>
+            see all collection <ChevronsRight></ChevronsRight>{" "}
+          </Link>
         </div>
-        <div  >
+        <div>
           <h4>Top Sellers</h4>
           <RankTable>
-
             <tbody>
               {sellers.map((item, index) => {
                 if (index >= 5) {
-                  return
+                  return;
                 }
                 return (
                   <TR key={`seller-${index}`}>
-                    <TH>
-                      #{index + 1}
-                    </TH>
+                    <TH>#{index + 1}</TH>
                     <td>
                       <Link to={`/orders/owner/${item.address}`}>
                         {shortAddress(item.address, 10, -6)}
                       </Link>
-
                     </td>
                     <td>
-                      {item.activeSellCount}{` `}Items
+                      {item.activeSellCount}
+                      {` `}Items
                     </td>
                   </TR>
-                )
-              })
-
-              }
-
+                );
+              })}
             </tbody>
           </RankTable>
+          <Link to={`/all-sellers`} style={{ color: "#ffff" }}>
+            see all sellers <ChevronsRight></ChevronsRight>{" "}
+          </Link>
         </div>
       </Row>
     </Container>

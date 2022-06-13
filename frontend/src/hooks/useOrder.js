@@ -1,11 +1,4 @@
-import React, {
-  useEffect,
-  useMemo,
-  useReducer,
-  createContext,
-  useState,
-  useCallback,
-} from "react";
+import React, { useState, useCallback } from "react";
 import { useMoralisWeb3Api } from "react-moralis";
 import { useWeb3React } from "@web3-react/core";
 import axios from "axios";
@@ -16,246 +9,275 @@ import { API_BASE, NFT_MARKETPLACE } from "../constants";
 import MarketplaceABI from "../abi/marketplace.json";
 import NFTABI from "../abi/nft.json";
 import ERC20ABI from "../abi/erc20.json";
-import collection from "../components/Collection";
-import { getProviders } from "../helper"
+import { getProviders } from "../helper";
 
 window.Buffer = window.Buffer || require("buffer").Buffer;
 
 const useOrder = () => {
+  const Web3Api = useMoralisWeb3Api();
 
-  const Web3Api = useMoralisWeb3Api()
+  const context = useWeb3React();
 
-  const context = useWeb3React()
+  const { chainId, account, library } = context;
 
-  const { chainId, account, library } = context
-
-  const [tick, setTick] = useState(0)
+  const [tick, setTick] = useState(0);
 
   const increaseTick = useCallback(() => {
-    setTick(tick + 1)
-  }, [tick])
+    setTick(tick + 1);
+  }, [tick]);
 
-  const getAllOrders = useCallback(async (
-    limit = 200,
-    offset = 0
-  ) => {
+  const getAllOrders = useCallback(async (limit = 200, offset = 0) => {
+    let result = [];
 
-    let result = []
+    const { data } = await axios.get(
+      `${API_BASE}/orders?limit=${limit}&offset=${offset}`
+    );
 
-    const { data } = await axios.get(`${API_BASE}/orders?limit=${limit}&offset=${offset}`)
-
-    const { orders } = data
-
+    const { orders } = data;
 
     if (orders) {
-      result = orders.filter(item => (!item.fulfilled) && (item.confirmed) && (!item.canceled))
+      result = orders.filter(
+        (item) => !item.fulfilled && item.confirmed && !item.canceled
+      );
       result = result.sort(function (a, b) {
         return b.orderId - a.orderId;
       });
     }
 
-    return result
-  }, [])
+    return result;
+  }, []);
 
   const getAccountOrders = useCallback(async () => {
+    let result = [];
 
-    let result = []
+    const { data } = await axios.get(`${API_BASE}/orders/owner/${account}`);
 
-    const { data } = await axios.get(`${API_BASE}/orders/owner/${account}`)
-
-    const { orders } = data
+    const { orders } = data;
 
     if (orders) {
       // result = orders.filter(item => (!item.fulfilled) && (item.confirmed) && (!item.canceled) && (item.ownerAddress === account))
-      result = orders
+      result = orders;
       result = result.sort(function (a, b) {
         return a.orderId - b.orderId;
       });
     }
 
-    return result
-  }, [account])
+    return result;
+  }, [account]);
 
-  const getTopSellers = useCallback(async () => {
+  const getTopSellers = useCallback(async (limitNum) => {
+    const { data } = await axios.get(
+      `${API_BASE}/users?chain=80001,42&limit=${limitNum}`
+    );
 
-    const { data } = await axios.get(`${API_BASE}/users?chain=80001,42`)
+    const { users } = data;
 
-    const { users } = data
+    return users;
+  }, []);
 
-    return users
-  }, [])
+  const getTopCollections = useCallback(async (limitNum) => {
+    const { data } = await axios.get(
+      `${API_BASE}/collections?chain=80001,42&limit=${limitNum}`
+    );
 
-  const getTopCollections = useCallback(async () => {
-    const { data } = await axios.get(`${API_BASE}/collections?chain=80001,42`)
+    const { collections } = data;
 
-    const { collections } = data 
-
-    return collections
-  }, [])
+    return collections;
+  }, []);
 
   const getOrder = useCallback(async (id) => {
-
-    const { data } = await axios.get(`${API_BASE}/orders/${id}`)
+    const { data } = await axios.get(`${API_BASE}/orders/${id}`);
 
     if (data.status !== "ok") {
-      return
+      return;
     }
 
-    return data.order
-  }, [])
+    return data.order;
+  }, []);
 
   const getMetadata = async (nft) => {
-    let metadata = JSON.parse(nft.metadata)
+    let metadata = JSON.parse(nft.metadata);
 
     // fetch from token uri
     if (!metadata && nft && nft.token_uri) {
-      console.log("no metadata!")
+      console.log("no metadata!");
 
-      let uri = nft.token_uri.replaceAll("000000000000000000000000000000000000000000000000000000000000000", "")
+      let uri = nft.token_uri.replaceAll(
+        "000000000000000000000000000000000000000000000000000000000000000",
+        ""
+      );
 
       if (uri.indexOf("https://") === -1) {
-        uri = `https://${uri}`
+        uri = `https://${uri}`;
       }
 
       if (uri.indexOf("{id}") !== -1) {
-        uri = uri.replaceAll("{id}", nft.token_id)
+        uri = uri.replaceAll("{id}", nft.token_id);
       }
 
       try {
         // proxy
-        const { data } = await axios.get(`https://slijsy3prf.execute-api.ap-southeast-1.amazonaws.com/stage/proxy/${uri}`)
+        const { data } = await axios.get(
+          `https://slijsy3prf.execute-api.ap-southeast-1.amazonaws.com/stage/proxy/${uri}`
+        );
 
         if (data && data.data) {
-          metadata = data.data
-          if (!metadata['image'] && data.data['image_url']) {
-            metadata['image'] = data.data['image_url']
+          metadata = data.data;
+          if (!metadata["image"] && data.data["image_url"]) {
+            metadata["image"] = data.data["image_url"];
           }
         }
-      } catch (e) {
-
-      }
-
+      } catch (e) {}
     }
 
     return {
       ...nft,
       metadata,
-    }
-  }
+    };
+  };
 
-  const createOrder = useCallback(async (values) => {
+  const createOrder = useCallback(
+    async (values) => {
+      if (!account) {
+        throw new Error("Wallet not connected");
+      }
 
-    if (!account) {
-      throw new Error("Wallet not connected")
-    }
+      const { title } = values;
 
-    const { title } = values;
+      const slug = `${title.toLowerCase().replace(/ /g, "-")}-${new Date()
+        .valueOf()
+        .toString()
+        .slice(-6)}`;
 
-    const slug = `${(title.toLowerCase()).replace(/ /g, "-")}-${(new Date().valueOf().toString()).slice(-6)}`
+      console.log("created by : ", account);
 
-    console.log("created by : ", account)
+      const { data } = await axios.post(`${API_BASE}/orders`, {
+        ...values,
+        slug,
+        ownerAddress: account,
+      });
 
-    const { data } = await axios.post(`${API_BASE}/orders`, {
-      ...values,
-      slug,
-      ownerAddress: account
-    })
+      if (data.status === "error") {
+        throw new Error(data.message);
+      }
 
-    if (data.status === "error") {
-      throw new Error(data.message)
-    }
+      return {
+        orderId: data.orderId,
+      };
+    },
+    [account]
+  );
 
-    return {
-      orderId: data.orderId
-    }
-  }, [account])
+  const depositNft = useCallback(
+    async (values) => {
+      if (!account) {
+        throw new Error("Wallet not connected");
+      }
 
-  const depositNft = useCallback(async (values) => {
+      if (
+        NFT_MARKETPLACE.filter((item) => item.chainId === values.chainId)
+          .length === 0
+      ) {
+        throw new Error("Marketplace contract is not available on given chain");
+      }
 
-    if (!account) {
-      throw new Error("Wallet not connected")
-    }
+      if (chainId !== values.chainId) {
+        throw new Error("Invalid chain");
+      }
 
-    if ((NFT_MARKETPLACE.filter(item => item.chainId === values.chainId)).length === 0) {
-      throw new Error("Marketplace contract is not available on given chain")
-    }
+      const { contractAddress } = NFT_MARKETPLACE.find(
+        (item) => item.chainId === values.chainId
+      );
 
-    if (chainId !== values.chainId) {
-      throw new Error("Invalid chain")
-    }
+      const contract = new ethers.Contract(
+        contractAddress,
+        MarketplaceABI,
+        library.getSigner()
+      );
 
-    const { contractAddress } = NFT_MARKETPLACE.find(item => item.chainId === values.chainId)
+      const nftContract = new ethers.Contract(
+        values.baseAssetAddress,
+        NFTABI,
+        library.getSigner()
+      );
 
-    const contract = new ethers.Contract(contractAddress, MarketplaceABI, library.getSigner())
+      if (
+        (await nftContract.isApprovedForAll(account, contractAddress)) === false
+      ) {
+        const tx = await nftContract.setApprovalForAll(contractAddress, true);
+        await tx.wait();
+      }
 
-    const nftContract = new ethers.Contract(values.baseAssetAddress, NFTABI, library.getSigner())
+      // only same chain
 
-    if (await nftContract.isApprovedForAll(account, contractAddress) === false) {
-      const tx = await nftContract.setApprovalForAll(contractAddress, true)
-      await tx.wait()
-    }
+      const leaves = values.barterList
+        .filter((item) => item.chainId === values.chainId)
+        .map((item) =>
+          ethers.utils.keccak256(
+            ethers.utils.solidityPack(
+              ["address", "uint256"],
+              [item.assetAddress, item.assetTokenIdOrAmount]
+            )
+          )
+        );
+      console.log(
+        "leaves --> ",
+        leaves,
+        values.barterList.filter((item) => item.chainId === values.chainId)
+      );
 
-    // only same chain
+      let tree;
+      let hexRoot;
 
-    const leaves = values.barterList.filter(item => item.chainId === values.chainId).map(item => ethers.utils.keccak256(ethers.utils.solidityPack(["address", "uint256"], [item.assetAddress, item.assetTokenIdOrAmount])))
-    console.log("leaves --> ", leaves, values.barterList.filter(item => item.chainId === values.chainId))
+      if (leaves.length > 0) {
+        tree = new MerkleTree(leaves, keccak256, { sortPairs: true });
 
-    let tree
-    let hexRoot
+        hexRoot = tree.getHexRoot();
+      } else {
+        hexRoot = ethers.utils.formatBytes32String("");
+      }
 
-    if (leaves.length > 0) {
-      tree = new MerkleTree(leaves, keccak256, { sortPairs: true })
+      return await contract.create(
+        values.orderId,
+        values.baseAssetAddress,
+        values.baseAssetTokenId,
+        values.baseAssetIs1155,
+        hexRoot
+      );
+    },
+    [account, chainId, library]
+  );
 
-      hexRoot = tree.getHexRoot()
-    } else {
-      hexRoot = ethers.utils.formatBytes32String("")
-    }
+  const signMessage = useCallback(
+    async (message) => {
+      return {
+        message,
+        signature: await library.getSigner().signMessage(message),
+      };
+    },
+    [account, library]
+  );
 
-    return await contract.create(
-      values.orderId,
-      values.baseAssetAddress,
-      values.baseAssetTokenId,
-      values.baseAssetIs1155,
-      hexRoot
-    )
+  const confirmOrder = useCallback(
+    async ({ orderId, message, signature }) => {
+      if (!account) {
+        throw new Error("Wallet not connected");
+      }
 
-  }, [account, chainId, library])
+      const { data } = await axios.post(`${API_BASE}/orders/confirm`, {
+        orderId,
+        message,
+        signature,
+      });
 
-  const signMessage = useCallback(async (message) => {
-    return {
-      message,
-      signature: await library.getSigner().signMessage(message)
-    }
-  }, [account, library])
+      if (data.status === "error") {
+        throw new Error(data.message);
+      }
+    },
+    [account]
+  );
 
-  const confirmOrder = useCallback(async ({
-    orderId,
-    message,
-    signature
-  }) => {
-
-    if (!account) {
-      throw new Error("Wallet not connected")
-    }
-
-    const { data } = await axios.post(`${API_BASE}/orders/confirm`, {
-      orderId,
-      message,
-      signature
-    })
-
-    if (data.status === "error") {
-      throw new Error(data.message)
-    }
-
-  }, [account])
-
-  const resolveMetadata = async ({
-    assetAddress,
-    tokenId,
-    chainId
-  }) => {
-
+  const resolveMetadata = async ({ assetAddress, tokenId, chainId }) => {
     const options = {
       address: `${assetAddress}`,
       token_id: `${tokenId}`,
@@ -263,172 +285,230 @@ const useOrder = () => {
     };
 
     try {
-      const { data } = await axios.get(`${API_BASE}/nft/metadata/${assetAddress}/${tokenId}/0x${chainId.toString(16)}`)
+      const { data } = await axios.get(
+        `${API_BASE}/nft/metadata/${assetAddress}/${tokenId}/0x${chainId.toString(
+          16
+        )}`
+      );
 
       if (data && data.metadata) {
-        return data
+        return data;
       }
-    } catch (e) {
-
-    }
+    } catch (e) {}
     const tokenIdMetadata = await Web3Api.token.getTokenIdMetadata(options);
-    return await getMetadata(tokenIdMetadata)
-  }
+    return await getMetadata(tokenIdMetadata);
+  };
 
-  const resolveStatus = async ({
-    orderId,
-    chainId
-  }) => {
+  const resolveStatus = async ({ orderId, chainId }) => {
+    const providers = getProviders([42, 80001, 97, 43113]);
 
-    const providers = getProviders([42, 80001, 97, 43113])
+    const { provider } = providers.find((item) => item.chainId === chainId);
 
-    const { provider } = providers.find(item => item.chainId === chainId)
+    const { contractAddress } = NFT_MARKETPLACE.find(
+      (item) => item.chainId === chainId
+    );
 
-    const { contractAddress } = NFT_MARKETPLACE.find(item => item.chainId === chainId)
+    const marketplaceContract = new ethers.Contract(
+      contractAddress,
+      MarketplaceABI,
+      provider
+    );
 
-    const marketplaceContract = new ethers.Contract(contractAddress, MarketplaceABI, provider)
-
-    const result = await marketplaceContract.orders(orderId)
+    const result = await marketplaceContract.orders(orderId);
 
     if (result["canceled"] === true) {
-      return 3
+      return 3;
     }
 
     if (result["ended"] === true) {
-      return 2
+      return 2;
     }
 
     if (result["active"] === true) {
-      return 1
+      return 1;
     }
 
-    return 0
-  }
+    return 0;
+  };
 
-  const swap = useCallback(async (order, tokenIndex) => {
-
-    if (!account) {
-      throw new Error("Wallet not connected")
-    }
-
-    if ((NFT_MARKETPLACE.filter(item => item.chainId === order.chainId)).length === 0) {
-      throw new Error("Marketplace contract is not available on given chain")
-    }
-
-    const token = order.barterList[tokenIndex]
-
-    if (chainId !== order.chainId) {
-      throw new Error("Invalid chain")
-    }
-
-    const { contractAddress } = NFT_MARKETPLACE.find(item => item.chainId === order.chainId)
-
-    const contract = new ethers.Contract(contractAddress, MarketplaceABI, library.getSigner())
-
-    if (token.tokenType === 0) {
-      // erc20
-      const tokenContract = new ethers.Contract(token.assetAddress, ERC20ABI, library.getSigner())
-
-      if ((await tokenContract.allowance(account, contractAddress)).toString() === "0") {
-        const tx = await tokenContract.approve(contractAddress, ethers.constants.MaxUint256)
-        await tx.wait()
+  const swap = useCallback(
+    async (order, tokenIndex) => {
+      if (!account) {
+        throw new Error("Wallet not connected");
       }
 
-    } else {
-      // erc721 / 1155
-      const nftContract = new ethers.Contract(token.assetAddress, NFTABI, library.getSigner())
-
-      if (await nftContract.isApprovedForAll(account, contractAddress) === false) {
-        const tx = await nftContract.setApprovalForAll(contractAddress, true)
-        await tx.wait()
+      if (
+        NFT_MARKETPLACE.filter((item) => item.chainId === order.chainId)
+          .length === 0
+      ) {
+        throw new Error("Marketplace contract is not available on given chain");
       }
 
-    }
+      const token = order.barterList[tokenIndex];
 
-    const leaves = order.barterList.filter(item => item.chainId === chainId).map(item => ethers.utils.keccak256(ethers.utils.solidityPack(["address", "uint256"], [item.assetAddress, item.assetTokenIdOrAmount])))
-    const tree = new MerkleTree(leaves, keccak256, { sortPairs: true })
+      if (chainId !== order.chainId) {
+        throw new Error("Invalid chain");
+      }
 
-    const proof = tree.getHexProof(ethers.utils.keccak256(ethers.utils.solidityPack(["address", "uint256"], [token.assetAddress, token.assetTokenIdOrAmount])))
+      const { contractAddress } = NFT_MARKETPLACE.find(
+        (item) => item.chainId === order.chainId
+      );
 
-    return await contract.swap(order.orderId, token.assetAddress, token.assetTokenIdOrAmount, token.tokenType, proof)
-  }, [account, chainId, library])
+      const contract = new ethers.Contract(
+        contractAddress,
+        MarketplaceABI,
+        library.getSigner()
+      );
 
+      if (token.tokenType === 0) {
+        // erc20
+        const tokenContract = new ethers.Contract(
+          token.assetAddress,
+          ERC20ABI,
+          library.getSigner()
+        );
 
-  const generateRelayMessages = async () => {
+        if (
+          (
+            await tokenContract.allowance(account, contractAddress)
+          ).toString() === "0"
+        ) {
+          const tx = await tokenContract.approve(
+            contractAddress,
+            ethers.constants.MaxUint256
+          );
+          await tx.wait();
+        }
+      } else {
+        // erc721 / 1155
+        const nftContract = new ethers.Contract(
+          token.assetAddress,
+          NFTABI,
+          library.getSigner()
+        );
 
-    const { data } = await axios.get(`${API_BASE}/orders`)
-    const { orders } = data
-
-    const messages = orders.filter(item => ((item.confirmed) && (!item.fulfilled) && (!item.canceled))).reduce((output, item) => {
-
-      const { barterList, chainId, orderId } = item
-
-      if (barterList && chainId && barterList.length > 0) {
-        for (let item of barterList) {
-          // filter non-cross-chain items
-          if (item.chainId !== chainId) {
-            output.push({
-              orderId,
-              chainId: item.chainId,
-              assetAddress: item.assetAddress,
-              assetTokenIdOrAmount: item.assetTokenIdOrAmount
-            })
-          }
+        if (
+          (await nftContract.isApprovedForAll(account, contractAddress)) ===
+          false
+        ) {
+          const tx = await nftContract.setApprovalForAll(contractAddress, true);
+          await tx.wait();
         }
       }
 
-      return output
-    }, [])
+      const leaves = order.barterList
+        .filter((item) => item.chainId === chainId)
+        .map((item) =>
+          ethers.utils.keccak256(
+            ethers.utils.solidityPack(
+              ["address", "uint256"],
+              [item.assetAddress, item.assetTokenIdOrAmount]
+            )
+          )
+        );
+      const tree = new MerkleTree(leaves, keccak256, { sortPairs: true });
 
+      const proof = tree.getHexProof(
+        ethers.utils.keccak256(
+          ethers.utils.solidityPack(
+            ["address", "uint256"],
+            [token.assetAddress, token.assetTokenIdOrAmount]
+          )
+        )
+      );
 
-    return messages
-  }
+      return await contract.swap(
+        order.orderId,
+        token.assetAddress,
+        token.assetTokenIdOrAmount,
+        token.tokenType,
+        proof
+      );
+    },
+    [account, chainId, library]
+  );
+
+  const generateRelayMessages = async () => {
+    const { data } = await axios.get(`${API_BASE}/orders`);
+    const { orders } = data;
+
+    const messages = orders
+      .filter((item) => item.confirmed && !item.fulfilled && !item.canceled)
+      .reduce((output, item) => {
+        const { barterList, chainId, orderId } = item;
+
+        if (barterList && chainId && barterList.length > 0) {
+          for (let item of barterList) {
+            // filter non-cross-chain items
+            if (item.chainId !== chainId) {
+              output.push({
+                orderId,
+                chainId: item.chainId,
+                assetAddress: item.assetAddress,
+                assetTokenIdOrAmount: item.assetTokenIdOrAmount,
+              });
+            }
+          }
+        }
+
+        return output;
+      }, []);
+
+    return messages;
+  };
 
   const generateValidatorMessages = async () => {
+    const { data } = await axios.get(`${API_BASE}/orders`);
+    const { orders } = data;
 
-    const { data } = await axios.get(`${API_BASE}/orders`)
-    const { orders } = data
+    const relayMessages = await generateRelayMessages();
 
-    const relayMessages = await generateRelayMessages()
+    let claims = [];
+    let checks = [];
 
-    let claims = []
-    let checks = []
-
-    const providers = getProviders([42, 80001, 97, 43113])
+    const providers = getProviders([42, 80001, 97, 43113]);
 
     // find the claim result
     for (let message of relayMessages) {
-
-      const { ownerAddress, chainId, orderId } = orders.find(item => item.orderId === message.orderId)
+      const { ownerAddress, chainId, orderId } = orders.find(
+        (item) => item.orderId === message.orderId
+      );
 
       // to prevent unnesssary checks
-      const check = checks.find(item => item.orderId === orderId && item.chainId === message.chainId)
+      const check = checks.find(
+        (item) => item.orderId === orderId && item.chainId === message.chainId
+      );
 
       if (!check) {
         checks.push({
           chainId: message.chainId,
-          orderId
-        })
+          orderId,
+        });
 
-        const row = providers.find(item => item.chainId === message.chainId)
+        const row = providers.find((item) => item.chainId === message.chainId);
 
         if (row && row.provider) {
+          const { provider } = row;
+          const { contractAddress } = NFT_MARKETPLACE.find(
+            (item) => item.chainId === message.chainId
+          );
 
-          const { provider } = row
-          const { contractAddress } = NFT_MARKETPLACE.find(item => item.chainId === message.chainId)
+          const marketplaceContract = new ethers.Contract(
+            contractAddress,
+            MarketplaceABI,
+            provider
+          );
 
-          const marketplaceContract = new ethers.Contract(contractAddress, MarketplaceABI, provider)
+          const result = await marketplaceContract.partialOrders(orderId);
 
-          const result = await marketplaceContract.partialOrders(orderId)
-
-          if (result['active']) {
+          if (result["active"]) {
             // Buyer
             claims.push({
               orderId: message.orderId,
               chainId,
-              claimerAddress: result['buyer'],
-              isOrigin: true
-            })
+              claimerAddress: result["buyer"],
+              isOrigin: true,
+            });
 
             // Seller
             // claims.push({
@@ -440,159 +520,253 @@ const useOrder = () => {
           }
         }
       }
-
     }
 
     // remove duplicates
     claims = claims.reduce((output, item) => {
-      const existing = output.find(x => x.hash === (ethers.utils.hashMessage(JSON.stringify(item))))
+      const existing = output.find(
+        (x) => x.hash === ethers.utils.hashMessage(JSON.stringify(item))
+      );
       if (!existing) {
         output.push({
           ...item,
-          hash: ethers.utils.hashMessage(JSON.stringify(item))
-        })
+          hash: ethers.utils.hashMessage(JSON.stringify(item)),
+        });
       }
-      return output
-    }, [])
+      return output;
+    }, []);
 
-    console.log("Total claims : ", claims.length)
+    console.log("Total claims : ", claims.length);
 
-    return claims
-  }
+    return claims;
+  };
 
-  const partialSwap = useCallback(async (order, token) => {
+  const partialSwap = useCallback(
+    async (order, token) => {
+      console.log("partial swap  ", order.orderId, token, chainId);
 
-    console.log("partial swap  ", order.orderId, token, chainId)
-
-    if (!account) {
-      throw new Error("Wallet not connected")
-    }
-
-    if ((NFT_MARKETPLACE.filter(item => item.chainId === token.chainId)).length === 0) {
-      throw new Error("Marketplace contract is not available on given chain")
-    }
-
-    if (chainId !== token.chainId) {
-      throw new Error("Invalid chain")
-    }
-
-    const { contractAddress } = NFT_MARKETPLACE.find(item => item.chainId === token.chainId)
-
-    const contract = new ethers.Contract(contractAddress, MarketplaceABI, library.getSigner())
-
-    if (token.tokenType === 0) {
-      // erc20
-      const tokenContract = new ethers.Contract(token.assetAddress, ERC20ABI, library.getSigner())
-
-      if ((await tokenContract.allowance(account, contractAddress)).toString() === "0") {
-        const tx = await tokenContract.approve(contractAddress, ethers.constants.MaxUint256)
-        await tx.wait()
+      if (!account) {
+        throw new Error("Wallet not connected");
       }
 
-    } else {
-      // erc721 / 1155
-      const nftContract = new ethers.Contract(token.assetAddress, NFTABI, library.getSigner())
-
-      if (await nftContract.isApprovedForAll(account, contractAddress) === false) {
-        const tx = await nftContract.setApprovalForAll(contractAddress, true)
-        await tx.wait()
+      if (
+        NFT_MARKETPLACE.filter((item) => item.chainId === token.chainId)
+          .length === 0
+      ) {
+        throw new Error("Marketplace contract is not available on given chain");
       }
 
-    }
+      if (chainId !== token.chainId) {
+        throw new Error("Invalid chain");
+      }
 
-    const currentData = await contract.partialOrders(order.orderId)
+      const { contractAddress } = NFT_MARKETPLACE.find(
+        (item) => item.chainId === token.chainId
+      );
 
-    console.log("current buyer --> ", currentData['buyer'])
+      const contract = new ethers.Contract(
+        contractAddress,
+        MarketplaceABI,
+        library.getSigner()
+      );
 
-    if (currentData['buyer'] !== account) {
+      if (token.tokenType === 0) {
+        // erc20
+        const tokenContract = new ethers.Contract(
+          token.assetAddress,
+          ERC20ABI,
+          library.getSigner()
+        );
 
-      const messages = await generateRelayMessages()
+        if (
+          (
+            await tokenContract.allowance(account, contractAddress)
+          ).toString() === "0"
+        ) {
+          const tx = await tokenContract.approve(
+            contractAddress,
+            ethers.constants.MaxUint256
+          );
+          await tx.wait();
+        }
+      } else {
+        // erc721 / 1155
+        const nftContract = new ethers.Contract(
+          token.assetAddress,
+          NFTABI,
+          library.getSigner()
+        );
 
-      console.log("messages --> ", messages)
+        if (
+          (await nftContract.isApprovedForAll(account, contractAddress)) ===
+          false
+        ) {
+          const tx = await nftContract.setApprovalForAll(contractAddress, true);
+          await tx.wait();
+        }
+      }
 
-      const leaves = messages.map(({ orderId, chainId, assetAddress, assetTokenIdOrAmount }) => ethers.utils.keccak256(ethers.utils.solidityPack(["uint256", "uint256", "address", "uint256"], [orderId, chainId, assetAddress, assetTokenIdOrAmount]))) // Order ID, Chain ID, Asset Address, Token ID
-      const tree = new MerkleTree(leaves, keccak256, { sortPairs: true })
+      const currentData = await contract.partialOrders(order.orderId);
 
-      const proof = tree.getHexProof(ethers.utils.keccak256(ethers.utils.solidityPack(["uint256", "uint256", "address", "uint256"], [order.orderId, token.chainId, token.assetAddress, token.assetTokenIdOrAmount])))
+      console.log("current buyer --> ", currentData["buyer"]);
 
-      const tx = await contract.partialSwap(order.orderId, token.assetAddress, token.assetTokenIdOrAmount, token.tokenType, proof)
-      await tx.wait()
+      if (currentData["buyer"] !== account) {
+        const messages = await generateRelayMessages();
 
-    }
+        console.log("messages --> ", messages);
 
+        const leaves = messages.map(
+          ({ orderId, chainId, assetAddress, assetTokenIdOrAmount }) =>
+            ethers.utils.keccak256(
+              ethers.utils.solidityPack(
+                ["uint256", "uint256", "address", "uint256"],
+                [orderId, chainId, assetAddress, assetTokenIdOrAmount]
+              )
+            )
+        ); // Order ID, Chain ID, Asset Address, Token ID
+        const tree = new MerkleTree(leaves, keccak256, { sortPairs: true });
 
-  }, [account, chainId, library])
+        const proof = tree.getHexProof(
+          ethers.utils.keccak256(
+            ethers.utils.solidityPack(
+              ["uint256", "uint256", "address", "uint256"],
+              [
+                order.orderId,
+                token.chainId,
+                token.assetAddress,
+                token.assetTokenIdOrAmount,
+              ]
+            )
+          )
+        );
 
-  const generateClaimProof = useCallback(async (order) => {
+        const tx = await contract.partialSwap(
+          order.orderId,
+          token.assetAddress,
+          token.assetTokenIdOrAmount,
+          token.tokenType,
+          proof
+        );
+        await tx.wait();
+      }
+    },
+    [account, chainId, library]
+  );
 
-    const messages = await generateValidatorMessages()
+  const generateClaimProof = useCallback(
+    async (order) => {
+      const messages = await generateValidatorMessages();
 
-    console.log("validator messages length : ", messages.length, messages)
+      console.log("validator messages length : ", messages.length, messages);
 
-    const leaves = messages.map(({ orderId, chainId, claimerAddress, isOrigin }) => ethers.utils.keccak256(ethers.utils.solidityPack(["uint256", "uint256", "address", "bool"], [orderId, chainId, claimerAddress, isOrigin]))) // Order ID, Chain ID, Claimer Address, Is Origin Chain
-    
-    const tree = new MerkleTree(leaves, keccak256, { sortPairs: true })
+      const leaves = messages.map(
+        ({ orderId, chainId, claimerAddress, isOrigin }) =>
+          ethers.utils.keccak256(
+            ethers.utils.solidityPack(
+              ["uint256", "uint256", "address", "bool"],
+              [orderId, chainId, claimerAddress, isOrigin]
+            )
+          )
+      ); // Order ID, Chain ID, Claimer Address, Is Origin Chain
 
-    const proof = tree.getHexProof(ethers.utils.keccak256(ethers.utils.solidityPack(["uint256", "uint256", "address", "bool"], [order.orderId, order.chainId, account, true])))
+      const tree = new MerkleTree(leaves, keccak256, { sortPairs: true });
 
-    console.log("claim proof : ", proof)
+      const proof = tree.getHexProof(
+        ethers.utils.keccak256(
+          ethers.utils.solidityPack(
+            ["uint256", "uint256", "address", "bool"],
+            [order.orderId, order.chainId, account, true]
+          )
+        )
+      );
 
-    return proof
-  }, [account])
+      console.log("claim proof : ", proof);
 
-  const eligibleToClaim = useCallback(async (order, proof) => {
+      return proof;
+    },
+    [account]
+  );
 
-    console.log("checking  ", order.orderId, chainId)
+  const eligibleToClaim = useCallback(
+    async (order, proof) => {
+      console.log("checking  ", order.orderId, chainId);
 
-    if (!account) {
-      return
-    }
+      if (!account) {
+        return;
+      }
 
-    if ((NFT_MARKETPLACE.filter(item => item.chainId === order.chainId)).length === 0) {
-      return
-    }
+      if (
+        NFT_MARKETPLACE.filter((item) => item.chainId === order.chainId)
+          .length === 0
+      ) {
+        return;
+      }
 
-    const providers = getProviders([42, 80001, 97, 43113])
+      const providers = getProviders([42, 80001, 97, 43113]);
 
-    const { provider } = providers.find(item => item.chainId === order.chainId)
-    const { contractAddress } = NFT_MARKETPLACE.find(item => item.chainId === order.chainId)
+      const { provider } = providers.find(
+        (item) => item.chainId === order.chainId
+      );
+      const { contractAddress } = NFT_MARKETPLACE.find(
+        (item) => item.chainId === order.chainId
+      );
 
-    const contract = new ethers.Contract(contractAddress, MarketplaceABI, provider)
+      const contract = new ethers.Contract(
+        contractAddress,
+        MarketplaceABI,
+        provider
+      );
 
-    const output = await contract.eligibleToClaim(order.orderId, account, true, proof)
-    return output
+      const output = await contract.eligibleToClaim(
+        order.orderId,
+        account,
+        true,
+        proof
+      );
+      return output;
+    },
+    [account, chainId]
+  );
 
-  }, [account, chainId])
+  const claim = useCallback(
+    async (order, token) => {
+      console.log("claiming  ", order.orderId, token, chainId);
 
-  const claim = useCallback(async (order, token) => {
+      if (!account) {
+        throw new Error("Wallet not connected");
+      }
 
-    console.log("claiming  ", order.orderId, token, chainId)
+      if (
+        NFT_MARKETPLACE.filter((item) => item.chainId === order.chainId)
+          .length === 0
+      ) {
+        throw new Error("Marketplace contract is not available on given chain");
+      }
 
-    if (!account) {
-      throw new Error("Wallet not connected")
-    }
+      if (chainId !== order.chainId) {
+        throw new Error("Invalid chain");
+      }
 
-    if ((NFT_MARKETPLACE.filter(item => item.chainId === order.chainId)).length === 0) {
-      throw new Error("Marketplace contract is not available on given chain")
-    }
+      const { contractAddress } = NFT_MARKETPLACE.find(
+        (item) => item.chainId === order.chainId
+      );
 
-    if (chainId !== order.chainId) {
-      throw new Error("Invalid chain")
-    }
+      const contract = new ethers.Contract(
+        contractAddress,
+        MarketplaceABI,
+        library.getSigner()
+      );
 
-    const { contractAddress } = NFT_MARKETPLACE.find(item => item.chainId === order.chainId)
+      const proof = await generateClaimProof(order);
 
-    const contract = new ethers.Contract(contractAddress, MarketplaceABI, library.getSigner())
+      console.log("proof --> ", proof);
 
-    const proof = await generateClaimProof(order)
+      const tx = await contract.claim(order.orderId, true, proof);
 
-    console.log("proof --> ", proof)
-
-    const tx = await contract.claim(order.orderId, true, proof)
-
-    return await tx.wait()
-
-  }, [account, chainId, library])
+      return await tx.wait();
+    },
+    [account, chainId, library]
+  );
 
   const getOrdersByCollection = useCallback(async (address) => {
     const { data } = await axios.get(
@@ -622,8 +796,7 @@ const useOrder = () => {
       return "Unknown";
     }
 
-    return data.nickname || "Unknown"
-
+    return data.nickname || "Unknown";
   }, []);
 
   return {
@@ -646,8 +819,8 @@ const useOrder = () => {
     eligibleToClaim,
     generateClaimProof,
     getTopSellers,
-    getTopCollections
-  }
-}
+    getTopCollections,
+  };
+};
 
-export default useOrder
+export default useOrder;
