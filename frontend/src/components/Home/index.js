@@ -7,7 +7,7 @@ const Home = () => {
   return (
     <>
       <Jumbotron />
-      {/* <RankBoard /> */}
+      <RankBoard />
       <Lists />
        
     </>

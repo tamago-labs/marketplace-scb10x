@@ -15,11 +15,14 @@ const ListContainer = styled.div`
   justify-content: center;
 `;
 const NftNameBoard = styled.div`
-  background: #ffff;
+background: rgb(34,193,195);
+background: linear-gradient(0deg, rgba(34,193,195,1) 0%, rgba(253,187,45,1) 100%);
   color: #7a0bc0;
-  border-radius: 20px;
-  padding: 10px;
-  height: 100%;
+  border-radius: 12px;
+  padding: 2rem 1rem;
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
 `;
 const RoundImg = styled.img`
   display: block;
@@ -33,6 +36,7 @@ const RoundImg = styled.img`
 const BoardDetail = styled.div`
   text-align: center;
   padding: 0px 15px;
+  width: 150px;
 
   h6 {
     font-weight: 600;
@@ -42,53 +46,64 @@ const BoardDetail = styled.div`
   }
 `;
 
+const Container = styled.div.attrs(() => ({ className: "container" }))`
+  margin-top: 1rem;
+  margin-bottom: 2rem; 
+`
+
+const SellerName = styled.div`
+  margin-left: auto;
+  margin-right: auto;
+  font-size: 20px; 
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+`
+
 /** CONSTANT */
 const MAX_ITEMS = 4;
 
 const SortByOwner = () => {
   const [max, setMax] = useState(MAX_ITEMS);
-  const [orders, setOrders] = useState([]);
-  const [data, setData] = useState();
+  const [orders, setOrders] = useState([]); 
   const [sellerName, setSellerName] = useState("");
-  const { getOrdersByOwner, resolveMetadata, getOwnerName } = useOrder();
-  let { ownerAddress } = useParams();
+  const { getOrdersByOwner, getOwnerName } = useOrder();
+  const { ownerAddress } = useParams();
 
   useEffect(() => {
     ownerAddress && getOrdersByOwner(ownerAddress).then(setOrders);
-  }, [ownerAddress, getOrdersByOwner]);
+    ownerAddress && getOwnerName(ownerAddress).then(setSellerName)
+  }, [ownerAddress]);
 
-  useEffect(() => {
-    if (orders.length !== 0) {
-      resolveMetadata({
-        assetAddress: orders[0].baseAssetAddress,
-        tokenId: orders[0].baseAssetTokenId,
-        chainId: orders[0].chainId,
-      }).then(setData);
+  const collections = useMemo(() => {
+
+    if (orders && orders.length > 0) {
+      return orders.reduce(( arr, item ) => {
+        if (arr.indexOf(item.baseAssetAddress) === -1) {
+          arr.push(item.baseAssetAddress)
+        }
+        return arr
+      },[])
     }
-    const fetchOwnerName = async () => {
-      const name = await getOwnerName(orders[0].ownerAddress);
-      setSellerName(name);
-    };
-    fetchOwnerName();
-  }, [orders, resolveMetadata]);
+    return []
+
+  },[orders])
 
   return (
-    <div style={{ marginTop: 32, paddingBottom: 32 }} className="container">
+    <Container>
       <div>
         <NftNameBoard>
           <div style={{ textAlign: "center" }}>
             <RoundImg src={BlankProfile} />
 
-            {data ? (
-              <p>{sellerName}</p>
+            {sellerName ? (
+              <SellerName>@{sellerName}</SellerName>
             ) : (
-              <Skeleton height="10px" width="20px" />
+              <Skeleton style={{marginTop: "0.5rem", marginBottom :"0.5rem"}} height="20px" width="80px" />
             )}
           </div>
           <div
             style={{
               position: "relative",
-              left: "30px",
               display: "flex",
               justifyContent: "center",
             }}
@@ -98,13 +113,17 @@ const SortByOwner = () => {
               <p>{orders.length}</p>
             </BoardDetail>
             <BoardDetail>
+              <h6>Collections</h6>
+              <p>{collections.length}</p>
+            </BoardDetail>
+            {/* <BoardDetail>
               <h6>Traded</h6>
               <p>-</p>
             </BoardDetail>
             <BoardDetail>
               <h6>Fulfilled</h6>
               <p>-</p>
-            </BoardDetail>
+            </BoardDetail> */}
           </div>
         </NftNameBoard>
         <ListContainer>
@@ -129,7 +148,7 @@ const SortByOwner = () => {
           )}
         </div>
       </div>
-    </div>
+    </Container>
   );
 };
 
