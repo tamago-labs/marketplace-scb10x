@@ -5,6 +5,7 @@ import Blockies from "react-blockies"
 import { Tabs, Tab } from "react-bootstrap"
 import { shortAddress } from "../../helper"
 import General from "./general"
+import DisputeForm from "./disputeForm"
 import Orders from "./orders"
 import ConnectPanel from "./connect"
 
@@ -95,6 +96,12 @@ const AccountDetails = () => {
                   title="Your Orders"
                 >
                   <Orders />
+                </Tab>
+                <Tab
+                  eventKey="disputeForm"
+                  title="Dispute Form"
+                >
+                  <DisputeForm />
                 </Tab>
               </AccountTab>
             </>
