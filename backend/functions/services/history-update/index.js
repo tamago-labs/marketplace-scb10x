@@ -32,11 +32,23 @@ const updateHistory = async () => {
         const collectionDoc = {
           address: order.baseAssetAddress,
           chainId: order.chainId,
+          name: 'Unknown',
           activeOrders: [],
           activeCount: 0,
           fulfilledOrders: [],
           fulfilledCount: 0
         }
+
+        let nft = await db.collection("nfts").where('address', '==', order.baseAssetAddress).get()
+        nft = nft.docs.map((doc) => ({
+          DocID: doc.id,
+          ...doc.data(),
+        }))[0]
+        if (nft) {
+          console.log(nft.metadata.name)
+          collectionDoc.name = nft.metadata.name
+        }
+
         if (order.fulfilled) {
           collectionDoc.fulfilledOrders.push(order.orderId)
           collectionDoc.fulfilledCount = 1
@@ -53,6 +65,18 @@ const updateHistory = async () => {
           ...doc.data(),
         }))[0]
         // console.log(collection)
+
+        // UPDATING COLLECTION NAME, not required in most cases
+        // let nft = await db.collection("nfts").where('address', '==', order.baseAssetAddress).get()
+        // nft = nft.docs.map((doc) => ({
+        //   DocID: doc.id,
+        //   ...doc.data(),
+        // }))[0]
+        // if (nft && collection.name !== nft.metadata.name) {
+        //   console.log(nft.metadata.name)
+        //   await db.collection("collections").doc(collection.DocID).update({ name: nft.metadata.name })
+        // }
+
         if (order.fulfilled) {
           await db.collection("collections").doc(collection.DocID).update({ fulfilledOrders: FieldValue.arrayUnion(order.orderId), fulfilledCount: collection.fulfilledOrders.length })
           await db.collection("collections").doc(collection.DocID).update({ activeOrders: FieldValue.arrayRemove(order.orderId), activeCount: collection.activeOrders.length })
