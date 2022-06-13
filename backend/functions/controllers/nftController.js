@@ -35,17 +35,23 @@ exports.getMetadata = async (req, res, next) => {
         token_id: id,
         chain: chain,
       };
-      console.log("datatype of token_id:", typeof id)
-      const tokenIdMetadata = await Moralis.Web3API.token.getTokenIdMetadata(options);
-      console.log({ tokenIdMetadata })
-      if (!tokenIdMetadata.metadata) {
-        return res.status(400).json({ message: "the API returns metadata as null" })
+      let tokenIdMetadata
+      try {
+        tokenIdMetadata = await Moralis.Web3API.token.getTokenIdMetadata(options);
+        console.log({ tokenIdMetadata })
+        if (!tokenIdMetadata.metadata) {
+          return res.status(424).json({ message: "Moralis API returns no metadata" })
+        }
+        const result = await getMetadata(tokenIdMetadata)
+        const metadata = result.metadata
+        // console.log("saving nft to firestore database...")
+        await db.collection('nfts').add({ address, id, chain, metadata })
+        return res.status(200).json({ status: "ok", metadata })
+      } catch (error) {
+        return res.status(424).json({ message: "Moralis API could not find metadata" })
       }
-      const result = await getMetadata(tokenIdMetadata)
-      const metadata = result.metadata
-      // console.log("saving nft to firestore database...")
-      await db.collection('nfts').add({ address, id, chain, metadata })
-      return res.status(200).json({ status: "ok", metadata })
+
+
     } else {
       // console.log("fetching metadata from firestore database...")
       let result = []
