@@ -303,7 +303,6 @@ const Faucet = () => {
   const [chain, setChain] = useState(42)
   const [isNFT, setNFT] = useState(true)
 
-
   const onMint = useCallback(async (address, id) => {
 
     if (chain !== chainId) {
