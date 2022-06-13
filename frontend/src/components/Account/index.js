@@ -9,7 +9,7 @@ import Orders from "./orders"
 import ConnectPanel from "./connect"
 
 const Wrapper = styled.div.attrs(() => ({ className: "container" }))`
-  padding-top: 2rem;
+  padding-top: 1rem;
 `
 
 const Avatar = styled.div.attrs(() => ({
@@ -22,12 +22,9 @@ const Avatar = styled.div.attrs(() => ({
 const Address = styled.div`
   margin-left: auto;
   margin-right: auto;
-  font-size: 24px;
-  margin-top: 1rem;
-
-  @media only screen and (max-width: 600px) {
-    font-size: 20px;
-  }
+  font-size: 20px; 
+  margin-top: 0.5rem;
+ 
 `
 
 const AccountTab = styled(Tabs)`
@@ -36,6 +33,14 @@ const AccountTab = styled(Tabs)`
 	}
 `
 
+const AvatarWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  padding: 2rem 1rem;
+  background: rgb(63,94,251);
+  background: radial-gradient(circle, rgba(63,94,251,1) 0%, rgba(252,70,107,1) 100%);
+  border-radius: 12px;
+`
 
 
 const AccountDetails = () => {
@@ -44,37 +49,40 @@ const AccountDetails = () => {
   return (
     <Wrapper>
       <div style={{ display: "flex" }}>
-        <div style={{ width: "800px" , marginLeft : "auto", marginRight : "auto"}}>
+        <div style={{ width: "800px", marginLeft: "auto", marginRight: "auto" }}>
           {!account && (
             <ConnectPanel />
           )}
 
           {account && (
-            <div style={{ display: "flex", flexDirection: "column" }}>
-              <Avatar>
-                <Blockies
-                  className="rounded-pill"
-                  seed={`${account}-${chainId}`}
-                  scale={12}
-                />
-              </Avatar>
-              <Address>{shortAddress(account, 10, -6)}</Address>
-              <button
-                onClick={() => {
-                  deactivate()
-                  window.location.reload()
-                }}
-                style={{
-                  width: "200px",
-                  marginLeft: "auto",
-                  marginRight: "auto",
-                  marginTop: "1rem",
-                  marginBottom: "1rem",
-                }}
-                className="btn btn-secondary rounded-pill btn"
-              >
-                Disconnect
-              </button>
+            <>
+              <AvatarWrapper>
+                <Avatar>
+                  <Blockies
+                    className="rounded-pill"
+                    seed={`${account}-${chainId}`}
+                    scale={10}
+                  />
+                </Avatar>
+                <Address>{shortAddress(account, 10, -6)}</Address>
+                <button
+                  onClick={() => {
+                    deactivate()
+                    window.location.reload()
+                  }}
+                  style={{
+                    width: "200px",
+                    marginLeft: "auto",
+                    marginRight: "auto",
+                    marginTop: "0.5rem",
+                    marginBottom: "1rem",
+                  }}
+                  className="btn btn-secondary rounded-pill btn"
+                >
+                  Disconnect
+                </button>
+              </AvatarWrapper>
+
               <AccountTab defaultActiveKey="orders" className="mt-3 mb-3">
                 {/* <Tab
                   eventKey="general"
@@ -89,7 +97,7 @@ const AccountDetails = () => {
                   <Orders />
                 </Tab>
               </AccountTab>
-            </div>
+            </>
           )}
         </div>
       </div>

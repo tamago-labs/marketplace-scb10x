@@ -168,9 +168,16 @@ function Header() {
 
               <Menu>
                 <Link to="/faucet">
-                  Faucet
+                  Testnet Faucet
                 </Link>
-
+                {` `}|{` `}
+                <Link to="/createOrder">
+                  Create Order
+                </Link>
+                {` `}|{` `}
+                <a target="_blank" href="https://docs.tamago.finance/tamago-finance/multi-chain-marketplace">
+                  Docs
+                </a>
               </Menu>
 
               {/* <!-- Extra Nav --> */}

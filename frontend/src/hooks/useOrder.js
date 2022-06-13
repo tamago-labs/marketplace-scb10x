@@ -76,6 +76,23 @@ const useOrder = () => {
     return result
   }, [account])
 
+  const getTopSellers = useCallback(async () => {
+
+    const { data } = await axios.get(`${API_BASE}/users?chain=80001,42`)
+
+    const { users } = data
+
+    return users
+  }, [])
+
+  const getTopCollections = useCallback(async () => {
+    const { data } = await axios.get(`${API_BASE}/collections?chain=80001,42`)
+
+    const { collections } = data 
+
+    return collections
+  }, [])
+
   const getOrder = useCallback(async (id) => {
 
     const { data } = await axios.get(`${API_BASE}/orders/${id}`)
@@ -620,7 +637,9 @@ const useOrder = () => {
     getMetadata,
     getAccountOrders,
     eligibleToClaim,
-    generateClaimProof
+    generateClaimProof,
+    getTopSellers,
+    getTopCollections
   }
 }
 
