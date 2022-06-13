@@ -1,10 +1,11 @@
 const { db } = require("../../firebase")
-const { ethers } = require("ethers");
 require("dotenv").config();
-const { getProvider } = require("..")
-const { MARKETPLACES } = require("../../constants")
-const { MARKETPLACE_ABI } = require("../../abi");
+// const { ethers } = require("ethers");
+// const { getProvider } = require("..")
+// const { MARKETPLACES } = require("../../constants")
+// const { MARKETPLACE_ABI } = require("../../abi");
 const { FieldValue } = require("firebase-admin/firestore");
+const { getOwnerName } = require("../../utils")
 
 const updateHistory = async () => {
   try {
@@ -91,6 +92,8 @@ const updateHistory = async () => {
       let user = await db.collection("users").where('address', '==', order.ownerAddress).get()
 
       if (user.empty) {
+        const name = await getOwnerName(order.ownerAddress)
+        console.log(name)
         //creating new firestore collection doc
         const collectionDoc = {
           address: order.ownerAddress,
@@ -98,6 +101,7 @@ const updateHistory = async () => {
           activeSellCount: 0,
           sold: [],
           soldCount: 0,
+          name: name,
           // bought: [],
           // boughtCount: 0
         }
@@ -111,11 +115,20 @@ const updateHistory = async () => {
         }
         await db.collection("users").add(collectionDoc)
       } else {
+
+        // UPDATING USER'S NAME, not required in most cases
+        // const name = await getOwnerName(order.ownerAddress)
+        // console.log(name)
+        // if (!user.name || user.name !== name) {
+        //   await db.collection("users").doc(user.DocID).update({ name: name })
+        // }
+
         // updating existing collection doc
         user = user.docs.map((doc) => ({
           DocID: doc.id,
           ...doc.data(),
         }))[0]
+
         if (order.fulfilled) {
           await db.collection("users").doc(user.DocID).update({ sold: FieldValue.arrayUnion(order.orderId), soldCount: user.sold.length })
           await db.collection("users").doc(user.DocID).update({ activeSells: FieldValue.arrayRemove(order.orderId), activeSellCount: user.activeSells.length })
