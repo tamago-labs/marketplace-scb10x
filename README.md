@@ -77,6 +77,13 @@ Mock NFT | 0x27dDF44eC9E32343599F7B939e4c35c034f78076
 Mock USDC | 0x65e38111d8e2561aDC0E2EA1eeA856E6a43dC892
 Mock DAI | 0x553588e084604a2677e10E46ea0a8A8e9D859146
 
+### Offchain Nodes
+
+Type | Address 
+--- | --- 
+Relayer | 0xf101B7cffF01FFF5D038C8ed38ae98dc45b98343
+Validator | 0x361aad4b274cCb5Bcc60316FF8db46C3cc753CCF
+
 ## License
 
 MIT © Tamago Finance
