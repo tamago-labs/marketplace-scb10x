@@ -11,6 +11,14 @@ export const NFT_MARKETPLACE = [
     {
         chainId: 80001,
         contractAddress: "0xf2260B00250c772CB64606dBb88d9544F709308C"
+    },
+    {
+        chainId: 97,
+        contractAddress: "0x576430Ecadbd9729B32a4cA9Fed9F38331273924"
+    },
+    {
+        chainId: 43113,
+        contractAddress: "0x576430Ecadbd9729B32a4cA9Fed9F38331273924"
     }
 ]
 
@@ -139,37 +147,37 @@ export const MOCK_NFT = {
         list: [
             {
                 name: "Fake CryptoKitties NFT",
-                address: "0x27dDF44eC9E32343599F7B939e4c35c034f78076",
+                address: "0xabA544c167443f3feE33Fb49Ee7b1b49594C25F3",
                 tokenId: "7",
                 image: "https://img.cryptokitties.co/0x06012c8cf97bead5deae237070f9587f8e7a266d/7.png"
             },
             {
                 name: "Fake CryptoKitties NFT",
-                address: "0x27dDF44eC9E32343599F7B939e4c35c034f78076",
+                address: "0xabA544c167443f3feE33Fb49Ee7b1b49594C25F3",
                 tokenId: "8",
                 image: "https://img.cryptokitties.co/0x06012c8cf97bead5deae237070f9587f8e7a266d/8.svg"
             },
             {
                 name: "Fake CryptoKitties NFT",
-                address: "0x27dDF44eC9E32343599F7B939e4c35c034f78076",
+                address: "0xabA544c167443f3feE33Fb49Ee7b1b49594C25F3",
                 tokenId: "9",
                 image: "https://img.cryptokitties.co/0x06012c8cf97bead5deae237070f9587f8e7a266d/9.png"
             },
             {
                 name: "Fake CryptoKitties NFT",
-                address: "0x27dDF44eC9E32343599F7B939e4c35c034f78076",
+                address: "0xabA544c167443f3feE33Fb49Ee7b1b49594C25F3",
                 tokenId: "10",
                 image: "https://img.cryptokitties.co/0x06012c8cf97bead5deae237070f9587f8e7a266d/10.png"
             },
             {
                 name: "Fake CryptoKitties NFT",
-                address: "0x27dDF44eC9E32343599F7B939e4c35c034f78076",
+                address: "0xabA544c167443f3feE33Fb49Ee7b1b49594C25F3",
                 tokenId: "11",
                 image: "https://img.cryptokitties.co/0x06012c8cf97bead5deae237070f9587f8e7a266d/11.svg"
             },
             {
                 name: "Fake CryptoKitties NFT",
-                address: "0x27dDF44eC9E32343599F7B939e4c35c034f78076",
+                address: "0xabA544c167443f3feE33Fb49Ee7b1b49594C25F3",
                 tokenId: "12",
                 image: "https://img.cryptokitties.co/0x06012c8cf97bead5deae237070f9587f8e7a266d/12.svg"
             }

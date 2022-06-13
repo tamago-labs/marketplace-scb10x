@@ -119,6 +119,7 @@ const ORDER_STATUS = {
   UNKNOWN: 0,
   NEW: 1,
   SOLD: 2,
+  CANCELED : 3
 };
 
 const OrderDetails = () => {
@@ -292,7 +293,7 @@ const OrderDetails = () => {
 
       {/* CROSSCHAIN SWITCHER */}
 
-      {status !== 1 && (
+      {status === (2 || 3) && (
         <AlertError>
           Please be aware that the order is already fulfilled or canceled
         </AlertError>
