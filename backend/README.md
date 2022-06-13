@@ -81,6 +81,6 @@
 
 \*3 : chain is required in query params, multiple chains can be passed as argument separated by **comma**. This endpoint supports pagination with **offsets** and **limits**.
 
-\*4 : This endpoint supports pagination with **offsets** and **limits**.
+\*4 : This endpoint supports pagination with **offset** and **limit**. eg. "/users?limit=100"
 
 #### Development Starting From SCB10X - May 2022 - Hackathon
