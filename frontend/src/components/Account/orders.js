@@ -277,7 +277,7 @@ const Orders = () => {
             : ""}
         </tbody>
       </OrderTable>
-      <p style={{ marginTop: "1.5rem" }}>You will be receiving the NFT back when cancel the order</p>
+      <p style={{ marginTop: "1.5rem", textAlign : "center" }}>You will be receiving the NFT back when cancel the order</p>
     </Wrapper>
   )
 }
