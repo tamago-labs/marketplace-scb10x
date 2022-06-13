@@ -11,12 +11,12 @@ exports.MARKETPLACES = [
     //     chainId: 1,
     //     contractAddress: "0x00"
     // },
-    // {
-    //     chainId: 56,
-    //     contractAddress: "0x00"
-    // },
-    // {
-    //     chainId: 137,
-    //     contractAddress: "0x00"
-    // },
+    {
+        chainId: 56,
+        contractAddress: "0x0d249716de3bE97a865Ff386Aa8A42428CB97347"
+    },
+    {
+        chainId: 137,
+        contractAddress: "0x6d2Ef00BDcdec6139079A9887C5a0549111215Ea"
+    },
 ]
