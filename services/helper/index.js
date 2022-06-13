@@ -21,6 +21,10 @@ exports.getProviders = (chainIds = []) => {
             url = process.env.KOVAN_RPC_SERVER
         } else if (chainId === 80001) {
             url = process.env.MUMBAI_RPC_SERVER
+        } else if (chainId === 97) {
+            url = process.env.BNB_TESTNET_RPC_SERVER
+        } else if (chainId === 43113) {
+            url = process.env.FUJI_RPC_SERVER
         }
 
         if (!url) {

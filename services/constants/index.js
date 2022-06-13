@@ -11,5 +11,15 @@ exports.NFT_MARKETPLACE = [
         chainId: 80001,
         gatewayAddress: "0x16EE94e3C07B24EbA6067eb9394BA70178aAc4c0",
         marketplaceAddress: "0xf2260B00250c772CB64606dBb88d9544F709308C"
+    },
+    {
+        chainId: 97,
+        gatewayAddress: "0x16EE94e3C07B24EbA6067eb9394BA70178aAc4c0",
+        marketplaceAddress: "0x576430Ecadbd9729B32a4cA9Fed9F38331273924"
+    },
+    {
+        chainId: 43113,
+        gatewayAddress: "0x16EE94e3C07B24EbA6067eb9394BA70178aAc4c0",
+        marketplaceAddress: "0x576430Ecadbd9729B32a4cA9Fed9F38331273924"
     }
 ]

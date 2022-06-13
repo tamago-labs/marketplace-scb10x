@@ -76,13 +76,19 @@ async function run({
 
                         logger.debug("Current root on chain : ", chainId , " is : ", currentRoot)
 
-                        const BASE_GAS = 5 // 5 GWEI
+                        let BASE_GAS = 5 // 5 GWEI
+                        let gasLimit = 100000
+
+                        if (chainId === 43113) {
+                            BASE_GAS = 27
+                            gasLimit = 200000
+                        }
 
                         if (currentRoot !== hexRoot) {
                             const tx = await gatewayContract.updateRelayMessage(hexRoot, {
                                 from: walletAddress,
                                 gasPrice: ethers.utils.parseUnits(`${BASE_GAS * (retries + 1)}`, 'gwei'),
-                                gasLimit: 100000 * (retries + 1)
+                                gasLimit: gasLimit * (retries + 1)
                             })
                             logger.debug("tx on chain : ", chainId ," is being processed...")
                             await tx.wait()
