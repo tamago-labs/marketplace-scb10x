@@ -57,19 +57,19 @@
 
 ## Collections
 
-| HTTP Method | path                        | RequestBody | Response                     | Notes         |
-| ----------- | --------------------------- | ----------- | ---------------------------- | ------------- |
-| GET         | /collections?chain=80001,42 | none        | { "status": "ok", disputes } | See Notes \*3 |
-| GET         | /collections/{address}      | none        | { "status": "ok", disputes } |               |
+| HTTP Method | path                        | RequestBody | Response                        | Notes         |
+| ----------- | --------------------------- | ----------- | ------------------------------- | ------------- |
+| GET         | /collections?chain=80001,42 | none        | { "status": "ok", collections } | See Notes \*3 |
+| GET         | /collections/{address}      | none        | { "status": "ok", collection }  |               |
 
 ---
 
 ## Users
 
-| HTTP Method | path             | RequestBody | Response                     | Notes         |
-| ----------- | ---------------- | ----------- | ---------------------------- | ------------- |
-| GET         | /users/          | none        | { "status": "ok", disputes } | See Notes \*4 |
-| GET         | /users/{address} | none        | { "status": "ok", disputes } |               |
+| HTTP Method | path             | RequestBody | Response                  | Notes         |
+| ----------- | ---------------- | ----------- | ------------------------- | ------------- |
+| GET         | /users/          | none        | { "status": "ok", users } | See Notes \*4 |
+| GET         | /users/{address} | none        | { "status": "ok", user }  |               |
 
 ---
 
