@@ -103,7 +103,7 @@ const NFTCard = ({ order, delay }) => {
   return (
     <BaseAssetCard
       orderId={order && order.orderId}
-      image={data && data.metadata.image}
+      image={data && data.metadata && data.metadata.image}
       chainId={order && order.chainId}
       assetAddress={order && order.baseAssetAddress}
       tokenId={order && order.baseAssetTokenId}
