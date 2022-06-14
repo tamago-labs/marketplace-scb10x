@@ -211,6 +211,8 @@ const To = ({
           <option style={{ color: "black" }} value={56}>BNB Chain</option>
           <option style={{ color: "black" }} value={42}>Kovan Testnet</option>
           <option style={{ color: "black" }} value={80001}>Mumbai Testnet</option>
+          <option style={{ color: "black" }} value={97}>BNB Testnet</option>
+          <option style={{ color: "black" }} value={43113}>Fuji Testnet</option>
         </ChainSelector>
 
         {isNft &&

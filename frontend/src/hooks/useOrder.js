@@ -117,12 +117,19 @@ const useOrder = () => {
         uri = `https://${uri}`
       }
 
+      if (uri.indexOf("{id}") !== -1) {
+        uri = uri.replaceAll("{id}", nft.token_id)
+      }
+
       try {
         // proxy
         const { data } = await axios.get(`https://slijsy3prf.execute-api.ap-southeast-1.amazonaws.com/stage/proxy/${uri}`)
 
         if (data && data.data) {
           metadata = data.data
+          if (!metadata['image'] && data.data['image_url']) {
+            metadata['image'] = data.data['image_url']
+          }
         }
       } catch (e) {
 
@@ -273,7 +280,7 @@ const useOrder = () => {
     chainId
   }) => {
 
-    const providers = getProviders([42, 80001])
+    const providers = getProviders([42, 80001, 97, 43113])
 
     const { provider } = providers.find(item => item.chainId === chainId)
 
@@ -387,7 +394,7 @@ const useOrder = () => {
     let claims = []
     let checks = []
 
-    const providers = getProviders([42, 80001])
+    const providers = getProviders([42, 80001, 97, 43113])
 
     // find the claim result
     for (let message of relayMessages) {
@@ -545,7 +552,7 @@ const useOrder = () => {
       return
     }
 
-    const providers = getProviders([42, 80001])
+    const providers = getProviders([42, 80001, 97, 43113])
 
     const { provider } = providers.find(item => item.chainId === order.chainId)
     const { contractAddress } = NFT_MARKETPLACE.find(item => item.chainId === order.chainId)

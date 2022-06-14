@@ -49,9 +49,9 @@ export const Connectors = [
     connector: walletconnect,
     imgSrc: "../images/wallet-provider/wallet-connect.svg",
   },
-  {
-    name: "Unstoppable Domains",
-    connector: uauth,
-    imgSrc: "../images/wallet-provider/unstopable.jpeg",
-  },
+  // {
+  //   name: "Unstoppable Domains",
+  //   connector: uauth,
+  //   imgSrc: "../images/wallet-provider/unstopable.jpeg",
+  // },
 ]
