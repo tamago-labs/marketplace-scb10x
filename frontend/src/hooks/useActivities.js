@@ -31,12 +31,12 @@ const useActivities = (chainId) => {
                 masterKey: "AdNlpYjZuuiCGzlPaonWrJoGSIB6Scnae2AiNY6B"
             }
         }
-    
+
         throw new Error("Chain isn't supported")
     }
 
     const resolveSwapTable = (chainId) => {
-        switch(chainId) {
+        switch (chainId) {
             case 97:
                 return "bnbTestnetSwap"
             case 42:
@@ -49,7 +49,7 @@ const useActivities = (chainId) => {
     }
 
     const resolveClaimTable = (chainId) => {
-        switch(chainId) {
+        switch (chainId) {
             case 97:
                 return "bnbTestnetClaim"
             case 42:
@@ -74,15 +74,15 @@ const useActivities = (chainId) => {
 
         query.equalTo("orderId", `${orderId}`)
 
-        let results = await query.find(); 
+        let results = await query.find();
 
         for (let i = 0; i < results.length; i++) {
-            const object = results[i]; 
+            const object = results[i];
             result.push({
-                type : "swap",
-                buyer : object.get("fromAddress"),
+                type: "swap",
+                buyer: object.get("fromAddress"),
                 transaction: object.get("transaction_hash"),
-                timestamp : object.get("block_timestamp")
+                timestamp: object.get("block_timestamp")
             })
         }
 
@@ -92,25 +92,78 @@ const useActivities = (chainId) => {
 
         query.equalTo("orderId", `${orderId}`)
 
-        results = await query.find(); 
+        results = await query.find();
 
         for (let i = 0; i < results.length; i++) {
-            const object = results[i]; 
+            const object = results[i];
             result.push({
-                type : "claim",
-                buyer : object.get("fromAddress"),
+                type: "claim",
+                buyer: object.get("fromAddress"),
                 transaction: object.get("transaction_hash"),
-                timestamp : object.get("block_timestamp")
+                timestamp: object.get("block_timestamp")
             })
         }
 
         return result
     }, [chainId])
 
+    const getActivitiesByAccount = useCallback(async (account) => {
 
+
+        let result = []
+
+
+        for (let chainId of [42, 97, 80001, 43113]) {
+            await Moralis.start(generateMoralisParams(chainId));
+
+            // checking swaps events
+            const Monster = Moralis.Object.extend(resolveSwapTable(chainId));
+            let query = new Moralis.Query(Monster);
+            query.equalTo("fromAddress", `${account.toLowerCase()}`)
+
+            let results = await query.find();
+
+            for (let i = 0; i < results.length; i++) {
+                const object = results[i];
+                result.push({
+                    type: "swap",
+                    orderId :  object.get("orderId"),
+                    chainId : chainId,
+                    transaction: object.get("transaction_hash"),
+                    timestamp: object.get("block_timestamp")
+                })
+            }
+ 
+            // checking claim events
+            const Claims = Moralis.Object.extend(resolveClaimTable(chainId));
+            query = new Moralis.Query(Claims);
+
+            query.equalTo("fromAddress", `${account.toLowerCase()}`)
+
+            results = await query.find();
+
+            for (let i = 0; i < results.length; i++) {
+                const object = results[i];
+                result.push({
+                    type: "claim",
+                    orderId :  object.get("orderId"),
+                    chainId : chainId,
+                    transaction: object.get("transaction_hash"),
+                    timestamp: object.get("block_timestamp")
+                })
+            } 
+
+        }
+
+        return result.sort(function (a, b) {
+            return a.orderId - b.orderId;
+          });
+
+    }, [])
 
     return {
-        getActivitiesFromOrder
+        getActivitiesFromOrder,
+        getActivitiesByAccount
     }
 }
 
