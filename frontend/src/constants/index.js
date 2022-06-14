@@ -59,7 +59,15 @@ export const MOCK_NFT = {
                 name: "Mock CloneX",
                 address: "0xf4d331039448182cf140de338177706657df8ce9",
                 tokenId: "0",
+                isERC721: true,
                 image: "https://img.seadn.io/files/394d49b567bb7fea665326f263cc4b5d.png?auto=format&w=600"
+            },
+            {
+                name: "Moon Birds",
+                address: "0x9B13BD06ad29a6f267DDb6d0AbE4c6b1a5862b6A",
+                tokenId: "0",
+                isERC721: true,
+                image: "https://live---metadata-5covpqijaa-uc.a.run.app/images/33"
             }
         ]
     },
@@ -99,7 +107,15 @@ export const MOCK_NFT = {
                 name: "Mock CloneX",
                 address: "0x65e38111d8e2561aDC0E2EA1eeA856E6a43dC892",
                 tokenId: "0",
+                isERC721: true,
                 image: "https://img.seadn.io/files/394d49b567bb7fea665326f263cc4b5d.png?auto=format&w=600"
+            },
+            {
+                name: "Moon Birds",
+                address: "0xe5209A4f622C6eD2C158dcCcdDB69B05f9D0E4E0",
+                tokenId: "0",
+                isERC721: true,
+                image: "https://live---metadata-5covpqijaa-uc.a.run.app/images/33"
             }
         ]
     },
@@ -140,6 +156,20 @@ export const MOCK_NFT = {
                 address: "0x61ad3Fe6B44Bfbbcec39c9FaD566538c894b6471",
                 tokenId: "6",
                 image: "https://img.cryptokitties.co/0x06012c8cf97bead5deae237070f9587f8e7a266d/6.png"
+            },
+            {
+                name: "Moon Birds",
+                address: "0x487f33E1f048159061D059f72a2c165DEc5BCa5c",
+                tokenId: "0",
+                isERC721: true,
+                image: "https://live---metadata-5covpqijaa-uc.a.run.app/images/33"
+            },
+            {
+                name: "Cool Cats",
+                address: "0xe5209A4f622C6eD2C158dcCcdDB69B05f9D0E4E0",
+                tokenId: "0",
+                isERC721: true,
+                image: "https://drive.google.com/uc?id=15YKL56lgYazC8W-2fX4QJRhYajhYYQA6"
             }
         ]
     },
@@ -180,6 +210,20 @@ export const MOCK_NFT = {
                 address: "0xabA544c167443f3feE33Fb49Ee7b1b49594C25F3",
                 tokenId: "12",
                 image: "https://img.cryptokitties.co/0x06012c8cf97bead5deae237070f9587f8e7a266d/12.svg"
+            },
+            {
+                name: "Moon Birds",
+                address: "0x487f33E1f048159061D059f72a2c165DEc5BCa5c",
+                tokenId: "0",
+                isERC721: true,
+                image: "https://live---metadata-5covpqijaa-uc.a.run.app/images/33"
+            },
+            {
+                name: "Cool Cats",
+                address: "0xe5209A4f622C6eD2C158dcCcdDB69B05f9D0E4E0",
+                tokenId: "0",
+                isERC721: true,
+                image: "https://drive.google.com/uc?id=15YKL56lgYazC8W-2fX4QJRhYajhYYQA6"
             }
         ]
     }
