@@ -27,7 +27,7 @@ const RoundedBox = styled.div.attrs(() => ({}))`
   overflow: hidden;
   min-height: 225px;
 
-  @media only screen and (max-width: 600px) {
+  @media only screen and (max-width: 1000px) {
     padding: 1rem 2rem; 
   }
 `
@@ -39,8 +39,16 @@ const WelcomeText = styled.div`
   margin-right: auto;
   text-align: center;
 
-  @media only screen and (max-width: 600px) {
+  @media only screen and (max-width: 1000px) {
+    font-size: 22px;
+  }
+
+  @media only screen and (max-width: 700px) {
     font-size: 16px;
+  }
+
+  @media only screen and (max-width: 500px) {
+    font-size: 14px;
   }
 `;
 
@@ -69,10 +77,33 @@ text-align: center;
 font-size: 14px;
 margin-top: 1rem;
 
-@media only screen and (max-width: 600px) {
+@media only screen and (max-width: 800px) {
   font-size: 12px;
  
 }
+
+@media only screen and (max-width: 500px) {
+  margin-top: 0.2rem;
+  font-size: 11px;
+ 
+}
+`
+
+const DesktopHidden = styled.div`
+  font-size: 14px;
+  display: none;
+  a {
+    color: inherit;
+  }
+  @media only screen and (max-width: 1000px) {
+    display: block;
+    
+  }
+
+  @media only screen and (max-width: 600px) { 
+    font-size: 12px;
+  }
+
 `
 
 const Jumbotron = () => {
@@ -133,10 +164,22 @@ const Jumbotron = () => {
         <Button className="btn-secondary">
           Docs
         </Button> */}
-          <div style={{ maxWidth: "800px" , marginLeft : "auto", marginRight :"auto" }}>
+          <div style={{ maxWidth: "800px", marginLeft: "auto", marginRight: "auto" }}>
             <Subtitle>🎉 The product was awarded the 1st prize from <a href="http://metathon.scb10x.com/" style={{ color: "inherit" }} target="_blank">SCB10X's Metaverse Global Hackathon'22</a> in the Infrastructure category and under heavy development </Subtitle>
           </div>
-
+          <DesktopHidden>
+            <Link to="/faucet">
+              Testnet Faucet
+            </Link>
+            {` `}|{` `}
+            <Link to="/createOrder">
+              Create Order
+            </Link>
+            {` `}|{` `}
+            <a target="_blank" href="https://docs.tamago.finance/tamago-finance/multi-chain-marketplace">
+              Docs
+            </a>
+          </DesktopHidden>
         </Buttons>
 
 

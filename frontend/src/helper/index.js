@@ -40,12 +40,19 @@ export const resolveStatusName = (statusCode) => {
   }
 }
 
-export const resolveBlockexplorerLink = (networkId, assetAddress, tokenId) => {
+export const resolveBlockexplorerLink = (networkId, assetAddress, isAddress = true) => {
+
+  const prefix = isAddress ? "address" : "tx"
+
   switch (networkId) {
     case 42:
-      return `https://kovan.etherscan.io/address/${assetAddress}`
+      return `https://kovan.etherscan.io/${prefix}/${assetAddress}`
+    case 97:
+      return `https://testnet.bscscan.com/${prefix}/${assetAddress}`
     case 80001:
-      return `https://mumbai.polygonscan.com/address/${assetAddress}`
+      return `https://mumbai.polygonscan.com/${prefix}/${assetAddress}`
+    case 43113:
+      return `https://testnet.avascan.info/blockchain/c/${prefix}/${assetAddress}`
     default:
       return "#"
   }
@@ -72,7 +79,10 @@ export const resolveNetworkIconUrl = (networkId) => {
   }
 }
 
-export const getProviders = (chainIds = []) => {
+export const getProviders = () => {
+
+  const chainIds = [42, 80001, 97, 43113]
+
   return chainIds.map(chainId => {
 
     let url

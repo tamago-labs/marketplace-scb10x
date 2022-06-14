@@ -95,8 +95,6 @@ const Collection = () => {
     return []
   },[orders])
 
-  
-
   return (
     <Container>
       <div>
