@@ -48,6 +48,7 @@ exports.getMetadata = async (req, res, next) => {
         await db.collection('nfts').add({ address, id, chain, metadata })
         return res.status(200).json({ status: "ok", metadata })
       } catch (error) {
+        console.log(error.message)
         return res.status(424).json({ message: "Moralis API could not find metadata" })
       }
 
