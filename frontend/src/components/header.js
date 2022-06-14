@@ -74,7 +74,7 @@ const Navbar = styled.div.attrs(() => ({
 `;
 
 const StyledBadge = styled(Badge)`
-  @media only screen and (max-width: 600px) {
+  @media only screen and (max-width: 1000px) {
     display: none;
   }
 `;
@@ -93,7 +93,7 @@ const Wrapper = styled.header.attrs(() => ({ className: "site-header mo-left hea
 `
 
 const MobileHidden = styled.span`
-@media only screen and (max-width: 600px) {
+@media only screen and (max-width: 1000px) {
   display: none;
 }
 `
@@ -108,7 +108,7 @@ const Menu = styled.div`
     }
   }
 
-@media only screen and (max-width: 600px) {
+@media only screen and (max-width: 1000px) {
   display: none;
 }
 `
@@ -168,7 +168,7 @@ function Header() {
 
               <Menu>
                 <Link to="/faucet">
-                  Testnet Faucet
+                  <MobileHidden>Testnet</MobileHidden>{` `}Faucet
                 </Link>
                 {` `}|{` `}
                 <Link to="/createOrder">

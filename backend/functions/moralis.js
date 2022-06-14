@@ -8,7 +8,7 @@ const Moralis = require("moralis/node");
 const MoralisOptions = {
   serverUrl: process.env.MORALIS_SERVER_URL,
   appId: process.env.MORALIS_APP_ID,
-  moralisSecret: process.env.MORALIS_SECRET,
+  masterKey: process.env.MORALIS_MASTER_KEY,
 }
 
 module.exports = {

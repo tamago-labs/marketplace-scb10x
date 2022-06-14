@@ -80,7 +80,9 @@ const DisputeForm = () => {
     setLoading(true)
 		setError("")
     if (!email || !address || !orderLink || !comments) {
-      setError("Please fill all row")
+      // setError("Please fill complete all fields")
+      setError("Sorry the form is not available.")
+      setLoading(false)
 			return
     }
     try {
@@ -91,7 +93,7 @@ const DisputeForm = () => {
         type: crossChain ? "cross-chain" : "intra-chain",
         comments,
       })
-      toast.success("Create dispute form completed!", {
+      toast.success("Submitted!", {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -103,7 +105,9 @@ const DisputeForm = () => {
       setOrderLink("")
       setComment("")
     } catch (e) {
-			setError("Something go wrong")
+      console.log("e --> ", e)
+			// setError("Something went wrong")
+      setError("Sorry the form is not available.")
     } finally {
       setLoading(false)
     }
@@ -163,7 +167,7 @@ const DisputeForm = () => {
               <TailSpin color="#fff" height={24} width={24} />
             </span>
           )}
-          Confirm
+          Submit
         </div>
       </a>
       {error && <span className="error-message">{error}</span>}

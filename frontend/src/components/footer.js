@@ -17,15 +17,12 @@ const TextLink = styled.a`
 `;
 
 const Container = styled.div.attrs(() => ({ className: "container" }))`
-  margin-top: 6rem;
+  margin-top: 5rem;
   padding-bottom: 1rem;
-  font-size: 14px;
-  display: flex;
-  flex-direction: row;
+  font-size: 14px; 
   div {
-    flex: 1;
-    :last-child {
-      margin-left: auto;
+    div {
+      text-align :center;
     }
   }
 `;
@@ -33,7 +30,7 @@ const Container = styled.div.attrs(() => ({ className: "container" }))`
 const Footer = () => {
   return (
     <Container>
-      <div>Copyright © 2022 Tamago Finance</div>
+      {/* <div>Copyright © 2022 Tamago Finance</div>
       <div style={{ marginLeft: "auto", marginRight: "auto" }}>
         Made with love during SCB10x Metathon'22
       </div>
@@ -68,7 +65,48 @@ const Footer = () => {
         >
           Docs
         </TextLink>
+      </div> */}
+      <div className="row">
+        <div className="col-6 col-sm-4" style={{marginTop: "10px"}}>
+          Copyright © 2022 Tamago Finance
+        </div>
+        <div className="col-6 col-sm-4" style={{marginTop: "10px"}}>
+          Made with love during SCB10x Metathon'22
+        </div>
+        <div className="col-12 col-sm-4" style={{marginTop: "10px"}}>
+          <TextLink
+            href="https://twitter.com/TamagoFinance"
+            target="_blank"
+          >
+            Twitter
+          </TextLink>
+          <TextLink
+            href="https://t.me/tamagofinance"
+            target="_blank"
+          >
+            Telegram
+          </TextLink>
+          <TextLink
+            href="https://discord.gg/78fax5dPqk"
+            target="_blank"
+          >
+            Discord
+          </TextLink>
+          <TextLink
+            href="https://github.com/tamago-finance/marketplace-scb10x"
+            target="_blank"
+          >
+            GitHub
+          </TextLink>
+          <TextLink
+            href="https://docs.tamago.finance/tamago-finance/multi-chain-marketplace"
+            target="_blank"
+          >
+            Docs
+          </TextLink>
+        </div>
       </div>
+
     </Container>
   );
 };

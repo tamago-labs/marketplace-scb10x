@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState, useEffect } from "react"
 import styled from "styled-components"
 import { useWeb3React } from "@web3-react/core"
 import Blockies from "react-blockies"
@@ -9,6 +9,7 @@ import General from "./general"
 import DisputeForm from "./disputeForm"
 import Orders from "./orders"
 import ConnectPanel from "./connect"
+import useOrder from "../../hooks/useOrder"
 
 const Wrapper = styled.div.attrs(() => ({ className: "container" }))`
   padding-top: 1rem;
@@ -60,7 +61,17 @@ const AvatarWrapper = styled.div`
 
 const AccountDetails = () => {
   const { account, chainId, deactivate } = useWeb3React()
+  const { getAccountOrders } = useOrder()
 
+  const [orders, setOrders] = useState([])
+
+  useEffect(() => {
+    getAccountOrders().then(
+      (orders) => {
+        setOrders(orders)
+      }
+    )
+  }, [account])
 
   const settings = {
     particle: {
@@ -92,8 +103,6 @@ const AccountDetails = () => {
             <>
               <AvatarWrapper>
                 <ParticleBackground style={{ position: "absolute", zIndex: 1 }} settings={settings} />
-
-
                 <div style={{ position: "absolute", zIndex: "10", width: "100%", textAlign: "center" }}>
                   <Avatar>
                     <Blockies
@@ -125,12 +134,6 @@ const AccountDetails = () => {
 
               <div style={{ maxWidth: "900px", marginLeft: "auto", marginRight: "auto" }}>
                 <AccountTab defaultActiveKey="orders" className="mt-3 mb-3">
-                  {/* <Tab
-                  eventKey="general"
-                  title="General"
-                >
-                  <General />
-                </Tab> */}
                   <Tab
                     eventKey="orders"
                     title="Your Orders"
