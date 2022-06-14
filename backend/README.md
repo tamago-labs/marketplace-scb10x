@@ -21,8 +21,8 @@
 | GET         | /orders/collection/{collection_address} | none                        | { "status": "ok", "orders": [{...},{...},{...}]}        |               |
 | GET         | /orders/owner/{owner_address}           | none                        | { "status": "ok", "orders": [{...},{...},{...}]}        |               |
 | POST        | /orders                                 | \*required                  | { "status": "ok", "body": {...req.body} , "orderId": 1} |               |
-| POST        | /orders/confirm                         | {orderId,message,signature} | { "status": "ok", "orderId": 1}                         |               |
-| POST        | /orders/cancel                          | {orderId,message,signature} | { "status": "ok", "orderId": 1}                         |               |
+| POST        | /orders/confirm                         | {orderId,message,signature} | { "status": "ok", "orderId": 1}                         | See Notes \*5 |
+| POST        | /orders/cancel                          | {orderId,message,signature} | { "status": "ok", "orderId": 1}                         | See Notes \*5 |
 
 ---
 
@@ -46,12 +46,12 @@
 
 ## Disputes
 
-| HTTP Method | path                  | RequestBody                                   | Response                                      | Notes         |
-| ----------- | --------------------- | --------------------------------------------- | --------------------------------------------- | ------------- |
-| GET         | /disputes             | none                                          | { "status": "ok", disputes }                  |               |
-| GET         | /disputes/{id}        | none                                          | { "status": "ok", dispute }                   |               |
-| POST        | /disputes/            | { email, address, orderLink, type, comments } | { "status": "ok", body: req.body, disputeId } |               |
-| POST        | /disputes/update/{id} | { resolved (boolean), adminComment (string) } | { "status": "ok", dispute(updated) }          | See Notes \*2 |
+| HTTP Method | path                        | RequestBody                                                     | Response                                      | Notes         |
+| ----------- | --------------------------- | --------------------------------------------------------------- | --------------------------------------------- | ------------- |
+| GET         | /disputes                   | none                                                            | { "status": "ok", disputes }                  |               |
+| GET         | /disputes/address/{address} | none                                                            | { "status": "ok", disputes }                  |               |
+| GET         | /disputes/{id}              | none                                                            | { "status": "ok", dispute }                   |               |
+| POST        | /disputes/                  | {email, address, orderLink, type, comments, message, signature} | { "status": "ok", body: req.body, disputeId } | See Notes \*5 |
 
 ---
 
@@ -83,4 +83,6 @@
 
 \*4 : This endpoint supports pagination with **offset** and **limit**. eg. "/users?limit=100"
 
-#### Development Starting From SCB10X - May 2022 - Hackathon
+\*5 : This endpoint requires **message** and **signature** to recover address in backend server
+
+#### Development Started during SCB10X - May 2022 - Hackathon

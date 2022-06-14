@@ -54,7 +54,7 @@ exports.getDisputeByAddress = async (req, res, next) => {
 
     const disputes = await db.collection('disputes').where('address', '==', address).get()
     if (disputes.empty) {
-      return res.status(400).json({ message: "dispute with this ID does not exist" })
+      return res.status(400).json({ message: "could not find dispute(s) created by this address" })
     }
     let result = []
     disputes.forEach(doc => {
