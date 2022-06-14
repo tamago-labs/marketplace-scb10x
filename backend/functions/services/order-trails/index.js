@@ -22,11 +22,14 @@ const orderTrails = async () => {
 
       const { chainId, orderId, DocID } = order
 
+      //update this array if new chain is to be implemented
       const supportedChains = [
         // 1,
         42,
         56,
+        97,
         137,
+        43113,
         80001
       ]
 
