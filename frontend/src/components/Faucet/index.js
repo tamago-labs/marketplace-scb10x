@@ -322,7 +322,7 @@ const Faucet = () => {
   const [chain, setChain] = useState(42)
   const [isNFT, setNFT] = useState(true)
 
-  const onMint = useCallback(async (address, id) => {
+  const onMint = useCallback(async ({address, tokenId, isERC721}) => {
 
     if (chain !== chainId) {
       alert("Incorrect chain!")
@@ -330,7 +330,7 @@ const Faucet = () => {
     }
 
     try {
-      if (address === "0xf4d331039448182cf140de338177706657df8ce9" || address === "0x65e38111d8e2561aDC0E2EA1eeA856E6a43dC892") {
+      if (isERC721) {
         const contract = new ethers.Contract(
           address,
           MockNFT,
@@ -343,7 +343,7 @@ const Faucet = () => {
           MockERC1155Token,
           library.getSigner()
         )
-        await contract.mint(account, id, 1, "0x")
+        await contract.mint(account, tokenId, 1, "0x")
       }
     } catch (e) {
       console.log(`${e.message}`)
@@ -467,7 +467,7 @@ const Faucet = () => {
                 <img src={nft.image} width="100%" height="120px" style={{ marginBottom: "10px" }} />
 
                 <div className="text-center">
-                  <SmallButton onClick={() => onMint(nft.address, nft.tokenId)}>
+                  <SmallButton onClick={() => onMint(nft)}>
                     Mint{` `}{nft.name}{` `}#{nft.tokenId}
                   </SmallButton>
                 </div>
