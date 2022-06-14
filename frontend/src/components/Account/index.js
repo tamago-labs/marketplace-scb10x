@@ -6,6 +6,7 @@ import { Tabs, Tab } from "react-bootstrap"
 import ParticleBackground from 'react-particle-backgrounds'
 import { shortAddress } from "../../helper"
 import General from "./general"
+import DisputeForm from "./disputeForm"
 import Orders from "./orders"
 import ConnectPanel from "./connect"
 import useOrder from "../../hooks/useOrder"
@@ -133,20 +134,17 @@ const AccountDetails = () => {
 
               <div style={{ maxWidth: "900px", marginLeft: "auto", marginRight: "auto" }}>
                 <AccountTab defaultActiveKey="orders" className="mt-3 mb-3">
-                  {/* <Tab
-                  eventKey="general"
-                  title="General"
-                >
-                  <General />
-                </Tab> */}
                   <Tab
                     eventKey="orders"
                     title="Your Orders"
                   >
-                    <Orders
-                      orders={orders}
-                      setOrders={setOrders}
-                    />
+                    <Orders />
+                  </Tab>
+                  <Tab
+                    eventKey="disputeForm"
+                    title="Dispute Form"
+                  >
+                    <DisputeForm />
                   </Tab>
                 </AccountTab>
               </div>
