@@ -109,6 +109,38 @@ const MOCKS = [
         symbol: "DAI",
         decimals: 18,
         tokens: []
+    },
+    {
+        chainId: 97,
+        contractAddress: "0x65e38111d8e2561aDC0E2EA1eeA856E6a43dC892",
+        tokenType: 0,
+        symbol: "USDC",
+        decimals: 6,
+        tokens: []
+    },
+    {
+        chainId: 97,
+        contractAddress: "0x553588e084604a2677e10E46ea0a8A8e9D859146",
+        tokenType: 0,
+        symbol: "DAI",
+        decimals: 18,
+        tokens: []
+    },
+    {
+        chainId: 43113,
+        contractAddress: "0x65e38111d8e2561aDC0E2EA1eeA856E6a43dC892",
+        tokenType: 0,
+        symbol: "USDC",
+        decimals: 6,
+        tokens: []
+    },
+    {
+        chainId: 43113,
+        contractAddress: "0x553588e084604a2677e10E46ea0a8A8e9D859146",
+        tokenType: 0,
+        symbol: "DAI",
+        decimals: 18,
+        tokens: []
     }
 ]
 

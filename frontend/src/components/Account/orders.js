@@ -183,20 +183,17 @@ const OrderItem = ({
   )
 }
 
-const Orders = () => {
+const Orders = ({
+  orders,
+  setOrders
+}) => {
   const [loading, setLoading] = useState(-1)
-  const [orders, setOrders] = useState([])
+  
   const { getAccountOrders, claim } = useOrder()
   const { account, library, chainId } = useWeb3React()
   const [tick, setTick] = useState(0)
 
-  useEffect(() => {
-    getAccountOrders().then(
-      (orders) => {
-        setOrders(orders)
-      }
-    )
-  }, [])
+ 
 
   const onCancelOrder = useCallback(
     async (order) => {

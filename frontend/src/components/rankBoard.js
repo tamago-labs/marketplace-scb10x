@@ -85,7 +85,7 @@ const RankBoard = () => {
                     </TH>
                     <td>
                       <Link to={`/orders/collection/${item.address}`}>
-                        {shortAddress(item.address, 10, -6)}
+                        { item.name || shortAddress(item.address, 10, -6) }
                       </Link>
                     </td>
                     <td>
@@ -116,7 +116,7 @@ const RankBoard = () => {
                     </TH>
                     <td>
                       <Link to={`/orders/owner/${item.address}`}>
-                        {shortAddress(item.address, 10, -6)}
+                        { item.name ? `@${item.name}` :shortAddress(item.address, 10, -6)}
                       </Link>
 
                     </td>

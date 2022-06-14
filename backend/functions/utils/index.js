@@ -74,6 +74,10 @@ const getProviders = (chainIds = []) => {
       url = "https://kovan.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161"
     } else if (chainId === 80001) {
       url = "https://nd-546-345-588.p2pify.com/8947d77065859cda88213b612a0f8679"
+    } else if (chainId === 97) {
+      url = "https://nd-390-191-961.p2pify.com/0645132aa2a233d3fbe27116f3b8828b"
+    } else if (chainId === 43113) {
+      url = "https://nd-473-270-876.p2pify.com/613a7805f3d64a52349b6ca19b6e27a7/ext/bc/C/rpc"
     }
 
     if (!url) {
@@ -101,7 +105,7 @@ const generateValidatorMessages = async () => {
   let claims = []
   let checks = []
 
-  const providers = getProviders([42, 80001])
+  const providers = getProviders([42, 80001, 97, 43113])
 
   // find the claim result
   for (let message of relayMessages) {
@@ -168,10 +172,24 @@ const generateValidatorMessages = async () => {
   return claims
 }
 
+const getOwnerName = async (ownerAddress) => {
+  const { data } = await axios.get(
+    `https://api.tamago.finance/v2/account/${ownerAddress}`
+  );
+  if (data.status != "ok") {
+    return "Unknown";
+  }
+
+  return data.nickname || "Unknown"
+
+}
+
+
 
 
 module.exports = {
   getMetadata,
   generateRelayMessages,
-  generateValidatorMessages
+  generateValidatorMessages,
+  getOwnerName
 }
