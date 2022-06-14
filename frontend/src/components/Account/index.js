@@ -10,6 +10,8 @@ import DisputeForm from "./disputeForm"
 import Orders from "./orders"
 import ConnectPanel from "./connect"
 import useOrder from "../../hooks/useOrder"
+import useActivities from "../../hooks/useActivities"
+import History from "./history"
 
 const Wrapper = styled.div.attrs(() => ({ className: "container" }))`
   padding-top: 1rem;
@@ -62,8 +64,10 @@ const AvatarWrapper = styled.div`
 const AccountDetails = () => {
   const { account, chainId, deactivate } = useWeb3React()
   const { getAccountOrders } = useOrder()
+  const { getActivitiesByAccount } = useActivities(chainId)
 
   const [orders, setOrders] = useState([])
+  const [history, setHistory ] = useState([])
 
   useEffect(() => {
     getAccountOrders().then(
@@ -72,6 +76,10 @@ const AccountDetails = () => {
       }
     )
   }, [account])
+
+  useEffect(() => {
+    account && getActivitiesByAccount(account).then(setHistory)
+  } ,[ account])
 
   const settings = {
     particle: {
@@ -138,7 +146,17 @@ const AccountDetails = () => {
                     eventKey="orders"
                     title="Your Orders"
                   >
-                    <Orders />
+                    <Orders
+                      orders={orders}
+                    />
+                  </Tab>
+                  <Tab
+                    eventKey="history"
+                    title="Trade History"
+                  >
+                    <History
+                      history={history}
+                    />
                   </Tab>
                   <Tab
                     eventKey="disputeForm"
