@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useCallback, useContext } from "react"
+import { useWeb3React } from "@web3-react/core"
 import styled from "styled-components"
 import { ToastContainer, toast } from "react-toastify"
+import { Table } from "react-bootstrap"
 import { TailSpin } from "react-loader-spinner"
-import axios from "axios"
 import "react-toastify/dist/ReactToastify.css"
-import { API_BASE } from "../../constants"
+import useDispute from "../../hooks/useDispute"
 
 const Wrapper = styled.div.attrs(() => ({
   className: "rounded-md",
@@ -67,7 +68,18 @@ const InputTextArea = styled.textarea.attrs(() => ({
   }
 `
 
+const DisputeTable = styled(Table)`
+  color: #fff;
+
+  tr {
+    width: 100%;
+  }
+`
+
 const DisputeForm = () => {
+  const { account } = useWeb3React()
+  const { signMessage, createDispute, getDisputesByOwner } = useDispute()
+  const [disputes, setDisputes] = useState()
   const [email, setEmail] = useState()
   const [address, setAddress] = useState()
   const [orderLink, setOrderLink] = useState()
@@ -76,20 +88,32 @@ const DisputeForm = () => {
   const [loading, setLoading] = useState()
   const [error, setError] = useState()
 
+  useEffect(() => {
+    account && getDisputesByOwner(account).then(setDisputes)
+  }, [account])
+
+  console.log(disputes)
+
   const onConfirm = useCallback(async () => {
+    const message = "Please sign this message to confirm your form."
+
+    const { signature } = await signMessage(message)
+
     setLoading(true)
-		setError("")
+    setError("")
     if (!email || !address || !orderLink || !comments) {
       setError("Please fill all row")
-			return
+      return
     }
     try {
-      const { data } = await axios.post(`${API_BASE}/disputes`, {
+      const { disputeId } = await createDispute({
         email,
         address,
         orderLink,
-        type: crossChain ? "cross-chain" : "intra-chain",
+        crossChain,
         comments,
+        message,
+        signature,
       })
       toast.success("Create dispute form completed!", {
         position: "top-right",
@@ -103,7 +127,7 @@ const DisputeForm = () => {
       setOrderLink("")
       setComment("")
     } catch (e) {
-			setError("Something go wrong")
+      setError("Something go wrong")
     } finally {
       setLoading(false)
     }
@@ -145,7 +169,6 @@ const DisputeForm = () => {
         value={comments}
         onChange={(e) => setComment(e.target.value)}
       />
-      <hr />
       <a
         onClick={onConfirm}
         style={{
@@ -167,6 +190,31 @@ const DisputeForm = () => {
         </div>
       </a>
       {error && <span className="error-message">{error}</span>}
+      <hr />
+      <DisputeTable>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Created</th>
+            <th>Status</th>
+            <th>Admin Comment</th>
+          </tr>
+        </thead>
+        <tbody>
+          {disputes
+            ? disputes.map((data, index) => (
+                <tr key={index}>
+                  <td>{data.disputeId}</td>
+                  <td>
+                    {new Date(Number(data.timestamp) * 1000).toLocaleString()}
+                  </td>
+                  <td>{data.resolved ? "Resolved" : "Not Resolved"}</td>
+                  <td>{data.adminComment}</td>
+                </tr>
+              ))
+            : ""}
+        </tbody>
+      </DisputeTable>
     </Wrapper>
   )
 }
