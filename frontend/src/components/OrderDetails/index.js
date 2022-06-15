@@ -498,7 +498,7 @@ const Activities = ({
                                         #{index + 1}
                                     </th>
                                     <th>
-                                        {data.type === "swap" ? "Swapped" : "Partial Swapped"}
+                                        {data.type === "swap" ? "Swapped" : "Claimed (B)"}
                                     </th>
                                     <th>
                                         <a style={{ color: "inherit", textDecoration: "none" }} target="_blank" href={buyerLink}>
