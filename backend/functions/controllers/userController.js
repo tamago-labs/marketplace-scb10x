@@ -15,9 +15,13 @@ exports.getUsers = async (req, res, next) => {
       ...doc.data(),
     }))
 
+    const totalUsers = await db.collection("users").get()
+    const totalCount = totalUsers.size
+    // console.log(totalCollections.size)
+
     // console.log(result)
 
-    res.status(200).json({ status: "ok", users })
+    res.status(200).json({ status: "ok", users, totalCount })
   } catch (error) {
     next(error)
   }

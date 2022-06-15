@@ -13,16 +13,16 @@
 
 ## Orders
 
-| HTTP Method | path                                    | RequestBody                 | Response                                                | Notes         |
-| ----------- | --------------------------------------- | --------------------------- | ------------------------------------------------------- | ------------- |
-| GET         | /orders                                 | none                        | { "status": "ok", "orders": [{...},{...},{...}]}        |               |
-| GET         | /orders?chain=42&limit=20&offset=10     | none                        | { "status": "ok", "orders": [{...},{...},{...}]}        | See Notes \*1 |
-| GET         | /orders/{id}                            | none                        | { "status": "ok", "order": {...}}                       |               |
-| GET         | /orders/collection/{collection_address} | none                        | { "status": "ok", "orders": [{...},{...},{...}]}        |               |
-| GET         | /orders/owner/{owner_address}           | none                        | { "status": "ok", "orders": [{...},{...},{...}]}        |               |
-| POST        | /orders                                 | \*required                  | { "status": "ok", "body": {...req.body} , "orderId": 1} |               |
-| POST        | /orders/confirm                         | {orderId,message,signature} | { "status": "ok", "orderId": 1}                         | See Notes \*5 |
-| POST        | /orders/cancel                          | {orderId,message,signature} | { "status": "ok", "orderId": 1}                         | See Notes \*5 |
+| HTTP Method | path                                    | RequestBody                 | Response                                                             | Notes         |
+| ----------- | --------------------------------------- | --------------------------- | -------------------------------------------------------------------- | ------------- |
+| GET         | /orders                                 | none                        | { "status": "ok", "orders": [{...},{...},{...}],"totalCount":number} |               |
+| GET         | /orders?chain=42&limit=20&offset=10     | none                        | { "status": "ok", "orders": [{...},{...},{...}],"totalCount":number} | See Notes \*1 |
+| GET         | /orders/{id}                            | none                        | { "status": "ok", "order": {...}}                                    |               |
+| GET         | /orders/collection/{collection_address} | none                        | { "status": "ok", "orders": [{...},{...},{...}]}                     |               |
+| GET         | /orders/owner/{owner_address}           | none                        | { "status": "ok", "orders": [{...},{...},{...}]}                     |               |
+| POST        | /orders                                 | \*required                  | { "status": "ok", "body": {...req.body} , "orderId": 1}              |               |
+| POST        | /orders/confirm                         | {orderId,message,signature} | { "status": "ok", "orderId": 1}                                      | See Notes \*5 |
+| POST        | /orders/cancel                          | {orderId,message,signature} | { "status": "ok", "orderId": 1}                                      | See Notes \*5 |
 
 ---
 
@@ -66,10 +66,10 @@
 
 ## Users
 
-| HTTP Method | path             | RequestBody | Response                  | Notes         |
-| ----------- | ---------------- | ----------- | ------------------------- | ------------- |
-| GET         | /users/          | none        | { "status": "ok", users } | See Notes \*4 |
-| GET         | /users/{address} | none        | { "status": "ok", user }  |               |
+| HTTP Method | path             | RequestBody | Response                             | Notes         |
+| ----------- | ---------------- | ----------- | ------------------------------------ | ------------- |
+| GET         | /users/          | none        | { "status": "ok", users,totalCount } | See Notes \*4 |
+| GET         | /users/{address} | none        | { "status": "ok", user }             |               |
 
 ---
 
