@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import styled from "styled-components";
 import Skeleton from "react-loading-skeleton";
 import { Badge } from "reactstrap";
 import { Link } from "react-router-dom";
 import { MoreVertical, ChevronDown } from "react-feather";
 import { resolveBlockexplorerLink, resolveNetworkName } from "../helper";
+import useOpenSea from "../hooks/useOpenSea";
 
 const AssetCardContainer = styled.div`
   background-color: #7a0bc0;
@@ -70,19 +71,32 @@ const ChainBadge = styled(Badge).attrs(() => ({ color: "success" }))`
 
 const MoreInfo = styled(({ className, chainId, assetAddress, isERC20 }) => {
   const [menuVisible, setMenuVisible] = useState(false);
+  const [link, setLink] = useState("");
 
   const blockExplorerLink = resolveBlockexplorerLink(chainId, assetAddress);
+  const { getOpenSeaLink } = useOpenSea();
+
+  useEffect(() => {
+    setLink(getOpenSeaLink(resolveNetworkName(chainId), assetAddress));
+  }, []);
 
   return (
     <div className={className}>
       <button onClick={() => setMenuVisible(!menuVisible)}>
-        <MoreVertical color={ !isERC20 ? "#7a0bc0" : "white" } border="" />
+        <MoreVertical color={!isERC20 ? "#7a0bc0" : "white"} border="" />
       </button>
       {menuVisible && (
         <div className="--menu">
-          <a href={blockExplorerLink} target="_blank" className="--menu-item">
-            Contract Address
-          </a>
+          <div>
+            <a href={blockExplorerLink} target="_blank" className="--menu-item">
+              Contract Address
+            </a>
+          </div>
+          <div>
+            <a href={link} target="_blank" className="--menu-item">
+              Open Sea
+            </a>
+          </div>
         </div>
       )}
     </div>
@@ -130,11 +144,19 @@ export const BaseAssetCard = ({
   chainId,
   assetAddress,
   tokenId,
-  orderId
+  orderId,
 }) => (
   <BaseAssetCardContainer>
     <PreviewContainer>
-      {image ? <Link to={`/order/${orderId}`}><Image src={image} /></Link> : <Link to={`/order/${orderId}`}><Skeleton height="220px" /></Link>}
+      {image ? (
+        <Link to={`/order/${orderId}`}>
+          <Image src={image} />
+        </Link>
+      ) : (
+        <Link to={`/order/${orderId}`}>
+          <Skeleton height="220px" />
+        </Link>
+      )}
       {chainId && (
         <ChainInfo>
           <div>{resolveNetworkName(chainId)}</div>
@@ -172,7 +194,7 @@ export const PairAssetCard = ({
               display: "flex",
               height: "220px",
               border: "1px solid #fa58b6",
-              borderRadius: "20px"
+              borderRadius: "20px",
             }}
           >
             <div style={{ margin: "auto", fontSize: "24px" }}>ERC-20</div>

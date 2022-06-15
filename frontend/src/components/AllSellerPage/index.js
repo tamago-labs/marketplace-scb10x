@@ -6,6 +6,7 @@ import useOrder from "../../hooks/useOrder";
 import { ChevronsLeft } from "react-feather";
 import { shortAddress } from "../../helper";
 import { Pagination, PaginationItem, PaginationLink } from "reactstrap";
+import ReactPaginate from "react-paginate";
 
 /* Styled Component */
 const Container = styled.div.attrs(() => ({ className: "container" }))`
@@ -45,16 +46,16 @@ const TR = styled.tr.attrs(() => ({}))`
 `;
 const AllSellerPage = () => {
   const [sellers, setSellers] = useState([]);
-  const { getTopSellers } = useOrder();
-  const [pageNum, setPageNum] = useState(1);
+  const { getTopSellers, getTopSellersByIndex } = useOrder();
+  const [pageCount, setpageCount] = useState(0);
 
   useEffect(() => {
     getTopSellers(100).then(setSellers);
-
-    if (sellers > 100) {
-      //loop all
-    }
   }, []);
+
+  const handlePageClick = async (data) => {
+    console.log(data.selected);
+  };
 
   return (
     <Container>
@@ -94,25 +95,25 @@ const AllSellerPage = () => {
             textAlign: "center",
           }}
         >
-          <Pagination aria-label="Page navigation example">
-            <PaginationItem disabled>
-              <PaginationLink first href="#" />
-            </PaginationItem>
-            <PaginationItem disabled>
-              <PaginationLink href="#" previous />
-            </PaginationItem>
-
-            <PaginationItem active>
-              <PaginationLink href="#">1</PaginationLink>
-            </PaginationItem>
-
-            <PaginationItem>
-              <PaginationLink href="#" next />
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationLink href="#" last />
-            </PaginationItem>
-          </Pagination>
+          <ReactPaginate
+            previousLabel={"previous"}
+            nextLabel={"next"}
+            breakLabel={"..."}
+            pageCount={20}
+            marginPagesDisplayed={2}
+            pageRangeDisplayed={3}
+            onPageChange={handlePageClick}
+            containerClassName={"pagination justify-content-center"}
+            pageClassName={"page-item"}
+            pageLinkClassName={"page-link"}
+            previousClassName={"page-item"}
+            previousLinkClassName={"page-link"}
+            nextClassName={"page-item"}
+            nextLinkClassName={"page-link"}
+            breakClassName={"page-item"}
+            breakLinkClassName={"page-link"}
+            activeClassName={"active"}
+          />
         </div>
       </div>
     </Container>

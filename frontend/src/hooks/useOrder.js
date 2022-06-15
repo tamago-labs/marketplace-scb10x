@@ -75,6 +75,16 @@ const useOrder = () => {
     return users;
   }, []);
 
+  const getTopSellersByIndex = useCallback(async (startIndex, limitNum) => {
+    const { data } = await axios.get(
+      `${API_BASE}/users?chain=80001,42&offset=${startIndex}&limit=${limitNum}`
+    );
+
+    const { users } = data;
+
+    return users;
+  }, []);
+
   const getTopCollections = useCallback(async (limitNum) => {
     const { data } = await axios.get(
       `${API_BASE}/collections?chain=80001,42&limit=${limitNum}`
@@ -818,8 +828,9 @@ const useOrder = () => {
     getAccountOrders,
     eligibleToClaim,
     generateClaimProof,
-    getTopSellers,
     getTopCollections,
+    getTopSellers,
+    getTopSellersByIndex,
   };
 };
 
