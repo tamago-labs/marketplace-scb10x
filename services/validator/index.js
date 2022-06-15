@@ -13,6 +13,7 @@ logger.enableAll()
 const { delay, getProviders, generateRelayMessages, getValidatorKey } = require("../helper")
 const { API_BASE, NFT_MARKETPLACE } = require("../constants")
 const { GATEWAY_ABI, MARKETPLACE_ABI } = require("../abi")
+const { Tickets } = require("./tickets")
 
 async function run({
     pollingDelay,
@@ -49,76 +50,18 @@ async function run({
                     // get the original messages
                     const messages = generateRelayMessages(orders.filter(item => ((item.confirmed) && (!item.fulfilled) && (!item.canceled))))
 
-                    let claims = []
-                    let checks = []
+                    const tickets = new Tickets({
+                        logger,
+                        providers,
+                        orders,
+                        messages
+                    })
 
-                    // find the claim result
-                    for (let message of messages) {
+                    await tickets.update()
 
-                        const { ownerAddress, chainId, orderId } = orders.find(item => item.orderId === message.orderId)
+                    const claims = tickets.getClaims()
 
-                        // to prevent unnesssary checks
-                        const check = checks.find(item => item.orderId === orderId && item.chainId === message.chainId)
-
-                        if (!check) {
-                            checks.push({
-                                chainId: message.chainId,
-                                orderId
-                            })
-
-                            logger.debug("checking order : ", orderId)
-
-                            // check pair chain first
-                            const row = providers.find(item => item.chainId === message.chainId)
-
-                            if (row && row.provider) {
-
-                                const { provider } = row
-                                const { marketplaceAddress } = NFT_MARKETPLACE.find(item => item.chainId === message.chainId)
-
-                                const marketplaceContract = new ethers.Contract(marketplaceAddress, MARKETPLACE_ABI, provider)
-                                const result = await marketplaceContract.partialOrders(orderId)
-
-                                if (result['active']) {
-                                    // Buyer
-                                    claims.push({
-                                        orderId: message.orderId,
-                                        chainId,
-                                        claimerAddress: result['buyer'],
-                                        isOrigin: true
-                                    })
-
-                                    // Seller
-                                    // claims.push({
-                                    //     orderId: message.orderId,
-                                    //     chainId: message.chainId,
-                                    //     claimerAddress: ownerAddress,
-                                    //     isOrigin: false
-                                    // })
-                                }
-                            }
-
-                            // TODO : check origin chain 
-
-
-
-                        }
-
-                    }
-
-                    // remove duplicates
-                    claims = claims.reduce((output, item) => {
-                        const existing = output.find(x => x.hash === (ethers.utils.hashMessage(JSON.stringify(item))))
-                        if (!existing) {
-                            output.push({
-                                ...item,
-                                hash: ethers.utils.hashMessage(JSON.stringify(item))
-                            })
-                        }
-                        return output
-                    }, [])
-
-                    logger.debug("Total claims : ", claims.length)
+                    logger.debug("Total tickets : ", claims.length)
 
                     let leaves
                     let tree
@@ -174,7 +117,7 @@ async function run({
 
                     }
 
-                    await Promise.all(providers.map(item => push(item)))
+                   await Promise.all(providers.map(item => push(item)))
                 },
                 {
                     retries: errorRetries,
@@ -186,7 +129,6 @@ async function run({
                     }
                 }
             );
-
 
             logger.debug("End of execution loop ", (new Date()).toLocaleTimeString())
             await delay(Number(pollingDelay));
