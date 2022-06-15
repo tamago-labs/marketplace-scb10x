@@ -22,11 +22,14 @@ const orderTrails = async () => {
 
       const { chainId, orderId, DocID } = order
 
+      //update this array if new chain is to be implemented
       const supportedChains = [
         // 1,
         42,
         56,
+        97,
         137,
+        43113,
         80001
       ]
 
@@ -44,8 +47,14 @@ const orderTrails = async () => {
           case 56:
             rpcUrl = process.env.BNB_RPC_SERVER
             break;
+          case 97:
+            rpcUrl = process.env.BNB_TESTNET_RPC_SERVER
+            break;
           case 137:
             rpcUrl = process.env.POLYGON_RPC_SERVER
+            break;
+          case 43113:
+            rpcUrl = process.env.FUJI_RPC_SERVER
             break;
           case 80001:
             rpcUrl = process.env.MUMBAI_RPC_SERVER

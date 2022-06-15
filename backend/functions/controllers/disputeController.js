@@ -1,5 +1,5 @@
 const { db } = require("../firebase")
-
+const { ethers } = require("ethers");
 
 
 
@@ -43,6 +43,30 @@ exports.getDisputeById = async (req, res, next) => {
   }
 }
 
+exports.getDisputeByAddress = async (req, res, next) => {
+  try {
+    if (!req || !req.params) {
+      return res.status(400).json({ message: "missing query params" })
+    }
+    const { address } = req.params
+
+    console.log("getting dispute with Address: ", address)
+
+    const disputes = await db.collection('disputes').where('address', '==', address).get()
+    if (disputes.empty) {
+      return res.status(400).json({ message: "could not find dispute(s) created by this address" })
+    }
+    let result = []
+    disputes.forEach(doc => {
+      result.push(doc.data())
+    });
+    res.status(200).json({ status: "ok", disputes: result })
+
+  } catch (error) {
+    next(error)
+  }
+}
+
 exports.createDispute = async (req, res, next) => {
   try {
 
@@ -51,10 +75,19 @@ exports.createDispute = async (req, res, next) => {
     }
     console.log(req.body)
 
-    const { email, address, orderLink, type, comments } = req.body
+    const { email, address, orderLink, type, comments, message, signature } = req.body
 
-    if (!(email && address && orderLink && type && comments)) {
+    if (!(email && address && orderLink && type && comments && message && signature)) {
       return res.status(400).json({ message: "some required fields are missing" })
+    }
+
+    const ownerAddress = address
+    const recoveredAddress = ethers.utils.verifyMessage(message, signature)
+    console.log("Verifying order's owner address :  ", ownerAddress)
+    console.log("Recovered address : ", recoveredAddress)
+
+    if (recoveredAddress.toLowerCase() !== ownerAddress.toLowerCase()) {
+      return res.status(400).json({ message: "You are not authorized to confirm the order" })
     }
 
     //getting all disputes

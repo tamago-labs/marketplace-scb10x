@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useMemo } from "react"
 import styled, { keyframes } from "styled-components"
 import { useWeb3React } from "@web3-react/core"
 import { ethers } from "ethers"
+import ParticleBackground from 'react-particle-backgrounds'
 import MockERC1155Token from "../../abi/mockERC1155Token.json"
 import { MOCK_NFT, MOCK_TOKEN } from "../../constants"
 import { resolveNetworkName } from "../../helper"
@@ -224,6 +225,24 @@ const Container2 = styled.div.attrs(() => ({ className: "container" }))`
 const Title = styled.div`
   text-align :center; 
   margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  padding: 2rem 1rem;
+  background: rgb(34,193,195);
+  background: linear-gradient(234deg, rgba(34,193,195,1) 0%, rgba(253,187,45,1) 100%);
+  border-radius: 12px;
+  color: white;
+  font-weight: 600;
+  text-shadow: 1px 1px #333; 
+
+  position: relative;
+  overflow: hidden;
+  min-height: 180px; 
+
+  @media only screen and (max-width: 600px) {
+    padding: 1rem 2rem; 
+  }
+
   p {
     font-size: 14px;
     margin-top: 10px;
@@ -303,7 +322,7 @@ const Faucet = () => {
   const [chain, setChain] = useState(42)
   const [isNFT, setNFT] = useState(true)
 
-  const onMint = useCallback(async (address, id) => {
+  const onMint = useCallback(async ({address, tokenId, isERC721}) => {
 
     if (chain !== chainId) {
       alert("Incorrect chain!")
@@ -311,7 +330,7 @@ const Faucet = () => {
     }
 
     try {
-      if (address === "0xf4d331039448182cf140de338177706657df8ce9" || address === "0x65e38111d8e2561aDC0E2EA1eeA856E6a43dC892") {
+      if (isERC721) {
         const contract = new ethers.Contract(
           address,
           MockNFT,
@@ -324,7 +343,7 @@ const Faucet = () => {
           MockERC1155Token,
           library.getSigner()
         )
-        await contract.mint(account, id, 1, "0x")
+        await contract.mint(account, tokenId, 1, "0x")
       }
     } catch (e) {
       console.log(`${e.message}`)
@@ -366,17 +385,42 @@ const Faucet = () => {
 
   const disabled = chain !== chainId
 
+
+  const settings = {
+    particle: {
+      particleCount: 35,
+      color: "#fff",
+      minSize: 1,
+      maxSize: 4
+    },
+    velocity: {
+      minSpeed: 0.2,
+      maxSpeed: 0.4
+    },
+    opacity: {
+      minOpacity: 0,
+      maxOpacity: 0.6,
+      opacityTransitionTime: 10000
+    }
+  }
+
   return (
     <Container2>
 
       <Title>
-        <div className="title">🏭Faucet</div>
-        <p>
-          Allows mint mock NFTs and tokens for testing on testnet before taking any action with your real tokens
-        </p>
+        <ParticleBackground style={{ position: "absolute", zIndex: 1 }} settings={settings} />
+
+        <div style={{ position: "absolute", zIndex: "10", width: "100%", textAlign: "center" }}>
+          <div className="title">🏭Faucet</div>
+          <p>
+            Allows mint mock NFTs and tokens for testing on testnet before taking any action with your real tokens
+          </p>
+        </div>
+
+
       </Title>
 
-      
+
 
       <MainPanel>
 
@@ -412,14 +456,18 @@ const Faucet = () => {
         <Label>
           Available Tokens
         </Label>
+
+        { disabled && <div style={{ textAlign: "center", fontWeight: "600", height: "40px"   }}>
+          {disabled && "Invalid chain!"}
+        </div>}
         <ListContainer>
           {
             isNFT && mocks.map((nft, index) => (
-              <NFTCard key={`${index}-nft`}>
+              <NFTCard style={{ opacity: disabled ? 0.6 : 1 }} key={`${index}-nft`}>
                 <img src={nft.image} width="100%" height="120px" style={{ marginBottom: "10px" }} />
 
                 <div className="text-center">
-                  <SmallButton onClick={() => onMint(nft.address, nft.tokenId)}>
+                  <SmallButton onClick={() => onMint(nft)}>
                     Mint{` `}{nft.name}{` `}#{nft.tokenId}
                   </SmallButton>
                 </div>
@@ -428,7 +476,7 @@ const Faucet = () => {
 
           {!isNFT && tokens.map((token, index) => {
             return (
-              <NFTCard key={`${index}-token`}>
+              <NFTCard style={{ opacity: disabled ? 0.6 : 1 }} key={`${index}-token`}>
                 <div style={{ display: "flex", height: "120px", width: "100%", border: "1px solid white", marginBottom: "10px" }}>
                   <div style={{ margin: "auto" }}>
                     ERC-20
@@ -448,12 +496,12 @@ const Faucet = () => {
 
 
         </ListContainer>
-        {disabled &&
-          (<div style={{ textAlign: "center",  fontWeight: "600", marginTop: "0.5rem" }}>
+        {/* {disabled &&
+          (<div style={{ textAlign: "center", fontWeight: "600", marginTop: "0.5rem" }}>
             Invalid chain!
           </div>)
 
-        }
+        } */}
       </MainPanel>
     </Container2>
   )
