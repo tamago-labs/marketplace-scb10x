@@ -18,6 +18,7 @@ import NFTABI from "../abi/nft.json";
 import ERC20ABI from "../abi/erc20.json";
 import collection from "../components/Collection";
 import { getProviders } from "../helper"
+import useProof from "./useProof";
 
 window.Buffer = window.Buffer || require("buffer").Buffer;
 
@@ -26,6 +27,8 @@ const useOrder = () => {
   const Web3Api = useMoralisWeb3Api()
 
   const context = useWeb3React()
+
+  const { generateRelayMessages, generateValidatorMessages} = useProof()
 
   const { chainId, account, library } = context
 
@@ -280,7 +283,7 @@ const useOrder = () => {
     chainId
   }) => {
 
-    const providers = getProviders([42, 80001, 97, 43113])
+    const providers = getProviders()
 
     const { provider } = providers.find(item => item.chainId === chainId)
 
@@ -353,112 +356,6 @@ const useOrder = () => {
     return await contract.swap(order.orderId, token.assetAddress, token.assetTokenIdOrAmount, token.tokenType, proof)
   }, [account, chainId, library])
 
-
-  const generateRelayMessages = async () => {
-
-    const { data } = await axios.get(`${API_BASE}/orders`)
-    const { orders } = data
-
-    const messages = orders.filter(item => ((item.confirmed) && (!item.fulfilled) && (!item.canceled))).reduce((output, item) => {
-
-      const { barterList, chainId, orderId } = item
-
-      if (barterList && chainId && barterList.length > 0) {
-        for (let item of barterList) {
-          // filter non-cross-chain items
-          if (item.chainId !== chainId) {
-            output.push({
-              orderId,
-              chainId: item.chainId,
-              assetAddress: item.assetAddress,
-              assetTokenIdOrAmount: item.assetTokenIdOrAmount
-            })
-          }
-        }
-      }
-
-      return output
-    }, [])
-
-
-    return messages
-  }
-
-  const generateValidatorMessages = async () => {
-
-    const { data } = await axios.get(`${API_BASE}/orders`)
-    const { orders } = data
-
-    const relayMessages = await generateRelayMessages()
-
-    let claims = []
-    let checks = []
-
-    const providers = getProviders([42, 80001, 97, 43113])
-
-    // find the claim result
-    for (let message of relayMessages) {
-
-      const { ownerAddress, chainId, orderId } = orders.find(item => item.orderId === message.orderId)
-
-      // to prevent unnesssary checks
-      const check = checks.find(item => item.orderId === orderId && item.chainId === message.chainId)
-
-      if (!check) {
-        checks.push({
-          chainId: message.chainId,
-          orderId
-        })
-
-        const row = providers.find(item => item.chainId === message.chainId)
-
-        if (row && row.provider) {
-
-          const { provider } = row
-          const { contractAddress } = NFT_MARKETPLACE.find(item => item.chainId === message.chainId)
-
-          const marketplaceContract = new ethers.Contract(contractAddress, MarketplaceABI, provider)
-
-          const result = await marketplaceContract.partialOrders(orderId)
-
-          if (result['active']) {
-            // Buyer
-            claims.push({
-              orderId: message.orderId,
-              chainId,
-              claimerAddress: result['buyer'],
-              isOrigin: true
-            })
-
-            // Seller
-            // claims.push({
-            //   orderId: message.orderId,
-            //   chainId: message.chainId,
-            //   claimerAddress: ownerAddress,
-            //   isOrigin: false
-            // })
-          }
-        }
-      }
-
-    }
-
-    // remove duplicates
-    claims = claims.reduce((output, item) => {
-      const existing = output.find(x => x.hash === (ethers.utils.hashMessage(JSON.stringify(item))))
-      if (!existing) {
-        output.push({
-          ...item,
-          hash: ethers.utils.hashMessage(JSON.stringify(item))
-        })
-      }
-      return output
-    }, [])
-
-    console.log("Total claims : ", claims.length)
-
-    return claims
-  }
 
   const partialSwap = useCallback(async (order, token) => {
 
@@ -552,7 +449,7 @@ const useOrder = () => {
       return
     }
 
-    const providers = getProviders([42, 80001, 97, 43113])
+    const providers = getProviders()
 
     const { provider } = providers.find(item => item.chainId === order.chainId)
     const { contractAddress } = NFT_MARKETPLACE.find(item => item.chainId === order.chainId)
