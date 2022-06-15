@@ -113,11 +113,10 @@ const CrosschainSwapModal = ({
                             <>
                                 <div style={{ margin: "auto" }}>
                                     <h4 style={{ marginLeft: "auto", marginRight: "auto" }}>{item.symbol}</h4>
-
                                 </div>
                             </>
                         )}
-                        {pairMetadata && <img src={pairMetadata.metadata.image} width="100%" height="120px" style={{ margin: "auto" }} />}
+                        {pairMetadata && item.tokenType !== 0 && <img src={pairMetadata.metadata.image} width="100%" height="120px" style={{ margin: "auto" }} />}
                     </div>
                     <div>
                         <div style={{ margin: "auto", textAlign: "center" }}>
@@ -186,7 +185,7 @@ const CrosschainSwapModal = ({
 
                 {process === 2 &&
                     <CountContainer>
-                        (Elapsed : {`${count}s`} / Avg. : 90-180s)
+                        (Elapsed : {`${count}s`} / Avg. : 100-300s)
                     </CountContainer>
                 }
 
