@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import useOrder from "../../hooks/useOrder";
 import { ChevronsLeft } from "react-feather";
 import { shortAddress } from "../../helper";
+import ReactPaginate from "react-paginate";
 
 /* Styled Component */
 const Container = styled.div.attrs(() => ({ className: "container" }))`
@@ -42,13 +43,28 @@ const TR = styled.tr.attrs(() => ({}))`
     }
   }
 `;
+
+const LIMIT_PER_PAGE = 10;
+
 const AllCollectionPage = () => {
   const [collections, setCollections] = useState([]);
-  const { getTopCollections } = useOrder();
+  const { getTopCollectionsByIndex, getCollectionsTotal } = useOrder();
+  const [pageCount, setPageCount] = useState(0);
+  const [totalCount, setTotalCount] = useState(0);
 
   useEffect(() => {
-    getTopCollections(100).then(setCollections);
+    getTopCollectionsByIndex(0, LIMIT_PER_PAGE).then(setCollections);
+    getCollectionsTotal().then(setTotalCount);
+    setPageCount(Math.ceil(totalCount / LIMIT_PER_PAGE));
   }, []);
+  const handlePageClick = async (data) => {
+    let currentPage = data.selected;
+    // setCurrentPageIndex(currentPage);
+    getTopCollectionsByIndex(
+      parseInt(currentPage) * LIMIT_PER_PAGE,
+      LIMIT_PER_PAGE
+    ).then(setCollections);
+  };
 
   return (
     <Container>
@@ -57,15 +73,12 @@ const AllCollectionPage = () => {
         <RankTable>
           <tbody>
             {collections.map((item, index) => {
-              if (index >= 5) {
-                return;
-              }
               return (
                 <TR key={`collection-${index}`}>
                   <TH>#{index + 1}</TH>
                   <td>
                     <Link to={`/orders/collection/${item.address}`}>
-                      {shortAddress(item.address, 10, -6)}
+                      {item.name || shortAddress(item.address, 10, -6)}
                     </Link>
                   </td>
                   <td>
@@ -81,6 +94,33 @@ const AllCollectionPage = () => {
           <ChevronsLeft />
           back
         </Link>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            textAlign: "center",
+          }}
+        >
+          <ReactPaginate
+            previousLabel={"<<"}
+            nextLabel={">>"}
+            breakLabel={"..."}
+            pageCount={pageCount}
+            marginPagesDisplayed={2}
+            pageRangeDisplayed={3}
+            onPageChange={handlePageClick}
+            containerClassName={"pagination justify-content-center"}
+            pageClassName={"page-item"}
+            pageLinkClassName={"page-link"}
+            previousClassName={"page-item"}
+            previousLinkClassName={"page-link"}
+            nextClassName={"page-item"}
+            nextLinkClassName={"page-link"}
+            breakClassName={"page-item"}
+            breakLinkClassName={"page-link"}
+            activeClassName={"active"}
+          />
+        </div>
       </div>
     </Container>
   );

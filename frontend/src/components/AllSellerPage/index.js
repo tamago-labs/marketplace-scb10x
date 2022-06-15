@@ -5,7 +5,6 @@ import { Link } from "react-router-dom";
 import useOrder from "../../hooks/useOrder";
 import { ChevronsLeft } from "react-feather";
 import { shortAddress } from "../../helper";
-import { Pagination, PaginationItem, PaginationLink } from "reactstrap";
 import ReactPaginate from "react-paginate";
 
 /* Styled Component */
@@ -44,17 +43,30 @@ const TR = styled.tr.attrs(() => ({}))`
     }
   }
 `;
+
+const LIMIT_PER_PAGE = 10;
+
 const AllSellerPage = () => {
   const [sellers, setSellers] = useState([]);
-  const { getTopSellers, getTopSellersByIndex } = useOrder();
-  const [pageCount, setpageCount] = useState(0);
+  const { getTopSellersByIndex, getSellersTotal } = useOrder();
+  const [pageCount, setPageCount] = useState(0);
+  const [totalCount, setTotalCount] = useState(0);
+  // const [sellerNumber, setSellerNumber] = useState(0);
+  // const [currentPageIndex, setCurrentPageIndex] = useState(0);
 
   useEffect(() => {
-    getTopSellers(100).then(setSellers);
+    getTopSellersByIndex(0, LIMIT_PER_PAGE).then(setSellers);
+    getSellersTotal().then(setTotalCount);
+    setPageCount(Math.ceil(totalCount / LIMIT_PER_PAGE));
   }, []);
 
   const handlePageClick = async (data) => {
-    console.log(data.selected);
+    let currentPage = data.selected;
+    // setCurrentPageIndex(currentPage);
+    getTopSellersByIndex(
+      parseInt(currentPage) * LIMIT_PER_PAGE,
+      LIMIT_PER_PAGE
+    ).then(setSellers);
   };
 
   return (
@@ -64,15 +76,14 @@ const AllSellerPage = () => {
         <RankTable>
           <tbody>
             {sellers.map((item, index) => {
-              if (index >= 5) {
-                return;
-              }
               return (
                 <TR key={`seller-${index}`}>
                   <TH>#{index + 1}</TH>
                   <td>
                     <Link to={`/orders/owner/${item.address}`}>
-                      {shortAddress(item.address, 10, -6)}
+                      {item.name
+                        ? `@${item.name}`
+                        : shortAddress(item.address, 10, -6)}
                     </Link>
                   </td>
                   <td>
@@ -96,10 +107,10 @@ const AllSellerPage = () => {
           }}
         >
           <ReactPaginate
-            previousLabel={"previous"}
-            nextLabel={"next"}
+            previousLabel={"<<"}
+            nextLabel={">>"}
             breakLabel={"..."}
-            pageCount={20}
+            pageCount={pageCount}
             marginPagesDisplayed={2}
             pageRangeDisplayed={3}
             onPageChange={handlePageClick}

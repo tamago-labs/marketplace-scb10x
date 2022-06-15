@@ -56,7 +56,7 @@ function App() {
         <Route path="/orders/owner/:ownerAddress" element={<CreatorPage />} />
         <Route path="/account" element={<Account />} />
         <Route path="/faucet" element={<Faucet />} />
-        <Route path="/all-collection" element={<AllCollectionPage />} />
+        <Route path="/all-collections" element={<AllCollectionPage />} />
         <Route path="/all-sellers" element={<AllSellerPage />} />
       </Routes>
       <Footer />
