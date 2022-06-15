@@ -9,6 +9,7 @@ exports.getOrders = async (req, res, next) => {
     const offset = req.query.offset
 
     let allOrders
+    let totalCount
     // console.log(queries)
     if (chainQuery) {
       // console.log(chainQuery)
@@ -21,14 +22,20 @@ exports.getOrders = async (req, res, next) => {
       // console.log(chains)
       allOrders = await db.collection("orders").where("chainId", "in", chains).where('version', '==', 1).where('visible', '==', true).orderBy('timestamp', 'desc').limit(+limit || 500).offset(+offset || 0).get();
 
+      const totalOrders = await db.collection("orders").where("chainId", "in", chains).where('version', '==', 1).where('visible', '==', true).get()
+      totalCount = totalOrders.size
+      // console.log(totalCollections.size)
+
     } else {
       allOrders = await db.collection("orders").where('version', '==', 1).where('visible', '==', true).orderBy('timestamp', 'desc').limit(+limit || 500).offset(+offset || 0).get();
+      const totalOrders = await db.collection("orders").where('version', '==', 1).where('visible', '==', true).get()
+      totalCount = totalOrders.size
     }
     const result = allOrders.docs.map((doc) => ({
       ...doc.data(),
     }))
     // console.log(result)
-    res.status(200).json({ status: "ok", orders: result })
+    res.status(200).json({ status: "ok", orders: result, totalCount })
   } catch (error) {
     next(error)
   }

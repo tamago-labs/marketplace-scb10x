@@ -9,57 +9,14 @@ import React, {
 } from "react";
 import { ethers } from "ethers";
 import { getProviders } from "../helper";
-import { NFT_MARKETPLACE } from "../constants";
+import { NFT_MARKETPLACE, SUPPORT_CHAINS } from "../constants";
 import MarketplaceABI from "../abi/marketplace.json";
-
 import Moralis from "moralis"
-
-/* FIXME :  REMOVE FROM HERE */
-const serverUrl = "https://1ovp3qunsgo4.usemoralis.com:2053/server";
-const appId = "enCW1fXy8eMazgGNIgwKdOicHVw67k0AegYAr2eE";
-const masterKey = "AdNlpYjZuuiCGzlPaonWrJoGSIB6Scnae2AiNY6B";
+import useMoralisAPI from "./useMoralisAPI";
 
 const useActivities = (chainId) => {
 
-
-
-    const generateMoralisParams = (chainId) => {
-        if ([42, 80001, 97, 43113]) {
-            return {
-                serverUrl: "https://1ovp3qunsgo4.usemoralis.com:2053/server",
-                appId: "enCW1fXy8eMazgGNIgwKdOicHVw67k0AegYAr2eE",
-                masterKey: "AdNlpYjZuuiCGzlPaonWrJoGSIB6Scnae2AiNY6B"
-            }
-        }
-
-        throw new Error("Chain isn't supported")
-    }
-
-    const resolveSwapTable = (chainId) => {
-        switch (chainId) {
-            case 97:
-                return "bnbTestnetSwap"
-            case 42:
-                return "kovanTestnetSwap"
-            case 80001:
-                return "mumbaiTestnetSwap"
-            case 43113:
-                return "fujiTestnetSwap"
-        }
-    }
-
-    const resolveClaimTable = (chainId) => {
-        switch (chainId) {
-            case 97:
-                return "bnbTestnetClaim"
-            case 42:
-                return "kovanTestnetClaim"
-            case 80001:
-                return "mumbaiTestnetClaim"
-            case 43113:
-                return "fujiTestnetClaim"
-        }
-    }
+    const { generateMoralisParams, resolveClaimTable, resolveSwapTable } = useMoralisAPI()
 
     const getActivitiesFromOrder = useCallback(async (orderId) => {
 
@@ -127,13 +84,13 @@ const useActivities = (chainId) => {
                 const object = results[i];
                 result.push({
                     type: "swap",
-                    orderId :  object.get("orderId"),
-                    chainId : chainId,
+                    orderId: object.get("orderId"),
+                    chainId: chainId,
                     transaction: object.get("transaction_hash"),
                     timestamp: object.get("block_timestamp")
                 })
             }
- 
+
             // checking claim events
             const Claims = Moralis.Object.extend(resolveClaimTable(chainId));
             query = new Moralis.Query(Claims);
@@ -146,18 +103,18 @@ const useActivities = (chainId) => {
                 const object = results[i];
                 result.push({
                     type: "claim",
-                    orderId :  object.get("orderId"),
-                    chainId : chainId,
+                    orderId: object.get("orderId"),
+                    chainId: chainId,
                     transaction: object.get("transaction_hash"),
                     timestamp: object.get("block_timestamp")
                 })
-            } 
+            }
 
         }
 
         return result.sort(function (a, b) {
             return a.orderId - b.orderId;
-          });
+        });
 
     }, [])
 

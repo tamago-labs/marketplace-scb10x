@@ -1,4 +1,11 @@
-import React, { useState, useCallback } from "react";
+import React, {
+  useEffect,
+  useMemo,
+  useReducer,
+  createContext,
+  useState,
+  useCallback,
+} from "react";
 import { useMoralisWeb3Api } from "react-moralis";
 import { useWeb3React } from "@web3-react/core";
 import axios from "axios";
@@ -9,7 +16,9 @@ import { API_BASE, NFT_MARKETPLACE } from "../constants";
 import MarketplaceABI from "../abi/marketplace.json";
 import NFTABI from "../abi/nft.json";
 import ERC20ABI from "../abi/erc20.json";
+import collection from "../components/Collection";
 import { getProviders } from "../helper";
+import useProof from "./useProof";
 
 window.Buffer = window.Buffer || require("buffer").Buffer;
 
@@ -17,6 +26,8 @@ const useOrder = () => {
   const Web3Api = useMoralisWeb3Api();
 
   const context = useWeb3React();
+
+  const { generateRelayMessages, generateValidatorMessages } = useProof();
 
   const { chainId, account, library } = context;
 
@@ -71,50 +82,6 @@ const useOrder = () => {
     const { users } = data;
 
     return users;
-  }, []);
-
-  const getTopSellersByIndex = useCallback(async (startIndex, limitNum) => {
-    const { data } = await axios.get(
-      `${API_BASE}/users?chain=80001,42&offset=${startIndex}&limit=${limitNum}`
-    );
-
-    const { users } = data;
-
-    return users;
-  }, []);
-
-  const getSellersTotal = useCallback(async () => {
-    const { data } = await axios.get(`${API_BASE}/users?chain=80001,42`);
-
-    const { totalCount } = data;
-
-    return totalCount;
-  }, []);
-
-  const getCollectionsTotal = useCallback(async () => {
-    const { data } = await axios.get(`${API_BASE}/collections?chain=80001,42`);
-
-    const { totalCount } = data;
-
-    return totalCount;
-  }, []);
-
-  const getTopCollections = useCallback(async () => {
-    const { data } = await axios.get(`${API_BASE}/collections?chain=80001,42`);
-
-    const { collections } = data;
-
-    return collections;
-  }, []);
-
-  const getTopCollectionsByIndex = useCallback(async (startIndex, limitNum) => {
-    const { data } = await axios.get(
-      `${API_BASE}/collections?chain=80001,42&offset=${startIndex}&limit=${limitNum}`
-    );
-
-    const { collections } = data;
-
-    return collections;
   }, []);
 
   const getOrder = useCallback(async (id) => {
@@ -332,7 +299,7 @@ const useOrder = () => {
   };
 
   const resolveStatus = async ({ orderId, chainId }) => {
-    const providers = getProviders([42, 80001, 97, 43113]);
+    const providers = getProviders();
 
     const { provider } = providers.find((item) => item.chainId === chainId);
 
@@ -459,119 +426,6 @@ const useOrder = () => {
     },
     [account, chainId, library]
   );
-
-  const generateRelayMessages = async () => {
-    const { data } = await axios.get(`${API_BASE}/orders`);
-    const { orders } = data;
-
-    const messages = orders
-      .filter((item) => item.confirmed && !item.fulfilled && !item.canceled)
-      .reduce((output, item) => {
-        const { barterList, chainId, orderId } = item;
-
-        if (barterList && chainId && barterList.length > 0) {
-          for (let item of barterList) {
-            // filter non-cross-chain items
-            if (item.chainId !== chainId) {
-              output.push({
-                orderId,
-                chainId: item.chainId,
-                assetAddress: item.assetAddress,
-                assetTokenIdOrAmount: item.assetTokenIdOrAmount,
-              });
-            }
-          }
-        }
-
-        return output;
-      }, []);
-
-    return messages;
-  };
-
-  const generateValidatorMessages = async () => {
-    const { data } = await axios.get(`${API_BASE}/orders`);
-    const { orders } = data;
-
-    const relayMessages = await generateRelayMessages();
-
-    let claims = [];
-    let checks = [];
-
-    const providers = getProviders([42, 80001, 97, 43113]);
-
-    // find the claim result
-    for (let message of relayMessages) {
-      const { ownerAddress, chainId, orderId } = orders.find(
-        (item) => item.orderId === message.orderId
-      );
-
-      // to prevent unnesssary checks
-      const check = checks.find(
-        (item) => item.orderId === orderId && item.chainId === message.chainId
-      );
-
-      if (!check) {
-        checks.push({
-          chainId: message.chainId,
-          orderId,
-        });
-
-        const row = providers.find((item) => item.chainId === message.chainId);
-
-        if (row && row.provider) {
-          const { provider } = row;
-          const { contractAddress } = NFT_MARKETPLACE.find(
-            (item) => item.chainId === message.chainId
-          );
-
-          const marketplaceContract = new ethers.Contract(
-            contractAddress,
-            MarketplaceABI,
-            provider
-          );
-
-          const result = await marketplaceContract.partialOrders(orderId);
-
-          if (result["active"]) {
-            // Buyer
-            claims.push({
-              orderId: message.orderId,
-              chainId,
-              claimerAddress: result["buyer"],
-              isOrigin: true,
-            });
-
-            // Seller
-            // claims.push({
-            //   orderId: message.orderId,
-            //   chainId: message.chainId,
-            //   claimerAddress: ownerAddress,
-            //   isOrigin: false
-            // })
-          }
-        }
-      }
-    }
-
-    // remove duplicates
-    claims = claims.reduce((output, item) => {
-      const existing = output.find(
-        (x) => x.hash === ethers.utils.hashMessage(JSON.stringify(item))
-      );
-      if (!existing) {
-        output.push({
-          ...item,
-          hash: ethers.utils.hashMessage(JSON.stringify(item)),
-        });
-      }
-      return output;
-    }, []);
-
-    console.log("Total claims : ", claims.length);
-
-    return claims;
-  };
 
   const partialSwap = useCallback(
     async (order, token) => {
@@ -734,7 +588,7 @@ const useOrder = () => {
         return;
       }
 
-      const providers = getProviders([42, 80001, 97, 43113]);
+      const providers = getProviders();
 
       const { provider } = providers.find(
         (item) => item.chainId === order.chainId
@@ -829,6 +683,50 @@ const useOrder = () => {
     }
 
     return data.nickname || "Unknown";
+  }, []);
+
+  const getTopSellersByIndex = useCallback(async (startIndex, limitNum) => {
+    const { data } = await axios.get(
+      `${API_BASE}/users?chain=80001,42&offset=${startIndex}&limit=${limitNum}`
+    );
+
+    const { users } = data;
+
+    return users;
+  }, []);
+
+  const getSellersTotal = useCallback(async () => {
+    const { data } = await axios.get(`${API_BASE}/users?chain=80001,42`);
+
+    const { totalCount } = data;
+
+    return totalCount;
+  }, []);
+
+  const getCollectionsTotal = useCallback(async () => {
+    const { data } = await axios.get(`${API_BASE}/collections?chain=80001,42`);
+
+    const { totalCount } = data;
+
+    return totalCount;
+  }, []);
+
+  const getTopCollections = useCallback(async () => {
+    const { data } = await axios.get(`${API_BASE}/collections?chain=80001,42`);
+
+    const { collections } = data;
+
+    return collections;
+  }, []);
+
+  const getTopCollectionsByIndex = useCallback(async (startIndex, limitNum) => {
+    const { data } = await axios.get(
+      `${API_BASE}/collections?chain=80001,42&offset=${startIndex}&limit=${limitNum}`
+    );
+
+    const { collections } = data;
+
+    return collections;
   }, []);
 
   return {
