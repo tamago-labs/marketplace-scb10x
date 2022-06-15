@@ -57,10 +57,10 @@
 
 ## Collections
 
-| HTTP Method | path                        | RequestBody | Response                        | Notes         |
-| ----------- | --------------------------- | ----------- | ------------------------------- | ------------- |
-| GET         | /collections?chain=80001,42 | none        | { "status": "ok", collections } | See Notes \*3 |
-| GET         | /collections/{address}      | none        | { "status": "ok", collection }  |               |
+| HTTP Method | path                        | RequestBody | Response                                   | Notes         |
+| ----------- | --------------------------- | ----------- | ------------------------------------------ | ------------- |
+| GET         | /collections?chain=80001,42 | none        | { "status": "ok", collections,totalCount } | See Notes \*3 |
+| GET         | /collections/{address}      | none        | { "status": "ok", collection }             |               |
 
 ---
 
