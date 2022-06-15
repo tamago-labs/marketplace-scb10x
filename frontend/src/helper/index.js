@@ -1,6 +1,6 @@
 
 import { ethers } from "ethers";
-
+import { SUPPORT_CHAINS } from "../constants";
 
 export const shortAddress = (address, first = 6, last = -4) => {
   return `${address.slice(0, first)}...${address.slice(last)}`
@@ -81,7 +81,7 @@ export const resolveNetworkIconUrl = (networkId) => {
 
 export const getProviders = () => {
 
-  const chainIds = [42, 80001, 97, 43113]
+  const chainIds = SUPPORT_CHAINS
 
   return chainIds.map(chainId => {
 

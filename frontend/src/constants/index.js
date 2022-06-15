@@ -3,6 +3,8 @@ export const MORALIS_ID = "c5pJEepQAhugEYhT4xmn5FUvWRij5Rvbpn7yZGJ9"
 export const API_BASE = "https://asia-east2-sbc10x-hackatron-may2022.cloudfunctions.net/api"
 export const ACCOUNT_API_BASE = "https://api.tamago.finance/v2"
 
+export const SUPPORT_CHAINS = [42, 80001, 97, 43113]
+
 export const NFT_MARKETPLACE = [
     {
         chainId: 42,
