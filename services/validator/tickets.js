@@ -86,9 +86,9 @@ class Tickets {
                                 if ( !result["ended"] && (result['buyer']).toLowerCase() === fromAddress.toLowerCase()) {
                                     // granting a ticket for the seller
                                     claims.push({
-                                        orderId: orderId,
+                                        orderId: Number(orderId),
                                         chainId: pairItem.chainId,
-                                        claimerAddress: originalItem.ownerAddress,
+                                        claimerAddress: (originalItem.ownerAddress).toLowerCase(),
                                         isOrigin: false
                                     })
                                     break
@@ -144,9 +144,9 @@ class Tickets {
                     if (result['active']) {
                         // Buyer
                         claims.push({
-                            orderId: message.orderId,
+                            orderId: Number(message.orderId),
                             chainId,
-                            claimerAddress: result['buyer'],
+                            claimerAddress: (result['buyer']).toLowerCase(),
                             isOrigin: true
                         })
                     }

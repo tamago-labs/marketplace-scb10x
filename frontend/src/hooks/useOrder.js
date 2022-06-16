@@ -12,7 +12,7 @@ import axios from "axios";
 import { ethers } from "ethers";
 import { MerkleTree } from "merkletreejs";
 import keccak256 from "keccak256";
-import { API_BASE, NFT_MARKETPLACE } from "../constants";
+import { API_BASE, NFT_MARKETPLACE, MOCK_NFT } from "../constants";
 import MarketplaceABI from "../abi/marketplace.json";
 import NFTABI from "../abi/nft.json";
 import ERC20ABI from "../abi/erc20.json";
@@ -28,7 +28,7 @@ const useOrder = () => {
 
   const context = useWeb3React()
 
-  const { generateRelayMessages, generateValidatorMessages} = useProof()
+  const { generateRelayMessages, generateValidatorMessages } = useProof()
 
   const { chainId, account, library } = context
 
@@ -91,7 +91,7 @@ const useOrder = () => {
   const getTopCollections = useCallback(async () => {
     const { data } = await axios.get(`${API_BASE}/collections?chain=80001,42`)
 
-    const { collections } = data 
+    const { collections } = data
 
     return collections
   }, [])
@@ -253,6 +253,45 @@ const useOrder = () => {
 
   }, [account])
 
+  const resolveMetadataFromCacheServer = ({
+    assetAddress,
+    tokenId,
+    chainId
+  }) => {
+
+    try {
+      const mockCollections = MOCK_NFT[chainId]
+      const mock = mockCollections.list.find(item => (item.address).toLowerCase() === assetAddress.toLowerCase())
+
+      if (!mock.isERC721) {
+        return {
+          metadata: {
+            name: mock.name,
+            image: mock.image,
+            description: mock.description || ""
+          }
+        }
+      }
+
+    } catch (e) {
+
+    }
+
+    return new Promise((resolve) => {
+
+      axios.get(`${API_BASE}/nft/metadata/${assetAddress}/${tokenId}/0x${chainId.toString(16)}`).then(
+        ({ data }) => {
+          resolve(data)
+        }
+      )
+
+      setTimeout(() => {
+        resolve()
+      }, 3000)
+
+    })
+  }
+
   const resolveMetadata = async ({
     assetAddress,
     tokenId,
@@ -266,7 +305,12 @@ const useOrder = () => {
     };
 
     try {
-      const { data } = await axios.get(`${API_BASE}/nft/metadata/${assetAddress}/${tokenId}/0x${chainId.toString(16)}`)
+
+      const data = await resolveMetadataFromCacheServer({
+        assetAddress,
+        tokenId,
+        chainId
+      })
 
       if (data && data.metadata) {
         return data
@@ -420,17 +464,21 @@ const useOrder = () => {
 
   }, [account, chainId, library])
 
-  const generateClaimProof = useCallback(async (order) => {
+  const generateClaimProof = useCallback(async (order, isOriginChain = true, pairChainId) => {
 
     const messages = await generateValidatorMessages()
 
     console.log("validator messages length : ", messages.length, messages)
 
     const leaves = messages.map(({ orderId, chainId, claimerAddress, isOrigin }) => ethers.utils.keccak256(ethers.utils.solidityPack(["uint256", "uint256", "address", "bool"], [orderId, chainId, claimerAddress, isOrigin]))) // Order ID, Chain ID, Claimer Address, Is Origin Chain
-    
+
     const tree = new MerkleTree(leaves, keccak256, { sortPairs: true })
 
-    const proof = tree.getHexProof(ethers.utils.keccak256(ethers.utils.solidityPack(["uint256", "uint256", "address", "bool"], [order.orderId, order.chainId, account, true])))
+    const proof = tree.getHexProof(ethers.utils.keccak256(ethers.utils.solidityPack(["uint256", "uint256", "address", "bool"], [order.orderId, pairChainId ? pairChainId : order.chainId, account, isOriginChain])))
+
+    const root = tree.getHexRoot()
+
+    console.log("state root : ", root)
 
     console.log("claim proof : ", proof)
 
@@ -491,6 +539,38 @@ const useOrder = () => {
 
   }, [account, chainId, library])
 
+  const claimSeller = useCallback(async (order, pairChainId) => {
+
+    console.log("claiming seller ", order.orderId)
+
+    if (!account) {
+      throw new Error("Wallet not connected")
+    }
+
+    if ((NFT_MARKETPLACE.filter(item => item.chainId === pairChainId)).length === 0) {
+      throw new Error("Marketplace contract is not available on given chain")
+    }
+
+    if (chainId !== pairChainId) {
+      throw new Error("Invalid chain")
+    }
+
+    const { contractAddress } = NFT_MARKETPLACE.find(item => item.chainId === pairChainId)
+
+    const contract = new ethers.Contract(contractAddress, MarketplaceABI, library.getSigner())
+
+    const proof = await generateClaimProof(order, false, pairChainId)
+
+    console.log("proof --> ", proof)
+
+    const tx = await contract.claim(order.orderId, false, proof)
+
+    return await tx.wait()
+
+  }, [account, chainId, library])
+
+
+
   const getOrdersByCollection = useCallback(async (address) => {
     const { data } = await axios.get(
       `${API_BASE}/orders/collection/${address}`
@@ -537,6 +617,7 @@ const useOrder = () => {
     swap,
     partialSwap,
     claim,
+    claimSeller,
     resolveStatus,
     getMetadata,
     getAccountOrders,

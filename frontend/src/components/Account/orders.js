@@ -13,6 +13,7 @@ import { resolveNetworkName, resolveStatusName } from "../../helper"
 import { NFT_MARKETPLACE } from "../../constants"
 import { ExternalLink, AlertTriangle } from "react-feather"
 import MarketplaceABI from "../../abi/marketplace.json"
+import useProof from "../../hooks/useProof"
 
 const Wrapper = styled.div.attrs(() => ({
   className: "rounded-md",
@@ -183,17 +184,41 @@ const OrderItem = ({
   )
 }
 
+const PendingOrders = styled(
+  ({ className, pending }) => {
+ 
+
+    return (
+      <div className={className}>
+        <div style={{ margin: "auto" }}>
+          Order { pending.map( (item, index) => <><Link style={{color :"inherit", textDecoration : "none"}} to={`/order/${item.orderId}`}>#{item.orderId}</Link>{ (pending.length-1 !== index) && ", " }</>)} are pending for cross-chain claims
+        </div>
+      </div>
+    )
+  })`
+  min-height: 60px;
+  text-align: center;
+  border: 1px solid white;
+  display: flex; 
+  margin-bottom: 1.5rem; 
+
+  `
+
 const Orders = ({
   orders,
   setOrders
 }) => {
   const [loading, setLoading] = useState(-1)
-  
+
   const { getAccountOrders, claim } = useOrder()
   const { account, library, chainId } = useWeb3React()
+  const { checkPendingClaims } = useProof()
   const [tick, setTick] = useState(0)
+  const [pending, setPending] = useState([])
 
- 
+  useEffect(() => {
+    account && checkPendingClaims(account).then(setPending)
+  }, [account])
 
   const onCancelOrder = useCallback(
     async (order) => {
@@ -241,7 +266,12 @@ const Orders = ({
 
   return (
     <Wrapper>
-      
+
+      {pending.length > 0 &&
+        <PendingOrders
+          pending={pending}
+        />
+      }
       <OrderTable>
         <thead>
           <tr>
@@ -274,7 +304,7 @@ const Orders = ({
             : ""}
         </tbody>
       </OrderTable>
-      <p style={{ marginTop: "1.5rem", textAlign : "center" }}>You will be receiving the NFT back when cancel the order</p>
+      <p style={{ marginTop: "1.5rem", textAlign: "center" }}>You will be receiving the NFT back when cancel the order</p>
     </Wrapper>
   )
 }
