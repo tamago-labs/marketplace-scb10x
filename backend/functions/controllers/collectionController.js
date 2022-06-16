@@ -25,8 +25,9 @@ exports.getCollections = async (req, res, next) => {
       return res.status(204).json({ message: "empty query return" })
     }
 
-    collections = collections.docs.map((doc) => ({
+    collections = collections.docs.map((doc, index) => ({
       ...doc.data(),
+      queryIndex: (+offset || 0) + index + 1
     }))
 
     // console.log(result)
