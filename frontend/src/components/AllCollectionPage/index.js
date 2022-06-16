@@ -54,9 +54,13 @@ const AllCollectionPage = () => {
 
   useEffect(() => {
     getTopCollectionsByIndex(0, LIMIT_PER_PAGE).then(setCollections);
+  }, []);
+
+  useEffect(() => {
     getCollectionsTotal().then(setTotalCount);
     setPageCount(Math.ceil(totalCount / LIMIT_PER_PAGE));
-  }, []);
+  }, [totalCount]);
+
   const handlePageClick = async (data) => {
     let currentPage = data.selected;
     // setCurrentPageIndex(currentPage);
@@ -75,7 +79,7 @@ const AllCollectionPage = () => {
             {collections.map((item, index) => {
               return (
                 <TR key={`collection-${index}`}>
-                  <TH>#{index + 1}</TH>
+                  <TH>#{item.queryIndex}</TH>
                   <td>
                     <Link to={`/orders/collection/${item.address}`}>
                       {item.name || shortAddress(item.address, 10, -6)}

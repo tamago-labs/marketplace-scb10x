@@ -51,18 +51,18 @@ const AllSellerPage = () => {
   const { getTopSellersByIndex, getSellersTotal } = useOrder();
   const [pageCount, setPageCount] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
-  // const [sellerNumber, setSellerNumber] = useState(0);
-  // const [currentPageIndex, setCurrentPageIndex] = useState(0);
 
   useEffect(() => {
     getTopSellersByIndex(0, LIMIT_PER_PAGE).then(setSellers);
+  }, []);
+
+  useEffect(() => {
     getSellersTotal().then(setTotalCount);
     setPageCount(Math.ceil(totalCount / LIMIT_PER_PAGE));
-  }, []);
+  }, [totalCount]);
 
   const handlePageClick = async (data) => {
     let currentPage = data.selected;
-    // setCurrentPageIndex(currentPage);
     getTopSellersByIndex(
       parseInt(currentPage) * LIMIT_PER_PAGE,
       LIMIT_PER_PAGE
@@ -78,7 +78,7 @@ const AllSellerPage = () => {
             {sellers.map((item, index) => {
               return (
                 <TR key={`seller-${index}`}>
-                  <TH>#{index + 1}</TH>
+                  <TH>#{item.queryIndex}</TH>
                   <td>
                     <Link to={`/orders/owner/${item.address}`}>
                       {item.name
