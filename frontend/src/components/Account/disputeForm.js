@@ -76,6 +76,14 @@ const DisputeTable = styled(Table)`
   }
 `
 
+const Disclaimer = styled.div`
+  padding: 10px;
+  margin-bottom: 1rem;
+  text-align: center; 
+  font-size: 14px;
+`
+
+
 const DisputeForm = () => {
   const { account } = useWeb3React()
   const { signMessage, createDispute, getDisputesByOwner } = useDispute()
@@ -102,8 +110,7 @@ const DisputeForm = () => {
     setLoading(true)
     setError("")
     if (!email || !address || !orderLink || !comments) {
-      // setError("Please fill complete all fields")
-      setError("Sorry the form is not available.")
+      setError("Please fill complete all fields") 
       setLoading(false)
 			return
     }
@@ -130,8 +137,7 @@ const DisputeForm = () => {
       setComment("")
     } catch (e) {
       console.log("e --> ", e)
-			// setError("Something went wrong")
-      setError("Sorry the form is not available.")
+			setError("Something went wrong")
     } finally {
       setLoading(false)
     }
@@ -148,16 +154,23 @@ const DisputeForm = () => {
         rtl={false}
         draggable
       />
-      <h5>Email</h5>
+
+      <Disclaimer>
+        In a rare case when multiple users processing the same order from different chain at same time, the first who claim  will be receiving the NFT, the rest shall complete the form below in order to get your deposited NFT back.
+      </Disclaimer>
+
+      <hr/>
+
+      <h5>Email(*)</h5>
       <InputText value={email} onChange={(e) => setEmail(e.target.value)} />
-      <h5>Address</h5>
+      <h5>Your Wallet Address(*)</h5>
       <InputText value={address} onChange={(e) => setAddress(e.target.value)} />
-      <h5>Your Order Link</h5>
+      <h5>Order URL to be Reviewed(*)</h5>
       <InputText
         value={orderLink}
         onChange={(e) => setOrderLink(e.target.value)}
       />
-      <h5>Type</h5>
+      {/* <h5>Type</h5>
       <div className="d-flex">
         <div onClick={() => setCrosschain(false)}>
           <input type="radio" checked={!crossChain} />
@@ -167,7 +180,7 @@ const DisputeForm = () => {
           <input type="radio" checked={crossChain} />
           <label style={{ marginLeft: "10px" }}>Cross-chain</label>
         </div>
-      </div>
+      </div> */}
       <h5 className="mt-3">Comments</h5>
       <InputTextArea
         value={comments}
