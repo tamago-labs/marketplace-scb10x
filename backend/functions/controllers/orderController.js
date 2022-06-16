@@ -31,8 +31,9 @@ exports.getOrders = async (req, res, next) => {
       const totalOrders = await db.collection("orders").where('version', '==', 1).where('visible', '==', true).get()
       totalCount = totalOrders.size
     }
-    const result = allOrders.docs.map((doc) => ({
+    const result = allOrders.docs.map((doc, index) => ({
       ...doc.data(),
+      queryIndex: (+offset || 0) + index + 1
     }))
     // console.log(result)
     res.status(200).json({ status: "ok", orders: result, totalCount })
