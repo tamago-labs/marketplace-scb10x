@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useCallback, useContext } from "react"
+import { useWeb3React } from "@web3-react/core"
 import styled from "styled-components"
 import { ToastContainer, toast } from "react-toastify"
+import { Table } from "react-bootstrap"
 import { TailSpin } from "react-loader-spinner"
-import axios from "axios"
 import "react-toastify/dist/ReactToastify.css"
-import { API_BASE } from "../../constants"
+import useDispute from "../../hooks/useDispute"
 
 const Wrapper = styled.div.attrs(() => ({
   className: "rounded-md",
@@ -67,7 +68,26 @@ const InputTextArea = styled.textarea.attrs(() => ({
   }
 `
 
+const DisputeTable = styled(Table)`
+  color: #fff;
+
+  tr {
+    width: 100%;
+  }
+`
+
+const Disclaimer = styled.div`
+  padding: 10px;
+  margin-bottom: 1rem;
+  text-align: center; 
+  font-size: 14px;
+`
+
+
 const DisputeForm = () => {
+  const { account } = useWeb3React()
+  const { signMessage, createDispute, getDisputesByOwner } = useDispute()
+  const [disputes, setDisputes] = useState()
   const [email, setEmail] = useState()
   const [address, setAddress] = useState()
   const [orderLink, setOrderLink] = useState()
@@ -76,22 +96,33 @@ const DisputeForm = () => {
   const [loading, setLoading] = useState()
   const [error, setError] = useState()
 
+  useEffect(() => {
+    account && getDisputesByOwner(account).then(setDisputes)
+  }, [account])
+
+  console.log(disputes)
+
   const onConfirm = useCallback(async () => {
+    const message = "Please sign this message to confirm your form."
+
+    const { signature } = await signMessage(message)
+
     setLoading(true)
-		setError("")
+    setError("")
     if (!email || !address || !orderLink || !comments) {
-      // setError("Please fill complete all fields")
-      setError("Sorry the form is not available.")
+      setError("Please fill complete all fields") 
       setLoading(false)
 			return
     }
     try {
-      const { data } = await axios.post(`${API_BASE}/disputes`, {
+      const { disputeId } = await createDispute({
         email,
         address,
         orderLink,
-        type: crossChain ? "cross-chain" : "intra-chain",
+        crossChain,
         comments,
+        message,
+        signature,
       })
       toast.success("Submitted!", {
         position: "top-right",
@@ -106,8 +137,7 @@ const DisputeForm = () => {
       setComment("")
     } catch (e) {
       console.log("e --> ", e)
-			// setError("Something went wrong")
-      setError("Sorry the form is not available.")
+			setError("Something went wrong")
     } finally {
       setLoading(false)
     }
@@ -124,16 +154,23 @@ const DisputeForm = () => {
         rtl={false}
         draggable
       />
-      <h5>Email</h5>
+
+      <Disclaimer>
+        In a rare case when multiple users processing the same order from different chain at same time, the first who claim  will be receiving the NFT, the rest shall complete the form below in order to get your deposited NFT back.
+      </Disclaimer>
+
+      <hr/>
+
+      <h5>Email(*)</h5>
       <InputText value={email} onChange={(e) => setEmail(e.target.value)} />
-      <h5>Address</h5>
+      <h5>Your Wallet Address(*)</h5>
       <InputText value={address} onChange={(e) => setAddress(e.target.value)} />
-      <h5>Your Order Link</h5>
+      <h5>Order URL to be Reviewed(*)</h5>
       <InputText
         value={orderLink}
         onChange={(e) => setOrderLink(e.target.value)}
       />
-      <h5>Type</h5>
+      {/* <h5>Type</h5>
       <div className="d-flex">
         <div onClick={() => setCrosschain(false)}>
           <input type="radio" checked={!crossChain} />
@@ -143,13 +180,12 @@ const DisputeForm = () => {
           <input type="radio" checked={crossChain} />
           <label style={{ marginLeft: "10px" }}>Cross-chain</label>
         </div>
-      </div>
+      </div> */}
       <h5 className="mt-3">Comments</h5>
       <InputTextArea
         value={comments}
         onChange={(e) => setComment(e.target.value)}
       />
-      <hr />
       <a
         onClick={onConfirm}
         style={{
@@ -171,6 +207,31 @@ const DisputeForm = () => {
         </div>
       </a>
       {error && <span className="error-message">{error}</span>}
+      <hr />
+      <DisputeTable>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Created</th>
+            <th>Status</th>
+            <th>Admin Comment</th>
+          </tr>
+        </thead>
+        <tbody>
+          {disputes
+            ? disputes.map((data, index) => (
+                <tr key={index}>
+                  <td>{data.disputeId}</td>
+                  <td>
+                    {new Date(Number(data.timestamp) * 1000).toLocaleString()}
+                  </td>
+                  <td>{data.resolved ? "Resolved" : "Not Resolved"}</td>
+                  <td>{data.adminComment}</td>
+                </tr>
+              ))
+            : ""}
+        </tbody>
+      </DisputeTable>
     </Wrapper>
   )
 }
