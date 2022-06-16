@@ -4,7 +4,7 @@ import Skeleton from "react-loading-skeleton"
 import { resolveNetworkName } from "../../helper"
 import MOCKS from "../../mocks"
 import { ethers } from "ethers"
-import { X } from "react-feather"
+import { X, DollarSign , Clipboard } from "react-feather"
 
 const TableContainer = styled.div`
   background-color: rgba(38, 38, 38, 0.6);
@@ -146,6 +146,9 @@ const To = ({
   const [tokenAmount, setTokenAmount] = useState()
 
   const shorterName = (name) => {
+    if (!name) {
+      return
+    }
     return name.length > 28 ? `${name.slice(0, 15)}...${name.slice(-4)}` : name
   }
 
@@ -172,7 +175,7 @@ const To = ({
 
   const onClickFilter = (filter) => {
     if (searchFilter.indexOf(filter) !== -1) {
-      if(searchFilter.length <= 1) return
+      if (searchFilter.length <= 1) return
       const newSearchFilter = searchFilter.filter((data) => data !== filter)
       setSearchFilter(newSearchFilter)
     } else {
@@ -218,24 +221,12 @@ const To = ({
 
   return (
     <>
-      <div className="d-flex justify-content-center my-2">
-        <ChainSelector
-          onChange={(e) => {
-            if (e.target.value === "true") {
-              setNft(true)
-            } else {
-              setNft(false)
-            }
-          }}
-          defaultValue={isNft}
-        >
-          <option style={{ color: "black" }} value={true}>
-            NFT
-          </option>
-          <option style={{ color: "black" }} value={false}>
-            ERC-20
-          </option>
-        </ChainSelector>
+      <TokenSelector
+        setNft={setNft}
+        isNft={isNft}
+        />
+      <div className="d-flex justify-content-center my-2"> 
+        
         <ChainSelector
           onChange={(e) => {
             setSearchChain(Number(e.target.value))
@@ -352,74 +343,78 @@ const To = ({
         )}
       </div>
 
-      <div className="d-flex justify-content-center align-items-center mt-3">
-        Filter By :
-        <div className="d-flex justify-content-center mx-2">
-          <FilterButton
-            selected={searchFilter.indexOf("name") !== -1}
-            onClick={() => onClickFilter("name")}
-          >
-            Name
-          </FilterButton>
-          <FilterButton
-            selected={searchFilter.indexOf("description") !== -1}
-            onClick={() => onClickFilter("description")}
-          >
-            Description
-          </FilterButton>
-          <FilterButton
-            selected={searchFilter.indexOf("attributes") !== -1}
-            onClick={() => onClickFilter("attributes")}
-          >
-            Attributes
-          </FilterButton>
-        </div>
-      </div>
+      {isNft &&
+        (
+          <div className="d-flex justify-content-center align-items-center mt-3">
+            Filter By :
+            <div className="d-flex justify-content-center mx-2">
+              <FilterButton
+                selected={searchFilter.indexOf("name") !== -1}
+                onClick={() => onClickFilter("name")}
+              >
+                Name
+              </FilterButton>
+              <FilterButton
+                selected={searchFilter.indexOf("description") !== -1}
+                onClick={() => onClickFilter("description")}
+              >
+                Description
+              </FilterButton>
+              <FilterButton
+                selected={searchFilter.indexOf("attributes") !== -1}
+                onClick={() => onClickFilter("attributes")}
+              >
+                Attributes
+              </FilterButton>
+            </div>
+          </div>
+        )
+      }
       {isNft && (
         <Content>
           {searchNFT && !searchLoading
             ? searchNFT.map((nft, index) => (
-                <Card
-                  key={index}
-                  selected={toData.find(
-                    (data) => data.token_hash === nft.token_hash
-                  )}
-                  onClick={() => onClickCard({ ...nft, chainId: searchChain })}
-                >
-                  <img src={nft.metadata.image} width="100%" height="220" />
-                  <div className="name">
-                    {shorterName(nft.metadata.name)}
-                    {` `}#{shorterName(nft.token_id)}
-                  </div>
-                  <div className="name">
-                    Chain: {resolveNetworkName(searchChain)}
-                  </div>
-                </Card>
-              ))
+              <Card
+                key={index}
+                selected={toData.find(
+                  (data) => data.token_hash === nft.token_hash
+                )}
+                onClick={() => onClickCard({ ...nft, chainId: searchChain })}
+              >
+                <img src={nft.metadata.image} width="100%" height="220" />
+                <div className="name">
+                  {shorterName(nft.metadata.name)}
+                  {` `}#{shorterName(nft.token_id)}
+                </div>
+                <div className="name">
+                  Chain: {resolveNetworkName(searchChain)}
+                </div>
+              </Card>
+            ))
             : searchLoading && (
-                <>
-                  <Skeleton
-                    height="380px"
-                    width="260px"
-                    style={{ borderRadius: "12px", margin: "12px" }}
-                  />
-                  <Skeleton
-                    height="380px"
-                    width="260px"
-                    style={{ borderRadius: "12px", margin: "12px" }}
-                  />
-                  <Skeleton
-                    height="380px"
-                    width="260px"
-                    style={{ borderRadius: "12px", margin: "12px" }}
-                  />
-                  <Skeleton
-                    height="380px"
-                    width="260px"
-                    style={{ borderRadius: "12px", margin: "12px" }}
-                  />
-                </>
-              )}
+              <>
+                <Skeleton
+                  height="380px"
+                  width="260px"
+                  style={{ borderRadius: "12px", margin: "12px" }}
+                />
+                <Skeleton
+                  height="380px"
+                  width="260px"
+                  style={{ borderRadius: "12px", margin: "12px" }}
+                />
+                <Skeleton
+                  height="380px"
+                  width="260px"
+                  style={{ borderRadius: "12px", margin: "12px" }}
+                />
+                <Skeleton
+                  height="380px"
+                  width="260px"
+                  style={{ borderRadius: "12px", margin: "12px" }}
+                />
+              </>
+            )}
         </Content>
       )}
 
@@ -488,5 +483,56 @@ const To = ({
     </>
   )
 }
+
+
+const TokenSelector = styled(
+  ({ className, setNft, isNft }) => {
+    return (
+      <div className={className}>
+          <div onClick={() => setNft(true)} className={`--card ${isNft && "--active"}`}>
+            <Clipboard/>
+            <p>NFT</p> 
+          </div>
+          <div onClick={() => setNft(false)} className={`--card ${!isNft && "--active"}`}>
+            <DollarSign/>
+            <p>ERC-20</p> 
+          </div>
+      </div>
+    )
+  })`
+  
+  text-align: center;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+
+  >.--active {
+    background: white;
+    color: #333;
+  }
+
+  >.--card { 
+    width: 80px;
+    cursor: pointer;
+    
+    border: 1px solid white;
+    padding: 10px;
+    border-radius: 12px;
+    
+    p {
+      margin-top: 5px;
+      margin-bottom: 0px;
+    }
+    
+    :last-child {
+      margin-left: 10px;
+    }
+  }
+
+
+  `
+
 
 export default To
