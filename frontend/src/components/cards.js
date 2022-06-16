@@ -98,16 +98,7 @@ const MoreInfo = styled(
       setNetworkName(resolveNetworkName(chainId));
       setLink(getOpenSeaLink(networkName, assetAddress, tokenId));
       if (AVALABLE_TESTNET_OPENSEA.includes(networkName)) {
-        console.log(
-          "🚀 ~ file: cards.js ~ line 101 ~ useEffect ~ networkName",
-          networkName
-        );
         setIsAvailableOpenseaChain(true);
-
-        console.log(
-          "🚀 ~ file: cards.js ~ line 92 ~ isAvailableOpenseaChain",
-          isAvailableOpenseaChain
-        );
       }
     }, [networkName, isAvailableOpenseaChain]);
 

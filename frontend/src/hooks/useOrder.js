@@ -699,10 +699,6 @@ const useOrder = () => {
     const { data } = await axios.get(`${API_BASE}/users?chain=80001,42`);
 
     const { totalCount } = data;
-    console.log(
-      "🚀 ~ file: useOrder.js ~ line 702 ~ getSellersTotal ~ totalCount",
-      totalCount
-    );
 
     return totalCount;
   }, []);
