@@ -30,30 +30,35 @@ export const MOCK_NFT = {
             {
                 name: "Tamago Kovan NFT",
                 address: "0x48a47587c82E0B21d213D22064433BB67a7a7171",
+                description : "This is a mock Tamago ERC1155 NFT for testing in testnet networks",
                 tokenId: "1",
                 image: "https://nftluckbox.xyz/images/mock/kovan/01.png"
             },
             {
                 name: "Tamago Kovan NFT",
                 address: "0x48a47587c82E0B21d213D22064433BB67a7a7171",
+                description : "This is a mock Tamago ERC1155 NFT for testing in testnet networks",
                 tokenId: "2",
                 image: "https://nftluckbox.xyz/images/mock/kovan/02.png"
             },
             {
                 name: "Tamago Kovan NFT",
                 address: "0x48a47587c82E0B21d213D22064433BB67a7a7171",
+                description : "This is a mock Tamago ERC1155 NFT for testing in testnet networks",
                 tokenId: "3",
                 image: "https://nftluckbox.xyz/images/mock/kovan/03.png"
             },
             {
                 name: "Tamago Kovan NFT",
                 address: "0x48a47587c82E0B21d213D22064433BB67a7a7171",
+                description : "This is a mock Tamago ERC1155 NFT for testing in testnet networks",
                 tokenId: "4",
                 image: "https://nftluckbox.xyz/images/mock/kovan/04.png"
             },
             {
                 name: "Tamago Kovan NFT",
                 address: "0x48a47587c82E0B21d213D22064433BB67a7a7171",
+                description : "This is a mock Tamago ERC1155 NFT for testing in testnet networks",
                 tokenId: "5",
                 image: "https://nftluckbox.xyz/images/mock/kovan/05.png"
             },
@@ -78,30 +83,35 @@ export const MOCK_NFT = {
             {
                 name: "Tamago Mumbai NFT",
                 address: "0x576430Ecadbd9729B32a4cA9Fed9F38331273924",
+                description : "This is a mock Tamago ERC1155 NFT for testing in testnet networks",
                 tokenId: "1",
                 image: "https://nftluckbox.xyz/images/mock/kovan/01.png"
             },
             {
                 name: "Tamago Mumbai NFT",
                 address: "0x576430Ecadbd9729B32a4cA9Fed9F38331273924",
+                description : "This is a mock Tamago ERC1155 NFT for testing in testnet networks",
                 tokenId: "2",
                 image: "https://nftluckbox.xyz/images/mock/kovan/02.png"
             },
             {
                 name: "Tamago Mumbai NFT",
                 address: "0x576430Ecadbd9729B32a4cA9Fed9F38331273924",
+                description : "This is a mock Tamago ERC1155 NFT for testing in testnet networks",
                 tokenId: "3",
                 image: "https://nftluckbox.xyz/images/mock/kovan/03.png"
             },
             {
                 name: "Tamago Mumbai NFT",
                 address: "0x576430Ecadbd9729B32a4cA9Fed9F38331273924",
+                description : "This is a mock Tamago ERC1155 NFT for testing in testnet networks",
                 tokenId: "4",
                 image: "https://nftluckbox.xyz/images/mock/kovan/04.png"
             },
             {
                 name: "Tamago Mumbai NFT",
                 address: "0x576430Ecadbd9729B32a4cA9Fed9F38331273924",
+                description : "This is a mock Tamago ERC1155 NFT for testing in testnet networks",
                 tokenId: "5",
                 image: "https://nftluckbox.xyz/images/mock/kovan/05.png"
             },
@@ -126,36 +136,42 @@ export const MOCK_NFT = {
             {
                 name: "Fake CryptoKitties NFT",
                 address: "0x61ad3Fe6B44Bfbbcec39c9FaD566538c894b6471",
+                description : "This is a mock CryptoKitties ERC1155 NFT for testing in testnet networks",
                 tokenId: "1",
                 image: "https://img.cryptokitties.co/0x06012c8cf97bead5deae237070f9587f8e7a266d/1.png"
             },
             {
                 name: "Fake CryptoKitties NFT",
                 address: "0x61ad3Fe6B44Bfbbcec39c9FaD566538c894b6471",
+                description : "This is a mock CryptoKitties ERC1155 NFT for testing in testnet networks",
                 tokenId: "2",
                 image: "https://img.cryptokitties.co/0x06012c8cf97bead5deae237070f9587f8e7a266d/2.png"
             },
             {
                 name: "Fake CryptoKitties NFT",
                 address: "0x61ad3Fe6B44Bfbbcec39c9FaD566538c894b6471",
+                description : "This is a mock CryptoKitties ERC1155 NFT for testing in testnet networks",
                 tokenId: "3",
                 image: "https://img.cryptokitties.co/0x06012c8cf97bead5deae237070f9587f8e7a266d/3.png"
             },
             {
                 name: "Fake CryptoKitties NFT",
                 address: "0x61ad3Fe6B44Bfbbcec39c9FaD566538c894b6471",
+                description : "This is a mock CryptoKitties ERC1155 NFT for testing in testnet networks",
                 tokenId: "4",
                 image: "https://img.cryptokitties.co/0x06012c8cf97bead5deae237070f9587f8e7a266d/4.png"
             },
             {
                 name: "Fake CryptoKitties NFT",
                 address: "0x61ad3Fe6B44Bfbbcec39c9FaD566538c894b6471",
+                description : "This is a mock CryptoKitties ERC1155 NFT for testing in testnet networks",
                 tokenId: "5",
                 image: "https://img.cryptokitties.co/0x06012c8cf97bead5deae237070f9587f8e7a266d/5.png"
             },
             {
                 name: "Fake CryptoKitties NFT",
                 address: "0x61ad3Fe6B44Bfbbcec39c9FaD566538c894b6471",
+                description : "This is a mock CryptoKitties ERC1155 NFT for testing in testnet networks",
                 tokenId: "6",
                 image: "https://img.cryptokitties.co/0x06012c8cf97bead5deae237070f9587f8e7a266d/6.png"
             },
@@ -180,36 +196,42 @@ export const MOCK_NFT = {
             {
                 name: "Fake CryptoKitties NFT",
                 address: "0xabA544c167443f3feE33Fb49Ee7b1b49594C25F3",
+                description : "This is a mock CryptoKitties ERC1155 NFT for testing in testnet networks",
                 tokenId: "7",
                 image: "https://img.cryptokitties.co/0x06012c8cf97bead5deae237070f9587f8e7a266d/7.png"
             },
             {
                 name: "Fake CryptoKitties NFT",
                 address: "0xabA544c167443f3feE33Fb49Ee7b1b49594C25F3",
+                description : "This is a mock CryptoKitties ERC1155 NFT for testing in testnet networks",
                 tokenId: "8",
                 image: "https://img.cryptokitties.co/0x06012c8cf97bead5deae237070f9587f8e7a266d/8.svg"
             },
             {
                 name: "Fake CryptoKitties NFT",
                 address: "0xabA544c167443f3feE33Fb49Ee7b1b49594C25F3",
+                description : "This is a mock CryptoKitties ERC1155 NFT for testing in testnet networks",
                 tokenId: "9",
                 image: "https://img.cryptokitties.co/0x06012c8cf97bead5deae237070f9587f8e7a266d/9.png"
             },
             {
                 name: "Fake CryptoKitties NFT",
                 address: "0xabA544c167443f3feE33Fb49Ee7b1b49594C25F3",
+                description : "This is a mock CryptoKitties ERC1155 NFT for testing in testnet networks",
                 tokenId: "10",
                 image: "https://img.cryptokitties.co/0x06012c8cf97bead5deae237070f9587f8e7a266d/10.png"
             },
             {
                 name: "Fake CryptoKitties NFT",
                 address: "0xabA544c167443f3feE33Fb49Ee7b1b49594C25F3",
+                description : "This is a mock CryptoKitties ERC1155 NFT for testing in testnet networks",
                 tokenId: "11",
                 image: "https://img.cryptokitties.co/0x06012c8cf97bead5deae237070f9587f8e7a266d/11.svg"
             },
             {
                 name: "Fake CryptoKitties NFT",
                 address: "0xabA544c167443f3feE33Fb49Ee7b1b49594C25F3",
+                description : "This is a mock CryptoKitties ERC1155 NFT for testing in testnet networks",
                 tokenId: "12",
                 image: "https://img.cryptokitties.co/0x06012c8cf97bead5deae237070f9587f8e7a266d/12.svg"
             },
