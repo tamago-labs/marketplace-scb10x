@@ -50,17 +50,16 @@ const AllCollectionPage = () => {
   const [collections, setCollections] = useState([]);
   const { getTopCollectionsByIndex, getCollectionsTotal } = useOrder();
   const [pageCount, setPageCount] = useState(0);
-  const [totalCount, setTotalCount] = useState(0);
 
   useEffect(() => {
     getTopCollectionsByIndex(0, LIMIT_PER_PAGE).then(setCollections);
+    getCollectionsTotal().then(
+      (totalCount) => {
+        setPageCount(Math.ceil(totalCount / LIMIT_PER_PAGE));
+      }
+    );
+    
   }, []);
-
-  useEffect(() => {
-    getCollectionsTotal().then(setTotalCount);
-    setPageCount(Math.ceil(totalCount / LIMIT_PER_PAGE));
-  }, [totalCount]);
-
   const handlePageClick = async (data) => {
     let currentPage = data.selected;
     // setCurrentPageIndex(currentPage);
@@ -73,7 +72,7 @@ const AllCollectionPage = () => {
   return (
     <Container>
       <div>
-        <h4>Top Collections</h4>
+        <h4>All Collections</h4>
         <RankTable>
           <tbody>
             {collections.map((item, index) => {
@@ -94,15 +93,16 @@ const AllCollectionPage = () => {
             })}
           </tbody>
         </RankTable>
-        <Link to={`/`} style={{ color: "#ffff" }}>
+        {/* <Link to={`/`} style={{ color: "#ffff" }}>
           <ChevronsLeft />
           back
-        </Link>
+        </Link> */}
         <div
           style={{
             display: "flex",
             justifyContent: "center",
             textAlign: "center",
+            marginTop: "2rem"
           }}
         >
           <ReactPaginate

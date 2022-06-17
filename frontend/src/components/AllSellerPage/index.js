@@ -50,16 +50,16 @@ const AllSellerPage = () => {
   const [sellers, setSellers] = useState([]);
   const { getTopSellersByIndex, getSellersTotal } = useOrder();
   const [pageCount, setPageCount] = useState(0);
-  const [totalCount, setTotalCount] = useState(0);
 
   useEffect(() => {
     getTopSellersByIndex(0, LIMIT_PER_PAGE).then(setSellers);
-  }, []);
+    getSellersTotal().then(
+      (totalCount) => {
+        setPageCount(Math.ceil(totalCount / LIMIT_PER_PAGE));
+      }
+    );
 
-  useEffect(() => {
-    getSellersTotal().then(setTotalCount);
-    setPageCount(Math.ceil(totalCount / LIMIT_PER_PAGE));
-  }, [totalCount]);
+  }, []);
 
   const handlePageClick = async (data) => {
     let currentPage = data.selected;
@@ -72,7 +72,7 @@ const AllSellerPage = () => {
   return (
     <Container>
       <div>
-        <h4>Top Sellers</h4>
+        <h4>All Sellers</h4>
         <RankTable>
           <tbody>
             {sellers.map((item, index) => {
@@ -95,15 +95,16 @@ const AllSellerPage = () => {
             })}
           </tbody>
         </RankTable>
-        <Link to={`/`} style={{ color: "#ffff" }}>
+        {/* <Link to={`/`} style={{ color: "#ffff" }}>
           <ChevronsLeft />
           back
-        </Link>
+        </Link> */}
         <div
           style={{
             display: "flex",
             justifyContent: "center",
             textAlign: "center",
+            marginTop: "2rem"
           }}
         >
           <ReactPaginate

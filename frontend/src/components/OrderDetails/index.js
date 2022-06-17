@@ -15,6 +15,10 @@ import { AlertWarning, AlertError } from "../alert";
 import Skeleton from "react-loading-skeleton";
 import { useWeb3React } from "@web3-react/core";
 import useActivities from "../../hooks/useActivities";
+import Metadata from "./metadata"
+import Activities from "./activities";
+import Pending from "./pending"
+
 
 const Container = styled.div.attrs(() => ({ className: "container" }))`
   margin-top: 2rem;
@@ -106,7 +110,7 @@ const Image = styled.img`
 `;
 
 
-const Info = styled(({ className, name, value, link }) => {
+export const Info = styled(({ className, name, value, link }) => {
     return (
         <div className={className}>
             <label>{name}</label>
@@ -175,6 +179,10 @@ const OrderDetails = () => {
     const [tick, setTick] = useState(0)
     const [sellerName, setSellerName] = useState();
 
+    const [activities, setActivities] = useState()
+
+    const { getActivitiesFromOrder } = useActivities()
+
     const { id } = useParams();
 
     useEffect(() => {
@@ -196,6 +204,14 @@ const OrderDetails = () => {
         }
     }, [order, tick]);
 
+
+    useEffect(() => {
+
+        if (order) {
+            getActivitiesFromOrder(order.chainId, order.orderId).then(setActivities)
+        }
+
+    }, [order])
 
     useEffect(() => {
 
@@ -265,6 +281,15 @@ const OrderDetails = () => {
         }
     }
 
+    const isPendingClaim = useMemo(() => {
+        if (order && activities && activities.length > 0) {
+            if (order.ownerAddress.toLowerCase() === account.toLowerCase() && activities.find(item => item.type === "claim")) {
+                return true
+            }
+        }
+        return false
+    }, [activities, account, order])
+
     if (!order) {
         return <Container>Loading...</Container>;
     }
@@ -327,9 +352,6 @@ const OrderDetails = () => {
                                     Number(order.timestamp) * 1000
                                 ).toLocaleString()}
                             />
-
-
-
                         </div>
                     </div>
                 </AssetDetails>
@@ -341,24 +363,23 @@ const OrderDetails = () => {
                 <AlertError>
                     Please be aware that the order is already fulfilled or canceled
                 </AlertError>
-            )
+            )}
 
-            }
-
-
-
-
+            {isPendingClaim && (
+                <Pending 
+                    activities={activities}
+                    orderId={order && order.orderId}
+                    order={order}
+                />
+            )}
 
             {/* ITEMS */}
-
-
             <div style={{ maxWidth: "900px", marginLeft: "auto", marginRight: "auto" }}>
                 <StyledTabs defaultActiveKey="swaps" className="mt-3 mb-3">
                     <Tab
                         eventKey="swaps"
                         title="Assets to Swap"
                     >
-
                         <div>
                             <div
                                 style={{
@@ -380,7 +401,6 @@ const OrderDetails = () => {
                                 </div>
                             </div>
                         </div>
-
                         <div style={{ marginTop: "1rem", marginBottom: "1rem", height: "40px" }}>
                             {account && crossChain && (
                                 <div className="text-center">
@@ -391,9 +411,7 @@ const OrderDetails = () => {
                             {!account && (
                                 <AlertWarning>Connect your wallet to continue</AlertWarning>
                             )}
-
                         </div>
-
                         <div
                             style={{
                                 display: "flex",
@@ -418,8 +436,6 @@ const OrderDetails = () => {
                                 );
                             })}
                         </div>
-
-
                     </Tab>
                     <Tab
                         eventKey="activities"
@@ -428,6 +444,7 @@ const OrderDetails = () => {
                         <Activities
                             chainId={order.chainId}
                             orderId={order.orderId}
+                            activities={activities}
                         />
                     </Tab>
                     <Tab
@@ -440,183 +457,12 @@ const OrderDetails = () => {
                     </Tab>
                 </StyledTabs>
             </div>
-
-
-
         </Container>
     )
 }
 
 
-const ActivitiesTable = styled(Table)`
-  color: #fff;
-`
 
 
-const Activities = ({
-    chainId,
-    orderId
-}) => {
-
-    const [activities, setActivities] = useState()
-
-    const { getActivitiesFromOrder } = useActivities(chainId)
-
-    useEffect(() => {
-
-        if (orderId) {
-            getActivitiesFromOrder(orderId).then(setActivities)
-        }
-
-    }, [orderId])
-
-    return (
-        <div>
-            <ActivitiesTable>
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Type</th>
-                        <th>From</th>
-                        <th>Transaction</th>
-
-
-                        <th>Timestamp</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {activities
-                        ? activities.map((data, index) => {
-
-                            const buyerLink = resolveBlockexplorerLink(chainId, data.buyer);
-                            const txLink = resolveBlockexplorerLink(chainId, data.transaction, false)
-
-                            return (
-                                <tr key={index} >
-                                    <th>
-                                        #{index + 1}
-                                    </th>
-                                    <th>
-                                        {data.type === "swap" ? "Swapped" : "Claimed (B)"}
-                                    </th>
-                                    <th>
-                                        <a style={{ color: "inherit", textDecoration: "none" }} target="_blank" href={buyerLink}>
-                                            {shortAddress(data.buyer)}
-                                        </a>
-                                    </th>
-
-                                    <th>
-                                        <a style={{ color: "inherit", textDecoration: "none" }} target="_blank" href={txLink}>
-                                            {shortAddress(data.transaction, 10, -6)}
-                                        </a>
-
-                                    </th>
-
-
-                                    <th>
-                                        {(new Date(data.timestamp)).toLocaleString()}
-                                    </th>
-                                    <th>
-
-                                    </th>
-                                </tr>
-                            )
-                        })
-                        : ""}
-                </tbody>
-            </ActivitiesTable>
-        </div>
-    )
-}
-
-const Metadata = ({
-    data
-}) => {
-
-    const parseUri = (nft) => {
-
-        if (!nft) {
-            return ""
-        }
-
-        let uri = nft && nft.token_uri && nft.token_uri.replaceAll("000000000000000000000000000000000000000000000000000000000000000", "")
-
-        if (uri.indexOf("https://") === -1) {
-            uri = `https://${uri}`
-        }
-
-        if (uri.indexOf("{id}") !== -1) {
-            uri = uri.replaceAll("{id}", nft.token_id)
-        }
-        return uri
-    }
-
-    return (
-        <div>
-            {!data &&
-                <>
-                    <Skeleton />
-                    <Skeleton />
-                </>
-            }
-            {data && (
-                <>
-                    {data.contract_type && <Info
-                        name={"Type"}
-                        value={data.contract_type}
-
-                    />}
-                    {data.amount && <Info
-                        name={"Minted"}
-                        value={data.amount}
-
-                    />}
-                    {data.token_id && <Info
-                        name={"ID"}
-                        value={data.token_id}
-
-                    />}
-                    {data.token_address && <Info
-                        name={"Contract Address"}
-                        value={data.token_address}
-
-                    />}
-                    {data.owner_of && <Info
-                        name={"Owner Address"}
-                        value={data.owner_of}
-
-                    />}
-                    {data.token_uri &&
-                        <Info
-                            name={"URI"}
-                            value={parseUri(data)}
-
-                        />
-                    }
-                    {data.metadata && data.metadata.attributes && data.metadata.attributes.map((item, index) => {
-
-                        if (!item.trait_type || !item.value) {
-                            return
-                        }
-
-                        return (
-                            <Info
-                                name={item.trait_type}
-                                value={item.value}
-
-                            />
-                        )
-                    })
-
-                    }
-
-                </>
-            )
-
-            }
-        </div>
-    )
-}
 
 export default OrderDetails;

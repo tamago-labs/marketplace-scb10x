@@ -71,7 +71,7 @@ const History = ({
                                 <tr key={index}>
                                     <ColWithLink navigate={navigate} orderId={data.orderId}>{data.orderId}</ColWithLink>
                                     <ColWithLink navigate={navigate} orderId={data.orderId}>{resolveNetworkName(data.chainId)}</ColWithLink>
-                                    <ColWithLink navigate={navigate} orderId={data.orderId}>{data.type === "swap" ? "Swapped" : "Claimed (B)"}</ColWithLink>
+                                    <ColWithLink navigate={navigate} orderId={data.orderId}>{data.type === "claim" ? ( data.isOriginChain ? "Claimed (B)" : "Claimed (S)" ) : "Swapped"}</ColWithLink>
                                     <th>
                                         <a style={{ color: "inherit", textDecoration: "none" }} target="_blank" href={txLink}>
                                             {shortAddress(data.transaction, 10, -6)}

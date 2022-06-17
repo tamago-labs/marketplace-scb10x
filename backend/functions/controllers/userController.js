@@ -11,8 +11,9 @@ exports.getUsers = async (req, res, next) => {
       return res.status(204).json({ message: "empty query return" })
     }
 
-    users = users.docs.map((doc) => ({
+    users = users.docs.map((doc, index) => ({
       ...doc.data(),
+      queryIndex: (+offset || 0) + index + 1
     }))
 
     const totalUsers = await db.collection("users").get()
