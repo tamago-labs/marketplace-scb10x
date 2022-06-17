@@ -5,7 +5,10 @@ window.Buffer = window.Buffer || require("buffer").Buffer;
 const useOpenSea = () => {
   const getOpenSeaLink = (chain, address, tokenId) => {
     const chainName = chain.toLowerCase();
-    const url = `https://testnets.opensea.io/assets/${address}/${tokenId}`;
+    if (tokenId === undefined) {
+      tokenId = "";
+    }
+    const url = `https://testnets.opensea.io/assets/${chainName}/${address}/${tokenId}`;
     return url;
   };
 

@@ -80,7 +80,7 @@ const AllCollectionPage = () => {
             {collections.map((item, index) => {
               return (
                 <TR key={`collection-${index}`}>
-                  <TH>#{index + 1}</TH>
+                  <TH>#{item.queryIndex}</TH>
                   <td>
                     <Link to={`/orders/collection/${item.address}`}>
                       {item.name || shortAddress(item.address, 10, -6)}

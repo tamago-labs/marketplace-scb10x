@@ -3,7 +3,7 @@ import styled from "styled-components";
 import Skeleton from "react-loading-skeleton";
 import { Badge } from "reactstrap";
 import { Link } from "react-router-dom";
-import { MoreVertical, ChevronDown } from "react-feather";
+import { MoreVertical, ChevronsDown } from "react-feather";
 import { resolveBlockexplorerLink, resolveNetworkName } from "../helper";
 import useOpenSea from "../hooks/useOpenSea";
 
@@ -69,39 +69,72 @@ const ChainBadge = styled(Badge).attrs(() => ({ color: "success" }))`
   margin-right: auto;
 `;
 
-const MoreInfo = styled(({ className, chainId, assetAddress, isERC20 }) => {
-  const [menuVisible, setMenuVisible] = useState(false);
-  const [link, setLink] = useState("");
+const ThreeDotsButton = styled.button`
+  div {
+    background-color: #fa58b6;
+    border-radius: 50%;
+  }
+`;
 
-  const blockExplorerLink = resolveBlockexplorerLink(chainId, assetAddress);
-  const { getOpenSeaLink } = useOpenSea();
+const AVALABLE_TESTNET_OPENSEA = [
+  "Ropsten",
+  "Rinksby",
+  "Goerli",
+  "Kovan",
+  "Mumbai",
+];
 
-  useEffect(() => {
-    setLink(getOpenSeaLink(resolveNetworkName(chainId), assetAddress));
-  }, []);
+const MoreInfo = styled(
+  ({ className, chainId, assetAddress, isERC20, tokenId }) => {
+    const [menuVisible, setMenuVisible] = useState(false);
+    const [link, setLink] = useState("");
+    const [isAvailableOpenseaChain, setIsAvailableOpenseaChain] =
+      useState(undefined);
+    const [networkName, setNetworkName] = useState("");
+    const blockExplorerLink = resolveBlockexplorerLink(chainId, assetAddress);
+    const { getOpenSeaLink } = useOpenSea();
 
-  return (
-    <div className={className}>
-      <button onClick={() => setMenuVisible(!menuVisible)}>
-        <MoreVertical color={!isERC20 ? "#7a0bc0" : "white"} border="" />
-      </button>
-      {menuVisible && (
-        <div className="--menu">
+    useEffect(() => {
+      setNetworkName(resolveNetworkName(chainId));
+      setLink(getOpenSeaLink(networkName, assetAddress, tokenId));
+      if (AVALABLE_TESTNET_OPENSEA.includes(networkName)) {
+        setIsAvailableOpenseaChain(true);
+      }
+    }, [networkName, isAvailableOpenseaChain]);
+
+    return (
+      <div className={className}>
+        <ThreeDotsButton onClick={() => setMenuVisible(!menuVisible)}>
           <div>
-            <a href={blockExplorerLink} target="_blank" className="--menu-item">
-              Contract Address
-            </a>
+            <ChevronsDown color={!isERC20 ? "#ffff" : "white"} />
           </div>
-          <div>
-            <a href={link} target="_blank" className="--menu-item">
-              Open Sea
-            </a>
+        </ThreeDotsButton>
+        {menuVisible && (
+          <div className="--menu">
+            <div>
+              <a
+                href={blockExplorerLink}
+                target="_blank"
+                className="--menu-item"
+              >
+                Contract Address
+              </a>
+            </div>
+            <div>
+              {isAvailableOpenseaChain ? (
+                <a href={link} target="_blank" className="--menu-item">
+                  OpenSea
+                </a>
+              ) : (
+                ""
+              )}
+            </div>
           </div>
-        </div>
-      )}
-    </div>
-  );
-})`
+        )}
+      </div>
+    );
+  }
+)`
   position: absolute;
   top: 5px;
   right: 5px;

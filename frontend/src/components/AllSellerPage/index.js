@@ -80,7 +80,7 @@ const AllSellerPage = () => {
             {sellers.map((item, index) => {
               return (
                 <TR key={`seller-${index}`}>
-                  <TH>#{(index + 1) }</TH>
+                  <TH>#{item.queryIndex}</TH>
                   <td>
                     <Link to={`/orders/owner/${item.address}`}>
                       {item.name
