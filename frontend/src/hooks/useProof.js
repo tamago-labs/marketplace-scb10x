@@ -57,6 +57,8 @@ const useProof = () => {
         return messages
     }
 
+
+
     const generateBuyerTickets = async ({
         providers,
         relayMessages,
@@ -94,9 +96,9 @@ const useProof = () => {
                     if (result['active']) {
                         // Buyer
                         claims.push({
-                            orderId: message.orderId,
+                            orderId: Number(message.orderId),
                             chainId,
-                            claimerAddress: result['buyer'],
+                            claimerAddress: (result['buyer']).toLowerCase(),
                             isOrigin: true
                         })
 
@@ -166,12 +168,12 @@ const useProof = () => {
                             try {
                                 const result = await marketplaceContract.partialOrders(orderId)
 
-                                if ( !result["ended"] && (result['buyer']).toLowerCase() === fromAddress.toLowerCase()) {
+                                if (!result["ended"] && (result['buyer']).toLowerCase() === fromAddress.toLowerCase()) {
                                     // granting a ticket for the seller
                                     claims.push({
-                                        orderId: orderId,
+                                        orderId: Number(orderId),
                                         chainId: pairItem.chainId,
-                                        claimerAddress: originalItem.ownerAddress,
+                                        claimerAddress: (originalItem.ownerAddress).toLowerCase(),
                                         isOrigin: false
                                     })
                                     break
@@ -206,7 +208,7 @@ const useProof = () => {
         })
 
         const sellerTickers = await generateSellerTickets({
-            providers, 
+            providers,
             orders
         })
 
@@ -217,9 +219,69 @@ const useProof = () => {
         return claims
     }
 
+    const checkPendingClaims = async (account) => {
+        const { data } = await axios.get(`${API_BASE}/orders`)
+        const { orders } = data
+
+        const providers = getProviders()
+
+        const sellerTickets = await generateSellerTickets({
+            providers,
+            orders
+        })
+
+        return sellerTickets.filter(item => (item.claimerAddress).toLowerCase() === (account).toLowerCase())
+    }
+
+    const getMyClaim = async (orderId, buyer) => { 
+
+        const { data } = await axios.get(`${API_BASE}/orders`)
+        const { orders } = data
+
+        const providers = getProviders()
+
+        const currentOrder = orders.find(item => item.orderId === orderId)
+
+        for (let pairItem of currentOrder.barterList) {
+            const row = providers.find(item => Number(item.chainId) === Number(pairItem.chainId))
+
+            if (row && row.provider) {
+                const { provider } = row
+                const { contractAddress } = NFT_MARKETPLACE.find(item => Number(item.chainId) === Number(pairItem.chainId))
+
+                const marketplaceContract = new ethers.Contract(contractAddress, MarketplaceABI, provider)
+
+                try {
+                    const result = await marketplaceContract.partialOrders(orderId) 
+                    if (!result["ended"] && (result['buyer']).toLowerCase() === buyer.toLowerCase()) {
+                        return {
+                            ...pairItem,
+                            claimed : false
+                        }
+                    }
+                    if (result["ended"]) {
+                        return {
+                            ...pairItem,
+                            claimed : true
+                        }
+                    }
+
+                } catch (e) {
+                    // console.log("no active oriders on chain id : ", pairItem.chainId)
+                }
+
+            }
+
+        }
+        return
+    }
+
+
     return {
         generateRelayMessages,
-        generateValidatorMessages
+        generateValidatorMessages,
+        checkPendingClaims,
+        getMyClaim
     }
 }
 

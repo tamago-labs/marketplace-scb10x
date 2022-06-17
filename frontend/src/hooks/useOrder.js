@@ -12,7 +12,7 @@ import axios from "axios";
 import { ethers } from "ethers";
 import { MerkleTree } from "merkletreejs";
 import keccak256 from "keccak256";
-import { API_BASE, NFT_MARKETPLACE } from "../constants";
+import { API_BASE, NFT_MARKETPLACE, MOCK_NFT } from "../constants";
 import MarketplaceABI from "../abi/marketplace.json";
 import NFTABI from "../abi/nft.json";
 import ERC20ABI from "../abi/erc20.json";
@@ -654,6 +654,38 @@ const useOrder = () => {
     [account, chainId, library]
   );
 
+  const claimSeller = useCallback(async (order, pairChainId) => {
+
+    console.log("claiming seller ", order.orderId)
+
+    if (!account) {
+      throw new Error("Wallet not connected")
+    }
+
+    if ((NFT_MARKETPLACE.filter(item => item.chainId === pairChainId)).length === 0) {
+      throw new Error("Marketplace contract is not available on given chain")
+    }
+
+    if (chainId !== pairChainId) {
+      throw new Error("Invalid chain")
+    }
+
+    const { contractAddress } = NFT_MARKETPLACE.find(item => item.chainId === pairChainId)
+
+    const contract = new ethers.Contract(contractAddress, MarketplaceABI, library.getSigner())
+
+    const proof = await generateClaimProof(order, false, pairChainId)
+
+    console.log("proof --> ", proof)
+
+    const tx = await contract.claim(order.orderId, false, proof)
+
+    return await tx.wait()
+
+  }, [account, chainId, library])
+
+
+
   const getOrdersByCollection = useCallback(async (address) => {
     const { data } = await axios.get(
       `${API_BASE}/orders/collection/${address}`
@@ -743,6 +775,7 @@ const useOrder = () => {
     swap,
     partialSwap,
     claim,
+    claimSeller,
     resolveStatus,
     getMetadata,
     getAccountOrders,
