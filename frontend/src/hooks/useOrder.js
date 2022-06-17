@@ -614,6 +614,14 @@ const useOrder = () => {
 
   }, []);
 
+  const getTopCollectionsByIndex = useCallback(async (startIndex, limitNum) => {
+    const { data } = await axios.get(
+      `${API_BASE}/collections?chain=80001,42&offset=${startIndex}&limit=${limitNum}`
+    );
+    const { collections } = data;
+    return collections;
+  }, []);
+
   return {
     getAllOrders,
     getOrder,
