@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import styled from "styled-components";
 import Skeleton from "react-loading-skeleton";
 import { Badge } from "reactstrap";
 import { Link } from "react-router-dom";
-import { MoreVertical, ChevronDown } from "react-feather";
+import { MoreVertical, ChevronsDown } from "react-feather";
 import { resolveBlockexplorerLink, resolveNetworkName } from "../helper";
+import useOpenSea from "../hooks/useOpenSea";
 
 const AssetCardContainer = styled.div`
   background-color: #7a0bc0;
@@ -68,26 +69,72 @@ const ChainBadge = styled(Badge).attrs(() => ({ color: "success" }))`
   margin-right: auto;
 `;
 
-const MoreInfo = styled(({ className, chainId, assetAddress, isERC20 }) => {
-  const [menuVisible, setMenuVisible] = useState(false);
+const ThreeDotsButton = styled.button`
+  div {
+    background-color: #fa58b6;
+    border-radius: 50%;
+  }
+`;
 
-  const blockExplorerLink = resolveBlockexplorerLink(chainId, assetAddress);
+const AVALABLE_TESTNET_OPENSEA = [
+  "Ropsten",
+  "Rinksby",
+  "Goerli",
+  "Kovan",
+  "Mumbai",
+];
 
-  return (
-    <div className={className}>
-      <button onClick={() => setMenuVisible(!menuVisible)}>
-        <MoreVertical color={ !isERC20 ? "#7a0bc0" : "white" } border="" />
-      </button>
-      {menuVisible && (
-        <div className="--menu">
-          <a href={blockExplorerLink} target="_blank" className="--menu-item">
-            Contract Address
-          </a>
-        </div>
-      )}
-    </div>
-  );
-})`
+const MoreInfo = styled(
+  ({ className, chainId, assetAddress, isERC20, tokenId }) => {
+    const [menuVisible, setMenuVisible] = useState(false);
+    // const [link, setLink] = useState("");
+    // const [isAvailableOpenseaChain, setIsAvailableOpenseaChain] =
+    //   useState(undefined);
+    const [networkName, setNetworkName] = useState("");
+    const blockExplorerLink = resolveBlockexplorerLink(chainId, assetAddress);
+    const { getOpenSeaLink } = useOpenSea();
+
+    useEffect(() => {
+      setNetworkName(resolveNetworkName(chainId));
+      // setLink(getOpenSeaLink(networkName, assetAddress, tokenId));
+      // if (AVALABLE_TESTNET_OPENSEA.includes(networkName)) {
+      //   setIsAvailableOpenseaChain(true);
+      // }
+    }, [networkName]);
+
+    return (
+      <div className={className}>
+        <ThreeDotsButton onClick={() => setMenuVisible(!menuVisible)}>
+          <div>
+            <MoreVertical color={!isERC20 ? "#ffff" : "white"} />
+          </div>
+        </ThreeDotsButton>
+        {menuVisible && (
+          <div className="--menu">
+            <div>
+              <a
+                href={blockExplorerLink}
+                target="_blank"
+                className="--menu-item"
+              >
+                Contract Address
+              </a>
+            </div>
+            {/* <div>
+              {isAvailableOpenseaChain ? (
+                <a href={link} target="_blank" className="--menu-item">
+                  OpenSea
+                </a>
+              ) : (
+                ""
+              )}
+            </div> */}
+          </div>
+        )}
+      </div>
+    );
+  }
+)`
   position: absolute;
   top: 5px;
   right: 5px;
@@ -105,7 +152,7 @@ const MoreInfo = styled(({ className, chainId, assetAddress, isERC20 }) => {
   .--menu {
     margin-top: 5px;
     position: absolute;
-    background: #7a0bc0;
+    background: #fa58b6;
     color: #ffff;
     right: -2px;
     padding: 5px;
@@ -130,11 +177,19 @@ export const BaseAssetCard = ({
   chainId,
   assetAddress,
   tokenId,
-  orderId
+  orderId,
 }) => (
   <BaseAssetCardContainer>
     <PreviewContainer>
-      {image ? <Link to={`/order/${orderId}`}><Image src={image} /></Link> : <Link to={`/order/${orderId}`}><Skeleton height="220px" /></Link>}
+      {image ? (
+        <Link to={`/order/${orderId}`}>
+          <Image src={image} />
+        </Link>
+      ) : (
+        <Link to={`/order/${orderId}`}>
+          <Skeleton height="220px" />
+        </Link>
+      )}
       {chainId && (
         <ChainInfo>
           <div>{resolveNetworkName(chainId)}</div>
@@ -172,7 +227,7 @@ export const PairAssetCard = ({
               display: "flex",
               height: "220px",
               border: "1px solid #fa58b6",
-              borderRadius: "20px"
+              borderRadius: "20px",
             }}
           >
             <div style={{ margin: "auto", fontSize: "24px" }}>ERC-20</div>

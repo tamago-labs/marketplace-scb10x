@@ -17,13 +17,12 @@ import MarketplaceABI from "../abi/marketplace.json";
 import NFTABI from "../abi/nft.json";
 import ERC20ABI from "../abi/erc20.json";
 import collection from "../components/Collection";
-import { getProviders } from "../helper"
+import { getProviders } from "../helper";
 import useProof from "./useProof";
 
 window.Buffer = window.Buffer || require("buffer").Buffer;
 
 const useOrder = () => {
-
   const Web3Api = useMoralisWeb3Api()
 
   const context = useWeb3React()
@@ -80,30 +79,22 @@ const useOrder = () => {
   }, [account])
 
   const getTopSellers = useCallback(async () => {
-
     const { data } = await axios.get(`${API_BASE}/users?chain=80001,42`)
-
     const { users } = data
-
     return users
   }, [])
 
   const getTopCollections = useCallback(async () => {
     const { data } = await axios.get(`${API_BASE}/collections?chain=80001,42`)
-
     const { collections } = data
-
     return collections
   }, [])
 
   const getOrder = useCallback(async (id) => {
-
     const { data } = await axios.get(`${API_BASE}/orders/${id}`)
-
     if (data.status !== "ok") {
       return
     }
-
     return data.order
   }, [])
 
@@ -591,6 +582,26 @@ const useOrder = () => {
     return data.orders;
   }, []);
 
+  const getSellersTotal = useCallback(async () => {
+    const { data } = await axios.get(`${API_BASE}/users?chain=80001,42`);
+    const { totalCount } = data;
+    return totalCount;
+  }, []);
+
+  const getCollectionsTotal = useCallback(async () => {
+    const { data } = await axios.get(`${API_BASE}/collections?chain=80001,42`);
+    const { totalCount } = data;
+    return totalCount;
+  }, []);
+
+  const getTopSellersByIndex = useCallback(async (startIndex, limitNum) => {
+    const { data } = await axios.get(
+      `${API_BASE}/users?chain=80001,42&offset=${startIndex}&limit=${limitNum}`
+    );
+    const { users } = data;
+    return users;
+  }, []);
+
   const getOwnerName = useCallback(async (ownerAddress) => {
     const { data } = await axios.get(
       `https://api.tamago.finance/v2/account/${ownerAddress}`
@@ -601,6 +612,14 @@ const useOrder = () => {
 
     return data.nickname || "Unknown"
 
+  }, []);
+
+  const getTopCollectionsByIndex = useCallback(async (startIndex, limitNum) => {
+    const { data } = await axios.get(
+      `${API_BASE}/collections?chain=80001,42&offset=${startIndex}&limit=${limitNum}`
+    );
+    const { collections } = data;
+    return collections;
   }, []);
 
   return {
@@ -623,9 +642,13 @@ const useOrder = () => {
     getAccountOrders,
     eligibleToClaim,
     generateClaimProof,
+    getTopCollections,
+    getTopCollectionsByIndex,
     getTopSellers,
-    getTopCollections
+    getTopSellersByIndex, 
+    getSellersTotal,
+    getCollectionsTotal
   }
-}
+};
 
-export default useOrder
+export default useOrder;
