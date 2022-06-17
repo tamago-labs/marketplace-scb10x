@@ -50,14 +50,12 @@ const AllCollectionPage = () => {
   const [collections, setCollections] = useState([]);
   const { getTopCollectionsByIndex, getCollectionsTotal } = useOrder();
   const [pageCount, setPageCount] = useState(0);
-  const [totalCount, setTotalCount] = useState(0);
 
   useEffect(() => {
     getTopCollectionsByIndex(0, LIMIT_PER_PAGE).then(setCollections);
     getCollectionsTotal().then(
       (totalCount) => {
         setPageCount(Math.ceil(totalCount / LIMIT_PER_PAGE));
-        setTotalCount(totalCount)
       }
     );
     

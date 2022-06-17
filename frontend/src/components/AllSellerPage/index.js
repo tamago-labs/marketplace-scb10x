@@ -50,14 +50,12 @@ const AllSellerPage = () => {
   const [sellers, setSellers] = useState([]);
   const { getTopSellersByIndex, getSellersTotal } = useOrder();
   const [pageCount, setPageCount] = useState(0);
-  const [totalCount, setTotalCount] = useState(0);
 
   useEffect(() => {
     getTopSellersByIndex(0, LIMIT_PER_PAGE).then(setSellers);
     getSellersTotal().then(
       (totalCount) => {
         setPageCount(Math.ceil(totalCount / LIMIT_PER_PAGE));
-        setTotalCount(totalCount)
       }
     );
 
