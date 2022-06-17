@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import useOrder from "../hooks/useOrder";
 import { ChevronsRight } from "react-feather";
 import { shortAddress } from "../helper";
+import Skeleton from "react-loading-skeleton";
 
 /* Styled Component */
 const Container = styled.div.attrs(() => ({ className: "container" }))`
@@ -49,6 +50,18 @@ const TR = styled.tr.attrs(() => ({}))`
   }
 `;
 
+const Loading = () => {
+  return (
+    <>
+      <Skeleton style={{marginBottom : "4px"}} height="28px" /> 
+      <Skeleton style={{marginBottom : "4px"}} height="28px" /> 
+      <Skeleton style={{marginBottom : "4px"}} height="28px"/> 
+      <Skeleton style={{marginBottom : "4px"}} height="28px"/> 
+      <Skeleton style={{marginBottom : "26px"}} height="28px"/>
+    </>
+  )
+}
+
 const RankBoard = () => {
   const [sellers, setSellers] = useState([]);
   const [collections, setCollections] = useState([]);
@@ -88,6 +101,7 @@ const RankBoard = () => {
               })}
             </tbody>
           </RankTable>
+          {(collections.length === 0) && <Loading />}
           <Link to={`/all-collection`} style={{ color: "#ffff" }}>
             Full List<ChevronsRight></ChevronsRight>{" "}
           </Link>
@@ -117,6 +131,7 @@ const RankBoard = () => {
               })}
             </tbody>
           </RankTable>
+          {(sellers.length === 0) && <Loading />}
           <Link to={`/all-sellers`} style={{ color: "#ffff" }}>
             Full List<ChevronsRight></ChevronsRight>{" "}
           </Link>
