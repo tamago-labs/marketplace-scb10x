@@ -159,6 +159,7 @@ const MoreInfo = styled(
     z-index: 20;
     font-size: 12px;
     width: 100%;
+    border: 1px solid #fa58b6;
 
     .--menu-item {
       color: inherit;
