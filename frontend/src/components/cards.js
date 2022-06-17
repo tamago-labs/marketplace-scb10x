@@ -87,26 +87,26 @@ const AVALABLE_TESTNET_OPENSEA = [
 const MoreInfo = styled(
   ({ className, chainId, assetAddress, isERC20, tokenId }) => {
     const [menuVisible, setMenuVisible] = useState(false);
-    const [link, setLink] = useState("");
-    const [isAvailableOpenseaChain, setIsAvailableOpenseaChain] =
-      useState(undefined);
+    // const [link, setLink] = useState("");
+    // const [isAvailableOpenseaChain, setIsAvailableOpenseaChain] =
+    //   useState(undefined);
     const [networkName, setNetworkName] = useState("");
     const blockExplorerLink = resolveBlockexplorerLink(chainId, assetAddress);
     const { getOpenSeaLink } = useOpenSea();
 
     useEffect(() => {
       setNetworkName(resolveNetworkName(chainId));
-      setLink(getOpenSeaLink(networkName, assetAddress, tokenId));
-      if (AVALABLE_TESTNET_OPENSEA.includes(networkName)) {
-        setIsAvailableOpenseaChain(true);
-      }
-    }, [networkName, isAvailableOpenseaChain]);
+      // setLink(getOpenSeaLink(networkName, assetAddress, tokenId));
+      // if (AVALABLE_TESTNET_OPENSEA.includes(networkName)) {
+      //   setIsAvailableOpenseaChain(true);
+      // }
+    }, [networkName]);
 
     return (
       <div className={className}>
         <ThreeDotsButton onClick={() => setMenuVisible(!menuVisible)}>
           <div>
-            <ChevronsDown color={!isERC20 ? "#ffff" : "white"} />
+            <MoreVertical color={!isERC20 ? "#ffff" : "white"} />
           </div>
         </ThreeDotsButton>
         {menuVisible && (
@@ -120,7 +120,7 @@ const MoreInfo = styled(
                 Contract Address
               </a>
             </div>
-            <div>
+            {/* <div>
               {isAvailableOpenseaChain ? (
                 <a href={link} target="_blank" className="--menu-item">
                   OpenSea
@@ -128,7 +128,7 @@ const MoreInfo = styled(
               ) : (
                 ""
               )}
-            </div>
+            </div> */}
           </div>
         )}
       </div>
@@ -152,7 +152,7 @@ const MoreInfo = styled(
   .--menu {
     margin-top: 5px;
     position: absolute;
-    background: #7a0bc0;
+    background: #fa58b6;
     color: #ffff;
     right: -2px;
     padding: 5px;
