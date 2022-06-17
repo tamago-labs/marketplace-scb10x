@@ -76,13 +76,7 @@ const ThreeDotsButton = styled.button`
   }
 `;
 
-const AVALABLE_TESTNET_OPENSEA = [
-  "Ropsten",
-  "Rinksby",
-  "Goerli",
-  "Kovan",
-  "Mumbai",
-];
+const AVALABLE_TESTNET_OPENSEA = ["Ropsten", "Rinksby", "Goerli", "Mumbai"];
 
 const MoreInfo = styled(
   ({ className, chainId, assetAddress, isERC20, tokenId }) => {

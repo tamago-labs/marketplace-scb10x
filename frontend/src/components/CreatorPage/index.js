@@ -1,11 +1,12 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import styled from "styled-components";
 import NFTCard from "../nftCard";
 import useOrder from "../../hooks/useOrder";
-import { Button } from "../../components/buttons";
+import { Button as MoreButton } from "../../components/buttons";
 import BlankProfile from "../../images/blank_profile.webp";
 import Skeleton from "react-loading-skeleton";
+import { ButtonGroup, Button } from "reactstrap";
 
 /** Styled Component */
 const ListContainer = styled.div`
@@ -15,8 +16,12 @@ const ListContainer = styled.div`
   justify-content: center;
 `;
 const NftNameBoard = styled.div`
-background: rgb(34,193,195);
-background: linear-gradient(0deg, rgba(34,193,195,1) 0%, rgba(253,187,45,1) 100%);
+  background: rgb(34, 193, 195);
+  background: linear-gradient(
+    0deg,
+    rgba(34, 193, 195, 1) 0%,
+    rgba(253, 187, 45, 1) 100%
+  );
   color: #7a0bc0;
   border-radius: 12px;
   padding: 2rem 1rem;
@@ -48,45 +53,56 @@ const BoardDetail = styled.div`
 
 const Container = styled.div.attrs(() => ({ className: "container" }))`
   margin-top: 1rem;
-  margin-bottom: 2rem; 
-`
+  margin-bottom: 2rem;
+`;
 
 const SellerName = styled.div`
   margin-left: auto;
   margin-right: auto;
-  font-size: 20px; 
+  font-size: 20px;
   margin-top: 0.5rem;
   margin-bottom: 0.5rem;
-`
+`;
+
+const StyleRadioButton = styled(Button)`
+  background-color: #fa58b6;
+  border-color: #fa58b6;
+
+  :hover {
+    background-color: #ffff;
+    color: #fa58b6;
+  }
+`;
 
 /** CONSTANT */
 const MAX_ITEMS = 4;
 
 const SortByOwner = () => {
   const [max, setMax] = useState(MAX_ITEMS);
-  const [orders, setOrders] = useState([]); 
+  const [orders, setOrders] = useState([]);
   const [sellerName, setSellerName] = useState("");
   const { getOrdersByOwner, getOwnerName } = useOrder();
   const { ownerAddress } = useParams();
 
   useEffect(() => {
     ownerAddress && getOrdersByOwner(ownerAddress).then(setOrders);
-    ownerAddress && getOwnerName(ownerAddress).then(setSellerName)
+    ownerAddress && getOwnerName(ownerAddress).then(setSellerName);
+
+    console.log("🚀 ~ file: index.js ~ line 83 ~ SortByOwner ~ orders", orders);
+    const networkNameSet = new Set();
   }, [ownerAddress]);
 
   const collections = useMemo(() => {
-
     if (orders && orders.length > 0) {
-      return orders.reduce(( arr, item ) => {
+      return orders.reduce((arr, item) => {
         if (arr.indexOf(item.baseAssetAddress) === -1) {
-          arr.push(item.baseAssetAddress)
+          arr.push(item.baseAssetAddress);
         }
-        return arr
-      },[])
+        return arr;
+      }, []);
     }
-    return []
-
-  },[orders])
+    return [];
+  }, [orders]);
 
   return (
     <Container>
@@ -98,7 +114,11 @@ const SortByOwner = () => {
             {sellerName ? (
               <SellerName>@{sellerName}</SellerName>
             ) : (
-              <Skeleton style={{marginTop: "0.5rem", marginBottom :"0.5rem"}} height="20px" width="80px" />
+              <Skeleton
+                style={{ marginTop: "0.5rem", marginBottom: "0.5rem" }}
+                height="20px"
+                width="80px"
+              />
             )}
           </div>
           <div
@@ -126,6 +146,29 @@ const SortByOwner = () => {
             </BoardDetail> */}
           </div>
         </NftNameBoard>
+        <div>
+          <h5>Radio Buttons</h5>
+          <ButtonGroup>
+            <StyleRadioButton
+              color="primary"
+              onClick={function noRefCheck() {}}
+            >
+              Kovan
+            </StyleRadioButton>
+            <StyleRadioButton
+              color="primary"
+              onClick={function noRefCheck() {}}
+            >
+              fiji
+            </StyleRadioButton>
+            <StyleRadioButton
+              color="primary"
+              onClick={function noRefCheck() {}}
+            >
+              Three
+            </StyleRadioButton>
+          </ButtonGroup>
+        </div>
         <ListContainer>
           {orders.length === 0 && <>Loading...</>}
 
@@ -144,7 +187,7 @@ const SortByOwner = () => {
           style={{ padding: "20px", marginTop: "1rem", textAlign: "center" }}
         >
           {orders.length > max && (
-            <Button onClick={() => setMax(max + 4)}>More...</Button>
+            <MoreButton onClick={() => setMax(max + 4)}>More...</MoreButton>
           )}
         </div>
       </div>
