@@ -146,7 +146,7 @@ const SortByOwner = () => {
             </BoardDetail> */}
           </div>
         </NftNameBoard>
-        <div>
+        {/* <div>
           <h5>Radio Buttons</h5>
           <ButtonGroup>
             <StyleRadioButton
@@ -168,7 +168,7 @@ const SortByOwner = () => {
               Three
             </StyleRadioButton>
           </ButtonGroup>
-        </div>
+        </div> */}
         <ListContainer>
           {orders.length === 0 && <>Loading...</>}
 
