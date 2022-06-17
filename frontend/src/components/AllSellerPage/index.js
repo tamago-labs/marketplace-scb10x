@@ -51,18 +51,20 @@ const AllSellerPage = () => {
   const { getTopSellersByIndex, getSellersTotal } = useOrder();
   const [pageCount, setPageCount] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
-  // const [sellerNumber, setSellerNumber] = useState(0);
-  // const [currentPageIndex, setCurrentPageIndex] = useState(0);
 
   useEffect(() => {
     getTopSellersByIndex(0, LIMIT_PER_PAGE).then(setSellers);
-    getSellersTotal().then(setTotalCount);
-    setPageCount(Math.ceil(totalCount / LIMIT_PER_PAGE));
+    getSellersTotal().then(
+      (totalCount) => {
+        setPageCount(Math.ceil(totalCount / LIMIT_PER_PAGE));
+        setTotalCount(totalCount)
+      }
+    );
+
   }, []);
 
   const handlePageClick = async (data) => {
     let currentPage = data.selected;
-    // setCurrentPageIndex(currentPage);
     getTopSellersByIndex(
       parseInt(currentPage) * LIMIT_PER_PAGE,
       LIMIT_PER_PAGE
@@ -72,13 +74,13 @@ const AllSellerPage = () => {
   return (
     <Container>
       <div>
-        <h4>Top Sellers</h4>
+        <h4>All Sellers</h4>
         <RankTable>
           <tbody>
             {sellers.map((item, index) => {
               return (
                 <TR key={`seller-${index}`}>
-                  <TH>#{index + 1}</TH>
+                  <TH>#{(index + 1) }</TH>
                   <td>
                     <Link to={`/orders/owner/${item.address}`}>
                       {item.name
@@ -95,15 +97,16 @@ const AllSellerPage = () => {
             })}
           </tbody>
         </RankTable>
-        <Link to={`/`} style={{ color: "#ffff" }}>
+        {/* <Link to={`/`} style={{ color: "#ffff" }}>
           <ChevronsLeft />
           back
-        </Link>
+        </Link> */}
         <div
           style={{
             display: "flex",
             justifyContent: "center",
             textAlign: "center",
+            marginTop: "2rem"
           }}
         >
           <ReactPaginate

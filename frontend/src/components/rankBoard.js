@@ -76,7 +76,7 @@ const RankBoard = () => {
                     <TH>#{index + 1}</TH>
                     <td>
                       <Link to={`/orders/collection/${item.address}`}>
-                        { item.name || shortAddress(item.address, 10, -6) }
+                        {item.name || shortAddress(item.address, 10, -6)}
                       </Link>
                     </td>
                     <td>
@@ -89,7 +89,7 @@ const RankBoard = () => {
             </tbody>
           </RankTable>
           <Link to={`/all-collection`} style={{ color: "#ffff" }}>
-            see all collection <ChevronsRight></ChevronsRight>{" "}
+            Full List<ChevronsRight></ChevronsRight>{" "}
           </Link>
         </div>
         <div>
@@ -105,7 +105,7 @@ const RankBoard = () => {
                     <TH>#{index + 1}</TH>
                     <td>
                       <Link to={`/orders/owner/${item.address}`}>
-                        { item.name ? `@${item.name}` :shortAddress(item.address, 10, -6)}
+                        {item.name ? `@${item.name}` : shortAddress(item.address, 10, -6)}
                       </Link>
                     </td>
                     <td>
@@ -118,7 +118,7 @@ const RankBoard = () => {
             </tbody>
           </RankTable>
           <Link to={`/all-sellers`} style={{ color: "#ffff" }}>
-            see all sellers <ChevronsRight></ChevronsRight>{" "}
+            Full List<ChevronsRight></ChevronsRight>{" "}
           </Link>
         </div>
       </Row>
