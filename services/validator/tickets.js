@@ -2,7 +2,7 @@ const { ethers } = require("ethers")
 
 const Moralis = require("moralis/node")
 
-const { NFT_MARKETPLACE } = require("../constants")
+const { NFT_MARKETPLACE, SUPPORT_CHAINS } = require("../constants")
 const { MARKETPLACE_ABI } = require("../abi")
 
 // generate claim tickets for buyers and sellers
@@ -42,7 +42,7 @@ class Tickets {
 
         let claims = []
 
-        for (let chainId of [42, 97, 80001, 43113]) {
+        for (let chainId of SUPPORT_CHAINS) {
 
             await Moralis.start(this.generateMoralisParams(chainId));
 
@@ -83,7 +83,7 @@ class Tickets {
                             try {
                                 const result = await marketplaceContract.partialOrders(orderId)
 
-                                if ( !result["ended"] && (result['buyer']).toLowerCase() === fromAddress.toLowerCase()) {
+                                if (!result["ended"] && (result['buyer']).toLowerCase() === fromAddress.toLowerCase()) {
                                     // granting a ticket for the seller
                                     claims.push({
                                         orderId: Number(orderId),
@@ -174,9 +174,16 @@ class Tickets {
     generateMoralisParams(chainId) {
         if ([42, 80001, 97, 43113].indexOf(chainId) !== -1) {
             return {
-                serverUrl: "https://1ovp3qunsgo4.usemoralis.com:2053/server",
-                appId: "enCW1fXy8eMazgGNIgwKdOicHVw67k0AegYAr2eE",
-                masterKey: "AdNlpYjZuuiCGzlPaonWrJoGSIB6Scnae2AiNY6B"
+                serverUrl: process.env.MORALIS_TESTNET_SERVER_URL,
+                appId: process.env.MORALIS_TESTNET_APP_ID,
+                masterKey: process.env.MORALIS_TESTNET_MASTER_KEY
+            }
+        }
+        if ([56, 137, 43114].indexOf(chainId) !== -1) {
+            return {
+                serverUrl: process.env.MORALIS_MAINNET_SERVER_URL,
+                appId: process.env.MORALIS_MAINNET_APP_ID,
+                masterKey: process.env.MARALIS_MAINNET_MASTER_KEY
             }
         }
         throw new Error("Chain isn't supported")
@@ -192,6 +199,12 @@ class Tickets {
                 return "mumbaiTestnetClaim"
             case 43113:
                 return "fujiTestnetClaim"
+            case 56:
+                return "bnbClaim"
+            case 137:
+                return "bnbClaim"
+            case 43114:
+                return "avaxClaim"
         }
     }
 
