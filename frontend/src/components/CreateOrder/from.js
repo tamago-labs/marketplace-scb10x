@@ -4,6 +4,7 @@ import styled from "styled-components"
 import Skeleton from "react-loading-skeleton"
 import { Alert } from "../alert"
 import { resolveNetworkName } from "../../helper"
+import { MoreInfo, PreviewContainer } from "../cards"
 
 const Content = styled.div`
   margin-top: 12px;
@@ -56,11 +57,6 @@ const From = ({ nfts, fromData, setFromData, step, setStep }) => {
 
   return (
     <>
-
-      {/* <Alert style={{ textAlign: "center", marginTop: "20px" }}>
-        Select NFT from your wallet that you want to list and deposit
-      </Alert> */}
-
       <Content>
         {nfts ? (
           nfts.map((nft, index) => (
@@ -69,8 +65,15 @@ const From = ({ nfts, fromData, setFromData, step, setStep }) => {
               selected={fromData && fromData.token_hash === nft.token_hash}
               onClick={() => setFromData(nft)}
             >
-              <img src={nft.metadata.image} width="100%" height="220" />
-              <div className="name">{(nft.name) || (nft.metadata.name)}{` `}#{shorterName(nft.token_id)}</div> 
+              <PreviewContainer>
+                <img src={nft.metadata.image} width="100%" height="220" />
+                <MoreInfo
+                  chainId={(chainId)}
+                  assetAddress={nft['token_address']}
+                  tokenId={nft.token_id}
+                />
+              </PreviewContainer>
+              <div className="name">{(nft.name) || (nft.metadata.name)}{` `}#{shorterName(nft.token_id)}</div>
               <div className="name">Chain: {resolveNetworkName(chainId)}</div>
             </Card>
           ))

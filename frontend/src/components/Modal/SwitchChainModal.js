@@ -5,12 +5,20 @@ import styled from "styled-components"
 import { X } from "react-feather"
 import { NETWORK } from "../../config/network"
 
+const ConnectorWrapper = styled.div.attrs(() => ({ className: "col-6" }))`
+  padding: 3px;
+  display: flex;
+`
+
 const Connector = styled.div`
+
   border: 1px solid #ddd;
   border-radius: 8px;
   padding: 12px;
-  margin-bottom: 12px;
+  width: 100%;
+  margin: auto;
   color: #000;
+  height: 100px;
 
   font-size: 20px;
 
@@ -28,31 +36,24 @@ const Connector = styled.div`
   }
 
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
 
-  img {
-    margin-right: 16px;
+  img { 
     width: 36px;
     height: 36px;
     border-radius: 12px;
   }
 
   div {
-    flex: 70%;
-    display: flex;
-    align-items: center;
-
-    :first-child {
-      flex: 20%;
-    }
-    :last-child {
-      flex: 10%;
-    }
+    margin-left: auto;
+    margin-right: auto;
   }
-  span {
-    font-size: 1rem;
-    margin: auto;
-    margin-left: 4px;
+
+  .--chain-name {
+    margin-top: 10px;
+    font-size: 14px;
+    max-width: 150px;
+    text-align: center;
   }
 
 
@@ -85,46 +86,51 @@ function WalletsModal({ toggleModal, modalVisible }) {
         <CloseIcon onClick={toggleModal} />
       </Header>
       <ModalBody>
-        {NETWORK.map((data, index) => (
-          <Connector
-            active={parseInt(data.chainId, 16) === parseInt(chainId)}
-            key={index}
-            onClick={async () => {
-              console.log(`Switching to chain `, data)
-              toggleModal()
-              const params = data
 
-              try {
-                await library?.send("wallet_switchEthereumChain", [
-                  { chainId: data.chainId },
-                  account,
-                ])
-              } catch (switchError) {
-                // This error code indicates that the chain has not been added to MetaMask.
-                if (switchError.code === 4902) {
+        <div className="row">
+          {NETWORK.map((data, index) => (
+            <ConnectorWrapper>
+              <Connector
+                active={parseInt(data.chainId, 16) === parseInt(chainId)}
+                key={index}
+                onClick={async () => {
+                  console.log(`Switching to chain `, data)
+                  toggleModal()
+                  const params = data
+
                   try {
-                    await library?.send("wallet_addEthereumChain", [
-                      params,
+                    await library?.send("wallet_switchEthereumChain", [
+                      { chainId: data.chainId },
                       account,
                     ])
-                  } catch (addError) {
-                    // handle "add" error
-                    console.error(`Add chain error ${addError}`)
+                  } catch (switchError) {
+                    // This error code indicates that the chain has not been added to MetaMask.
+                    if (switchError.code === 4902) {
+                      try {
+                        await library?.send("wallet_addEthereumChain", [
+                          params,
+                          account,
+                        ])
+                      } catch (addError) {
+                        // handle "add" error
+                        console.error(`Add chain error ${addError}`)
+                      }
+                    }
+                    console.error(`Switch chain error ${switchError}`)
+                    // handle other "switch" errors
                   }
-                }
-                console.error(`Switch chain error ${switchError}`)
-                // handle other "switch" errors
-              }
-            }}
-          >
-            <aside style={{ height: 30, width: 30, position: "relative", marginRight: 12, borderRadius: "50%" }}>
-              <img src={data.icon} />
-            </aside>
-            <span>
-              {data.chainName}
-            </span>
-          </Connector>
-        ))}
+                }}
+              >
+                <div style={{ height: 30, width: 30,  borderRadius: "50%" }}>
+                  <img src={data.icon} />
+                </div>
+                <div className="--chain-name">
+                  {data.chainName}
+                </div>
+              </Connector>
+            </ConnectorWrapper>
+          ))}
+        </div>
       </ModalBody>
       <ModalFooter>
         <Button color='secondary' onClick={toggleModal}>

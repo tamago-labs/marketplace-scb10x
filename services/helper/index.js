@@ -25,6 +25,12 @@ exports.getProviders = (chainIds = []) => {
             url = process.env.BNB_TESTNET_RPC_SERVER
         } else if (chainId === 43113) {
             url = process.env.FUJI_RPC_SERVER
+        } else if (chainId === 56) {
+            url = process.env.BNB_RPC_SERVER
+        }  else if (chainId === 137) {
+            url = process.env.POLYGON_RPC_SERVER
+        } else if (chainId === 43114) {
+            url = process.env.AVAX_RPC_SERVER
         }
 
         if (!url) {

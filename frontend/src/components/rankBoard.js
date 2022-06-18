@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { Table } from "react-bootstrap";
+import { Badge } from "reactstrap"
 import { Link } from "react-router-dom";
 import useOrder from "../hooks/useOrder";
 import { ChevronsRight } from "react-feather";
-import { shortAddress } from "../helper";
+import { resolveNetworkName, shortAddress } from "../helper";
+import Skeleton from "react-loading-skeleton";
+import { MAINNET_CHAINS } from "../constants";
 
 /* Styled Component */
 const Container = styled.div.attrs(() => ({ className: "container" }))`
@@ -35,7 +38,7 @@ const RankTable = styled(Table)`
   color: #fff;
 `;
 
-const TH = styled.th.attrs(() => ({ width: "15%" }))``;
+const TH = styled.th.attrs(() => ({ width: "10%" }))``;
 
 const TR = styled.tr.attrs(() => ({}))`
   td {
@@ -48,6 +51,18 @@ const TR = styled.tr.attrs(() => ({}))`
     }
   }
 `;
+
+const Loading = () => {
+  return (
+    <>
+      <Skeleton style={{ marginBottom: "4px" }} height="28px" />
+      <Skeleton style={{ marginBottom: "4px" }} height="28px" />
+      <Skeleton style={{ marginBottom: "4px" }} height="28px" />
+      <Skeleton style={{ marginBottom: "4px" }} height="28px" />
+      <Skeleton style={{ marginBottom: "26px" }} height="28px" />
+    </>
+  )
+}
 
 const RankBoard = () => {
   const [sellers, setSellers] = useState([]);
@@ -71,13 +86,16 @@ const RankBoard = () => {
                 if (index >= 5) {
                   return;
                 }
+                
                 return (
                   <TR key={`collection-${index}`}>
                     <TH>#{index + 1}</TH>
                     <td>
                       <Link to={`/orders/collection/${item.address}`}>
                         {item.name || shortAddress(item.address, 10, -6)}
-                      </Link>
+                      </Link>{` `}
+                      <Badge color={ MAINNET_CHAINS.includes(item.chainId) ? "primary" : "secondary"} >{resolveNetworkName(item.chainId)}</Badge>
+
                     </td>
                     <td>
                       {item.activeCount}
@@ -88,6 +106,7 @@ const RankBoard = () => {
               })}
             </tbody>
           </RankTable>
+          {(collections.length === 0) && <Loading />}
           <Link to={`/all-collection`} style={{ color: "#ffff" }}>
             Full List<ChevronsRight></ChevronsRight>{" "}
           </Link>
@@ -117,6 +136,7 @@ const RankBoard = () => {
               })}
             </tbody>
           </RankTable>
+          {(sellers.length === 0) && <Loading />}
           <Link to={`/all-sellers`} style={{ color: "#ffff" }}>
             Full List<ChevronsRight></ChevronsRight>{" "}
           </Link>

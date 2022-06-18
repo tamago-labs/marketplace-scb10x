@@ -1,4 +1,4 @@
-import { SUPPORT_CHAINS } from "../constants";
+import { MAINNET_CHAINS, SUPPORT_CHAINS, TESTNET_CHAINS } from "../constants";
 
 const useMoralisAPI = () => {
 
@@ -12,6 +12,12 @@ const useMoralisAPI = () => {
                 return "mumbaiTestnetSwap"
             case 43113:
                 return "fujiTestnetSwap"
+            case 56:
+                return "bnbSwap"
+            case 137:
+                return "polygonSwap"
+            case 43114:
+                return "avaxSwap"
         }
     }
 
@@ -25,18 +31,31 @@ const useMoralisAPI = () => {
                 return "mumbaiTestnetClaim"
             case 43113:
                 return "fujiTestnetClaim"
+            case 56:
+                return "bnbClaim"
+            case 137:
+                return "bnbClaim"
+            case 43114:
+                return "avaxClaim"
         }
     }
 
     const generateMoralisParams = (chainId) => {
-        if (SUPPORT_CHAINS.indexOf(chainId) !== -1) {
+        // FIXME : Remove from here
+        if (TESTNET_CHAINS.indexOf(chainId) !== -1) {
             return {
                 serverUrl: "https://1ovp3qunsgo4.usemoralis.com:2053/server",
                 appId: "enCW1fXy8eMazgGNIgwKdOicHVw67k0AegYAr2eE",
                 masterKey: "AdNlpYjZuuiCGzlPaonWrJoGSIB6Scnae2AiNY6B"
             }
         }
-
+        if (MAINNET_CHAINS.indexOf(chainId) !== -1) {
+            return {
+                serverUrl: "https://cybgqjtb97zb.usemoralis.com:2053/server",
+                appId: "c5pJEepQAhugEYhT4xmn5FUvWRij5Rvbpn7yZGJ9",
+                masterKey: "1OKt4BCqp7OcDwKmJGmrJTBeadyhfyznSrFnU1IB"
+            }
+        }
         throw new Error("Chain isn't supported")
     }
 

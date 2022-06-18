@@ -135,18 +135,17 @@ const ConnectPanel = () => {
                     </tr>
                     <tr>
                         <td>Polygon</td>
-                        <td>Mumbai Testnet</td> 
+                        <td>Mainnet, Mumbai Testnet</td> 
 
                     </tr>
                     <tr>
                         <td>BNB Smart Chain</td>
-                        <td>Testnet</td>
+                        <td>Mainnet, Testnet</td>
 
                     </tr>
                     <tr>
                         <td>Avalanche</td>
-                        <td>Fuji Testnet</td>
-
+                        <td>Mainnet, Fuji Testnet</td>
                     </tr>
                 </tbody>
             </table>

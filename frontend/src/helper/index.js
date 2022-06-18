@@ -22,6 +22,8 @@ export const resolveNetworkName = (networkId) => {
       return "Mumbai"
     case 43113:
       return "Fuji"
+    case 43114:
+      return "Avalanche"
     default:
       return "Not Support Chain"
   }
@@ -51,8 +53,14 @@ export const resolveBlockexplorerLink = (networkId, assetAddress, isAddress = tr
       return `https://testnet.bscscan.com/${prefix}/${assetAddress}`
     case 80001:
       return `https://mumbai.polygonscan.com/${prefix}/${assetAddress}`
+    case 137:
+      return `https://polygonscan.com/${prefix}/${assetAddress}`
+    case 56:
+      return `https://bscscan.com/${prefix}/${assetAddress}`
     case 43113:
       return `https://testnet.avascan.info/blockchain/c/${prefix}/${assetAddress}`
+    case 43114:
+      return `https://avascan.info/blockchain/c/${prefix}/${assetAddress}`
     default:
       return "#"
   }
@@ -74,6 +82,8 @@ export const resolveNetworkIconUrl = (networkId) => {
       return "https://raw.githubusercontent.com/sushiswap/icons/master/network/polygon.jpg"
     case 43113:
       return "https://raw.githubusercontent.com/sushiswap/icons/master/network/avalanche.jpg"
+    case 43114:
+      return "https://raw.githubusercontent.com/sushiswap/icons/master/network/avalanche.jpg"
     default:
       return "https://via.placeholder.com/30x30"
   }
@@ -86,15 +96,21 @@ export const getProviders = () => {
   return chainIds.map(chainId => {
 
     let url
-
+    
     if (chainId === 42) {
       url = "https://kovan.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161"
+    } else if (chainId === 137) {
+      url = "https://nd-643-057-168.p2pify.com/2ffe10d04df48d14f0e9ff6e0409f649"
     } else if (chainId === 80001) {
       url = "https://nd-546-345-588.p2pify.com/8947d77065859cda88213b612a0f8679"
     } else if (chainId === 97) {
       url = "https://nd-390-191-961.p2pify.com/0645132aa2a233d3fbe27116f3b8828b"
+    } else if (chainId === 56) {
+      url = "https://nd-886-059-484.p2pify.com/b62941033adcd0358ff9f38df217f856"
     } else if (chainId === 43113) {
       url = "https://nd-473-270-876.p2pify.com/613a7805f3d64a52349b6ca19b6e27a7/ext/bc/C/rpc"
+    } else if (chainId === 43114) {
+      url = "https://nd-752-163-197.p2pify.com/fd84ccbd64f32d8f8a99adb5d4557b0e/ext/bc/C/rpc"
     }
 
     if (!url) {

@@ -4,8 +4,10 @@ import { Table } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import useOrder from "../../hooks/useOrder";
 import { ChevronsLeft } from "react-feather";
-import { shortAddress } from "../../helper";
+import { shortAddress, resolveNetworkName } from "../../helper";
 import ReactPaginate from "react-paginate";
+import { Badge } from "reactstrap";
+import { MAINNET_CHAINS } from "../../constants"
 
 /* Styled Component */
 const Container = styled.div.attrs(() => ({ className: "container" }))`
@@ -58,7 +60,7 @@ const AllCollectionPage = () => {
         setPageCount(Math.ceil(totalCount / LIMIT_PER_PAGE));
       }
     );
-    
+
   }, []);
   const handlePageClick = async (data) => {
     let currentPage = data.selected;
@@ -83,6 +85,9 @@ const AllCollectionPage = () => {
                     <Link to={`/orders/collection/${item.address}`}>
                       {item.name || shortAddress(item.address, 10, -6)}
                     </Link>
+                    <Badge color={ MAINNET_CHAINS.includes(item.chainId) ? "primary" : "secondary"}>
+                      {resolveNetworkName(item.chainId)}
+                    </Badge>
                   </td>
                   <td>
                     {item.activeCount}
