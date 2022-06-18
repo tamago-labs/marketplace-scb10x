@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from "react"
 import styled from "styled-components"
 import { useWeb3React } from "@web3-react/core"
 import { useMoralisWeb3Api } from "react-moralis"
+import ParticleBackground from 'react-particle-backgrounds'
 import From from "./from"
 import To from "./to"
 import Confirm from "./confirm"
@@ -18,12 +19,35 @@ export const PROCESS = {
 }
 
 const Title = styled.div`
-  font-weight: bold;
-  font-size: 32px;
+text-align :center; 
+margin-top: 1rem;
+display: flex;
+flex-direction: column;
+padding: 1rem 1rem;
+
+border:0px;
+
+/* Created with https://www.css-gradient.com */
+background: #3FC1B9;
+background: -webkit-linear-gradient(top left, #3FC1B9, #56EA69);
+background: -moz-linear-gradient(top left, #3FC1B9, #56EA69);
+background: linear-gradient(to bottom right, #3FC1B9, #56EA69);
+
+border-radius: 12px;
+color: white;
+font-weight: 600;
+text-shadow: 1px 1px #333; 
+
+position: relative;
+overflow: hidden; 
+
+@media only screen and (max-width: 600px) {
+  padding: 1rem 2rem; 
+}
+
+font-weight: 600;
+  font-size: 24px;
   color: #fff;
-  width: 100%;
-  display: flex;
-  justify-content: center;
 `
 
 const StepHeader = styled.div`
@@ -33,8 +57,6 @@ const StepHeader = styled.div`
   justify-content: space-around;
 `
 
-
-
 const Step = styled.div`
   display: flex;
   align-items: center;
@@ -43,7 +65,12 @@ const Step = styled.div`
   .circle {
     border: 1px solid #fff;
     background: ${(props) =>
-    props.active ? "rgba(38, 38, 38, 0.6)" : "transparent"};
+    props.active ? "white" : "transparent"};
+
+    ${props => props.active && `
+    color: #333;
+    `}
+
     width: 24px;
     height: 24px;
     margin-right: 8px;
@@ -125,20 +152,42 @@ const CreateOrder = () => {
     })
   }, [account, chainId])
 
+
+
+
+  const settings = {
+    particle: {
+      particleCount: 35,
+      color: "#fff",
+      minSize: 1,
+      maxSize: 4
+    },
+    velocity: {
+      minSpeed: 0.2,
+      maxSpeed: 0.4
+    },
+    opacity: {
+      minOpacity: 0,
+      maxOpacity: 0.6,
+      opacityTransitionTime: 10000
+    }
+  }
+
   return (
     <div style={{ marginTop: 32 }} className="container">
 
-      <Title>Create Order</Title>
+      {/* <Title>Create Order</Title> */}
 
-
+      <Title>
+      <ParticleBackground style={{ position: "absolute", zIndex: 1 }} settings={settings} />
+        Create Order
+      </Title>
 
       {!account && (
-        <AlertWarning>
+        <AlertWarning style={{marginTop : "10px"}}>
           Connect your wallet to continue
         </AlertWarning>
       )}
-
-      <hr />
 
       <StepHeader>
         <Step active={step === 1}>
