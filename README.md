@@ -27,6 +27,13 @@ The project consists of 4 modules, `/frontend` made by React, `/contracts` with 
 
 ## Deployment
 
+### Avalanche
+
+Contract Name | Contract Address 
+--- | --- 
+Gateway | 0x16EE94e3C07B24EbA6067eb9394BA70178aAc4c0
+Marketplace | 0x576430Ecadbd9729B32a4cA9Fed9F38331273924
+
 ### Polygon
 
 Contract Name | Contract Address 
