@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import styled from "styled-components";
 import Skeleton from "react-loading-skeleton";
 import { Badge } from "reactstrap";
@@ -31,7 +31,7 @@ const BaseAssetCardContainer = styled(AssetCardContainer)`
   }
 `;
 
-const PreviewContainer = styled.div`
+export const PreviewContainer = styled.div`
   height: 220px;
   overflow: visible;
   position: relative;
@@ -77,30 +77,43 @@ const ThreeDotsButton = styled.button`
 `;
 
 const AVALABLE_TESTNET_OPENSEA = ["Ropsten", "Rinksby", "Goerli", "Mumbai"];
+const AVALABLE_MAINNET_OPENSEA = ["Polygon"];
 
-const MoreInfo = styled(
+
+export const MoreInfo = styled(
   ({ className, chainId, assetAddress, isERC20, tokenId }) => {
     const [menuVisible, setMenuVisible] = useState(false);
-    const [link, setLink] = useState("");
-    const [isAvailableOpenseaChain, setIsAvailableOpenseaChain] =
-      useState(undefined);
-    const [networkName, setNetworkName] = useState("");
-    const blockExplorerLink = resolveBlockexplorerLink(chainId, assetAddress);
-    const { getOpenSeaLink } = useOpenSea();
 
-    useEffect(() => {
-      setNetworkName(resolveNetworkName(chainId));
-      setLink(getOpenSeaLink(networkName, assetAddress, tokenId));
-      if (AVALABLE_TESTNET_OPENSEA.includes(networkName)) {
-        setIsAvailableOpenseaChain(true);
+
+    const blockExplorerLink = resolveBlockexplorerLink(chainId, assetAddress);
+    const { getOpenSeaTestnetLink, getOpenSeaLink } = useOpenSea();
+
+    const seaLink = useMemo(() => {
+
+      const networkName = resolveNetworkName(chainId)
+
+      if (!networkName) {
+        return
       }
-    }, [networkName]);
+
+      if (networkName && assetAddress && tokenId) {
+        if (AVALABLE_TESTNET_OPENSEA.includes(networkName)) {
+          return getOpenSeaTestnetLink(networkName, assetAddress, tokenId)
+        } else if (AVALABLE_MAINNET_OPENSEA.includes(networkName)) {
+          return getOpenSeaLink(networkName, assetAddress, tokenId)
+        }
+      }
+
+      return
+
+    }, [chainId, assetAddress, tokenId])
+
 
     return (
       <div className={className}>
         <ThreeDotsButton onClick={() => setMenuVisible(!menuVisible)}>
           <div>
-            <ChevronsDown color={!isERC20 ? "#ffff" : "white"} />
+            <MoreVertical color={!isERC20 ? "#ffff" : "white"} />
           </div>
         </ThreeDotsButton>
         {menuVisible && (
@@ -115,13 +128,12 @@ const MoreInfo = styled(
               </a>
             </div>
             <div>
-              {isAvailableOpenseaChain ? (
-                <a href={link} target="_blank" className="--menu-item">
-                  OpenSea
+              <>
+                <hr style={{ margin: "5px" }} />
+                <a href={seaLink} target="_blank" className={`--menu-item ${!seaLink && "--disabled"}`}>
+                  On OpenSea
                 </a>
-              ) : (
-                ""
-              )}
+              </>
             </div>
           </div>
         )}
@@ -130,7 +142,7 @@ const MoreInfo = styled(
   }
 )`
   position: absolute;
-  top: 5px;
+  top: 5px; 
   right: 5px;
   z-index: 10;
   width: 60%;
@@ -142,6 +154,14 @@ const MoreInfo = styled(
     padding: 3px;
     border: 0px;
   }
+
+  .--disabled {
+    opacity: 0.63;
+    :hover {
+      cursor: none;
+    }
+  }
+
 
   .--menu {
     margin-top: 5px;

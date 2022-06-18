@@ -131,6 +131,14 @@ const useOrder = () => {
 
     }
 
+    if (metadata && metadata.image && metadata.image.indexOf("ipfs://") !== -1) {
+      metadata.image = metadata.image.replaceAll("ipfs://", "https://ipfs.infura.io/ipfs/")
+    }
+
+    if (metadata && !metadata.image && metadata['image_url']) {
+      metadata.image = metadata['image_url']
+    }
+ 
     return {
       ...nft,
       metadata,

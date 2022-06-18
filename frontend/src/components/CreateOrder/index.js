@@ -129,7 +129,16 @@ const CreateOrder = () => {
     }
     const { result } = await Web3Api.token.searchNFTs(options)
     const data = result.map((nft) => {
-      const metadata = JSON.parse(nft.metadata)
+      let metadata = JSON.parse(nft.metadata)
+
+      if (metadata && metadata.image && metadata.image.indexOf("ipfs://") !== -1) {
+        metadata.image = metadata.image.replaceAll("ipfs://", "https://ipfs.infura.io/ipfs/")
+      }
+
+      if (metadata && !metadata.image && metadata['image_url']) {
+        metadata.image = metadata['image_url']
+      }
+
       return {
         ...nft,
         metadata,
@@ -179,12 +188,12 @@ const CreateOrder = () => {
       {/* <Title>Create Order</Title> */}
 
       <Title>
-      <ParticleBackground style={{ position: "absolute", zIndex: 1 }} settings={settings} />
-        Create Order
+        <ParticleBackground style={{ position: "absolute", zIndex: 1 }} settings={settings} />
+        🔨Create Order
       </Title>
 
       {!account && (
-        <AlertWarning style={{marginTop : "10px"}}>
+        <AlertWarning style={{ marginTop: "10px" }}>
           Connect your wallet to continue
         </AlertWarning>
       )}
@@ -245,6 +254,7 @@ const CreateOrder = () => {
           process={process}
           setProcess={setProcess}
           toTokens={toTokens}
+          setToTokens={setToTokens}
         />
       )}
 

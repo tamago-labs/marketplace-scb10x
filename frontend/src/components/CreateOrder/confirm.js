@@ -128,7 +128,8 @@ const Confirm = ({
   process,
   setProcess,
   setToData,
-  toTokens
+  toTokens,
+  setToTokens
 }) => {
 
   const [loading, setLoading] = useState(false)
@@ -154,7 +155,7 @@ const Confirm = ({
     }
 
     if (toData) {
- 
+
       order.barterList = toData.map(item => {
         return {
           assetAddress: item.token_address,
@@ -165,7 +166,7 @@ const Confirm = ({
       })
 
     }
-    
+
     if (toTokens) {
 
       order.barterList = order.barterList.concat(
@@ -178,11 +179,18 @@ const Confirm = ({
 
   }, [fromData, toData, orderId, chainId, toTokens])
 
+  const onTokenRemove = useCallback(
+    (index) => {
+      setToTokens(toTokens.filter((item, i) => index !== i))
+    },
+    [toTokens]
+  )
+
   const onGenerateId = useCallback(async () => {
     console.log("creating --> ", values)
 
     if (values.barterList.length === 0) {
-      return     
+      return
     }
 
     setLoading(true)
@@ -269,7 +277,6 @@ const Confirm = ({
     }
   }
 
-
   return (
     <>
       <Content>
@@ -294,19 +301,18 @@ const Confirm = ({
 
           {toTokens && toTokens.length > 0 && toTokens.map((token, index) => {
             return (
-              <Card onClick={() => { }} key={index}>
-
+              <Card onClick={() => onTokenRemove(index)} key={index}>
                 <div style={{ height: "220px", display: "flex" }}>
                   <div style={{ margin: "auto", fontSize: "24px" }}>
                     ERC-20
                   </div>
                 </div>
+                <div className="remove">Remove</div>
                 <div className="name"> {ethers.utils.formatUnits(token.assetTokenIdOrAmount, token.decimals)}{` `}{token.symbol}</div>
                 <div className="name">Chain: {resolveNetworkName(token.chainId)}</div>
               </Card>
             )
           })
-
           }
 
           {toData

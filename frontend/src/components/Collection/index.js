@@ -5,6 +5,7 @@ import Skeleton from "react-loading-skeleton";
 import NFTCard from "../nftCard";
 import useOrder from "../../hooks/useOrder";
 import { Button } from "../buttons";
+import { resolveNetworkName } from "../../helper";
 
 /** Styled Component */
 const ListContainer = styled.div`
@@ -83,7 +84,14 @@ const Collection = () => {
         assetAddress: orders[0].baseAssetAddress,
         tokenId: orders[0].baseAssetTokenId,
         chainId: orders[0].chainId,
-      }).then(setData);
+      }).then(
+        (data) => {
+          setData({
+            ...data,
+            chainId: orders[0].chainId
+          })
+        }
+      );
     }
   }, [orders]);
 
@@ -129,6 +137,10 @@ const Collection = () => {
             <BoardDetail>
               <h6>Items</h6>
               <p>{orders.length}</p>
+            </BoardDetail>
+            <BoardDetail>
+              <h6>Chain</h6>
+              <p>{data && data.chainId ? resolveNetworkName(data.chainId) : "--"}</p>
             </BoardDetail>
             <BoardDetail>
               <h6>Sellers</h6>

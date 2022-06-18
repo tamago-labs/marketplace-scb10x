@@ -1,10 +1,14 @@
 import React, { useState, useEffect, useMemo, useCallback } from "react"
 import styled from "styled-components"
 import Skeleton from "react-loading-skeleton"
-import { resolveNetworkName } from "../../helper"
+import { resolveBlockexplorerLink, resolveNetworkName } from "../../helper"
 import MOCKS from "../../mocks"
 import { ethers } from "ethers"
-import { X, DollarSign , Clipboard } from "react-feather"
+import { X, DollarSign, Clipboard, ExternalLink } from "react-feather"
+import { useWeb3React } from "@web3-react/core"
+import { MAINNET_CHAINS, TESTNET_CHAINS, ERC20_TOKENS } from "../../constants"
+import { MoreInfo, PreviewContainer } from "../cards"
+
 
 const TableContainer = styled.div`
   background-color: rgba(38, 38, 38, 0.6);
@@ -124,6 +128,15 @@ const FilterButton = styled.div`
   }
 `
 
+const Link = styled.a`
+  margin-left: 5px;
+  color: inherit;
+  :hover{
+    color: inherit;
+
+  }
+`
+
 const To = ({
   searchNFT,
   toData,
@@ -141,6 +154,7 @@ const To = ({
   setSearchFilter,
   searchFilter,
 }) => {
+  const { chainId } = useWeb3React()
   const [isNft, setNft] = useState(true)
   const [currentToken, setCurrentToken] = useState()
   const [tokenAmount, setTokenAmount] = useState()
@@ -153,10 +167,10 @@ const To = ({
   }
 
   useEffect(() => {
-    if (searchChain) {
+    if (searchChain && isNft) {
       setCurrentToken()
     }
-  }, [searchChain])
+  }, [searchChain, isNft])
 
   const onSearchTextChange = (e) => {
     setSearchText(e.target.value)
@@ -188,11 +202,15 @@ const To = ({
       MOCKS.filter(
         (item) => item.chainId === searchChain && item.tokenType === 0
       )
+    ).concat(
+      ERC20_TOKENS.filter(
+        (item) => item.chainId === searchChain && item.tokenType === 0
+      )
     )
   }, [searchChain])
 
   const onAdd = useCallback(() => {
-    if (tokenAmount && currentToken) {
+    if (tokenAmount && currentToken && searchChain) {
       const token = tokens.find(
         (item) => item.symbol === currentToken && item.chainId === searchChain
       )
@@ -219,38 +237,38 @@ const To = ({
     [toTokens]
   )
 
+  const isMainnet = chainId && MAINNET_CHAINS.includes(chainId) ? true : false
+
   return (
     <>
       <TokenSelector
         setNft={setNft}
         isNft={isNft}
-        />
-      <div className="d-flex justify-content-center my-2"> 
-        
+      />
+      <div className="d-flex justify-content-center my-2">
+
         <ChainSelector
           onChange={(e) => {
             setSearchChain(Number(e.target.value))
           }}
           defaultValue={searchChain}
         >
-          <option style={{ color: "black" }} value={137}>
-            Polygon
-          </option>
-          <option style={{ color: "black" }} value={56}>
-            BNB Chain
-          </option>
-          <option style={{ color: "black" }} value={42}>
-            Kovan Testnet
-          </option>
-          <option style={{ color: "black" }} value={80001}>
-            Mumbai Testnet
-          </option>
-          <option style={{ color: "black" }} value={97}>
-            BNB Testnet
-          </option>
-          <option style={{ color: "black" }} value={43113}>
-            Fuji Testnet
-          </option>
+
+          {isMainnet && MAINNET_CHAINS.map((item, index) => (
+            <option key={`mainnet-${index}`} style={{ color: "black" }} value={item}>
+              {resolveNetworkName(item)}
+            </option>
+          ))
+
+          }
+          {!isMainnet && TESTNET_CHAINS.map((item, index) => (
+            <option key={`mainnet-${index}`} style={{ color: "black" }} value={item}>
+              {resolveNetworkName(item)}
+            </option>
+          ))
+
+          }
+
         </ChainSelector>
 
         {isNft && (
@@ -381,7 +399,15 @@ const To = ({
                 )}
                 onClick={() => onClickCard({ ...nft, chainId: searchChain })}
               >
-                <img src={nft.metadata.image} width="100%" height="220" />
+                <PreviewContainer>
+                  <img src={nft.metadata.image} width="100%" height="220" />
+                  <MoreInfo
+                    chainId={(searchChain)}
+                    assetAddress={nft['token_address']}
+                    tokenId={nft.token_id}
+                  />
+                </PreviewContainer>
+
                 <div className="name">
                   {shorterName(nft.metadata.name)}
                   {` `}#{shorterName(nft.token_id)}
@@ -424,11 +450,18 @@ const To = ({
             <table className="table">
               <tbody>
                 {toTokens.map((token, index) => {
+
+                  const link = resolveBlockexplorerLink(token.chainId, token.assetAddress)
                   return (
                     <tr key={index}>
                       <td>#{index + 1}</td>
                       <td>{resolveNetworkName(token.chainId)}</td>
-                      <td>{token.symbol}</td>
+                      <td>
+                        {token.symbol}
+                        <Link target="_blank" href={link}>
+                          <ExternalLink />
+                        </Link>
+                      </td>
                       <td>
                         {ethers.utils.formatUnits(
                           token.assetTokenIdOrAmount,
@@ -489,14 +522,14 @@ const TokenSelector = styled(
   ({ className, setNft, isNft }) => {
     return (
       <div className={className}>
-          <div onClick={() => setNft(true)} className={`--card ${isNft && "--active"}`}>
-            <Clipboard/>
-            <p>NFT</p> 
-          </div>
-          <div onClick={() => setNft(false)} className={`--card ${!isNft && "--active"}`}>
-            <DollarSign/>
-            <p>ERC-20</p> 
-          </div>
+        <div onClick={() => setNft(true)} className={`--card ${isNft && "--active"}`}>
+          <Clipboard />
+          <p>NFT</p>
+        </div>
+        <div onClick={() => setNft(false)} className={`--card ${!isNft && "--active"}`}>
+          <DollarSign />
+          <p>ERC-20</p>
+        </div>
       </div>
     )
   })`
