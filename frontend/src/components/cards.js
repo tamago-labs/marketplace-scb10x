@@ -76,37 +76,31 @@ const ThreeDotsButton = styled.button`
   }
 `;
 
-const AVALABLE_TESTNET_OPENSEA = [
-  "Ropsten",
-  "Rinksby",
-  "Goerli",
-  "Kovan",
-  "Mumbai",
-];
+const AVALABLE_TESTNET_OPENSEA = ["Ropsten", "Rinksby", "Goerli", "Mumbai"];
 
 const MoreInfo = styled(
   ({ className, chainId, assetAddress, isERC20, tokenId }) => {
     const [menuVisible, setMenuVisible] = useState(false);
-    // const [link, setLink] = useState("");
-    // const [isAvailableOpenseaChain, setIsAvailableOpenseaChain] =
-    //   useState(undefined);
+    const [link, setLink] = useState("");
+    const [isAvailableOpenseaChain, setIsAvailableOpenseaChain] =
+      useState(undefined);
     const [networkName, setNetworkName] = useState("");
     const blockExplorerLink = resolveBlockexplorerLink(chainId, assetAddress);
     const { getOpenSeaLink } = useOpenSea();
 
     useEffect(() => {
       setNetworkName(resolveNetworkName(chainId));
-      // setLink(getOpenSeaLink(networkName, assetAddress, tokenId));
-      // if (AVALABLE_TESTNET_OPENSEA.includes(networkName)) {
-      //   setIsAvailableOpenseaChain(true);
-      // }
+      setLink(getOpenSeaLink(networkName, assetAddress, tokenId));
+      if (AVALABLE_TESTNET_OPENSEA.includes(networkName)) {
+        setIsAvailableOpenseaChain(true);
+      }
     }, [networkName]);
 
     return (
       <div className={className}>
         <ThreeDotsButton onClick={() => setMenuVisible(!menuVisible)}>
           <div>
-            <MoreVertical color={!isERC20 ? "#ffff" : "white"} />
+            <ChevronsDown color={!isERC20 ? "#ffff" : "white"} />
           </div>
         </ThreeDotsButton>
         {menuVisible && (
@@ -120,7 +114,7 @@ const MoreInfo = styled(
                 Contract Address
               </a>
             </div>
-            {/* <div>
+            <div>
               {isAvailableOpenseaChain ? (
                 <a href={link} target="_blank" className="--menu-item">
                   OpenSea
@@ -128,7 +122,7 @@ const MoreInfo = styled(
               ) : (
                 ""
               )}
-            </div> */}
+            </div>
           </div>
         )}
       </div>
@@ -152,13 +146,14 @@ const MoreInfo = styled(
   .--menu {
     margin-top: 5px;
     position: absolute;
-    background: #fa58b6;
+    background: #7a0bc0;
     color: #ffff;
     right: -2px;
     padding: 5px;
     z-index: 20;
     font-size: 12px;
     width: 100%;
+    border: 1px solid #fa58b6;
 
     .--menu-item {
       color: inherit;

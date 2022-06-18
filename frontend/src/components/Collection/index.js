@@ -14,8 +14,12 @@ const ListContainer = styled.div`
   justify-content: center;
 `;
 const NftNameBoard = styled.div`
-background: rgb(238,174,202);
-background: radial-gradient(circle, rgba(238,174,202,1) 0%, rgba(148,187,233,1) 100%);
+  background: rgb(238, 174, 202);
+  background: radial-gradient(
+    circle,
+    rgba(238, 174, 202, 1) 0%,
+    rgba(148, 187, 233, 1) 100%
+  );
   color: #7a0bc0;
   border-radius: 12px;
   padding: 2rem 1rem;
@@ -48,15 +52,15 @@ const BoardDetail = styled.div`
 const CollectionName = styled.div`
   margin-left: auto;
   margin-right: auto;
-  font-size: 20px; 
+  font-size: 20px;
   margin-top: 0.5rem;
   margin-bottom: 0.5rem;
-`
+`;
 
 const Container = styled.div.attrs(() => ({ className: "container" }))`
   margin-top: 1rem;
-  margin-bottom: 2rem; 
-`
+  margin-bottom: 2rem;
+`;
 
 /** CONSTANT */
 const MAX_ITEMS = 4;
@@ -85,15 +89,15 @@ const Collection = () => {
 
   const sellers = useMemo(() => {
     if (orders && orders.length > 0) {
-      return orders.reduce(( arr, item ) => {
+      return orders.reduce((arr, item) => {
         if (arr.indexOf(item.ownerAddress) === -1) {
-          arr.push(item.ownerAddress)
+          arr.push(item.ownerAddress);
         }
-        return arr
-      },[])
+        return arr;
+      }, []);
     }
-    return []
-  },[orders])
+    return [];
+  }, [orders]);
 
   return (
     <Container>
@@ -108,7 +112,11 @@ const Collection = () => {
             {data ? (
               <CollectionName>{data.metadata.name}</CollectionName>
             ) : (
-              <Skeleton style={{ marginTop: "0.5rem", marginBottom: "0.5rem" }} height="20px" width="80px" />
+              <Skeleton
+                style={{ marginTop: "0.5rem", marginBottom: "0.5rem" }}
+                height="20px"
+                width="80px"
+              />
             )}
           </div>
           <div
