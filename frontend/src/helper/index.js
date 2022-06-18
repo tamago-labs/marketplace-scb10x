@@ -22,6 +22,8 @@ export const resolveNetworkName = (networkId) => {
       return "Mumbai"
     case 43113:
       return "Fuji"
+    case 43114:
+      return "Avalanche"
     default:
       return "Not Support Chain"
   }
@@ -73,6 +75,8 @@ export const resolveNetworkIconUrl = (networkId) => {
     case 80001:
       return "https://raw.githubusercontent.com/sushiswap/icons/master/network/polygon.jpg"
     case 43113:
+      return "https://raw.githubusercontent.com/sushiswap/icons/master/network/avalanche.jpg"
+    case 43114:
       return "https://raw.githubusercontent.com/sushiswap/icons/master/network/avalanche.jpg"
     default:
       return "https://via.placeholder.com/30x30"
