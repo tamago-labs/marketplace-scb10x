@@ -159,11 +159,11 @@ function Header() {
                     height="45px"
                   />
                 </Link>
-                <div style={{ marginLeft: "10px", display: "flex" }}>
+                {/* <div style={{ marginLeft: "10px", display: "flex" }}>
                   <StyledBadge style={{ marginTop: "auto", marginBottom: "auto" }} color="warning">
                     Testnet
                   </StyledBadge>
-                </div>
+                </div> */}
               </div>
 
               <Menu>
