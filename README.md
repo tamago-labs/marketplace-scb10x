@@ -27,6 +27,13 @@ The project consists of 4 modules, `/frontend` made by React, `/contracts` with 
 
 ## Deployment
 
+### Ethereum
+
+Contract Name | Contract Address 
+--- | --- 
+Gateway | 0xA4d31FAD3D2b0b2777F639e6FBe125368Fd4d845
+Marketplace | 0x0213468b5ED54826b363bbC4A90BBc0A5f972c39
+
 ### Avalanche
 
 Contract Name | Contract Address 
