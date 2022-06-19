@@ -3,9 +3,9 @@ export const MORALIS_ID = "c5pJEepQAhugEYhT4xmn5FUvWRij5Rvbpn7yZGJ9"
 export const API_BASE = "https://asia-east2-sbc10x-hackatron-may2022.cloudfunctions.net/api"
 export const ACCOUNT_API_BASE = "https://api.tamago.finance/v2"
 
-export const SUPPORT_CHAINS = [42, 97, 80001, 43113, 137, 56, 43114]
+export const SUPPORT_CHAINS = [42, 97, 80001, 43113, 137, 56, 43114, 1]
 
-export const MAINNET_CHAINS = [137, 56, 43114]
+export const MAINNET_CHAINS = [137, 56, 43114, 1]
 export const TESTNET_CHAINS = [42, 97, 80001, 43113]
 
 export const NFT_MARKETPLACE = [
@@ -36,6 +36,10 @@ export const NFT_MARKETPLACE = [
     {
         chainId: 56,
         contractAddress: "0x0d249716de3bE97a865Ff386Aa8A42428CB97347"
+    },
+    {
+        chainId : 1,
+        contractAddress : "0x0213468b5ED54826b363bbC4A90BBc0A5f972c39"
     }
 ]
 
@@ -426,5 +430,33 @@ export const ERC20_TOKENS = [
         tokenType: 0,
         symbol: "DAI.e",
         decimals: 18
+    },
+    {
+        chainId: 1,
+        contractAddress: "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+        tokenType: 0,
+        symbol: "WETH",
+        decimals: 18
+    },
+    {
+        chainId: 1,
+        contractAddress: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+        tokenType: 0,
+        symbol: "USDC",
+        decimals: 6
+    },
+    {
+        chainId: 1,
+        contractAddress: "0x6b175474e89094c44da98b954eedeac495271d0f",
+        tokenType: 0,
+        symbol: "DAI",
+        decimals: 18
+    },
+    {
+        chainId: 1,
+        contractAddress: "0xdac17f958d2ee523a2206206994597c13d831ec7",
+        tokenType: 0,
+        symbol: "USDT",
+        decimals: 6
     }
 ]

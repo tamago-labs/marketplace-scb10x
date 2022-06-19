@@ -100,8 +100,13 @@ async function run({
                         let BASE_GAS = 5 // 5 GWEI
                         let gasLimit = 100000
 
-                        if (chainId === 43113) {
+                        if ( [43113, 43114].includes(chainId)) {
                             BASE_GAS = 27
+                            gasLimit = 200000
+                        }
+
+                        if ([1, 137].includes(chainId)) {
+                            BASE_GAS = 20
                             gasLimit = 200000
                         }
 

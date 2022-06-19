@@ -34,6 +34,11 @@ const CardContainer = styled.div`
   
 `
 
+const shorterName = (name) => {
+  return name.length > 28 ? `${name.slice(0, 15)}...${name.slice(-4)}` : name
+}
+
+
 const Card = styled.div`
   background-color: rgba(38, 38, 38, 0.6);
   width: 260px;
@@ -286,7 +291,7 @@ const Confirm = ({
             <img src={fromData.metadata.image} width="100%" height="220" />
             <div className="name">
               {fromData.name || fromData.metadata.name}
-              {` `}#{fromData.token_id}
+              {` `}#{shorterName(fromData.token_id)}
             </div>
             <div className="name">Chain: {resolveNetworkName(chainId)}</div>
           </Card>
@@ -320,7 +325,7 @@ const Confirm = ({
               <Card onClick={() => onClickCard(nft)} key={index}>
                 <div className="remove">Remove</div>
                 <img src={nft.metadata.image} width="100%" height="220" />
-                <div className="name">{nft.metadata.name}{` `}#{nft.token_id}</div>
+                <div className="name">{nft.metadata.name}{` `}#{shorterName(nft.token_id)}</div>
                 <div className="name">Chain: {resolveNetworkName(nft.chainId)}</div>
               </Card>
             ))

@@ -77,7 +77,7 @@ const ThreeDotsButton = styled.button`
 `;
 
 const AVALABLE_TESTNET_OPENSEA = ["Ropsten", "Rinksby", "Goerli", "Mumbai"];
-const AVALABLE_MAINNET_OPENSEA = ["Polygon"];
+const AVALABLE_MAINNET_OPENSEA = ["Polygon", "Ethereum" ];
 
 
 export const MoreInfo = styled(

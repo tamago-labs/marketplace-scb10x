@@ -179,7 +179,7 @@ class Tickets {
                 masterKey: process.env.MORALIS_TESTNET_MASTER_KEY
             }
         }
-        if ([56, 137, 43114].indexOf(chainId) !== -1) {
+        if ([56, 137, 43114, 1].indexOf(chainId) !== -1) {
             return {
                 serverUrl: process.env.MORALIS_MAINNET_SERVER_URL,
                 appId: process.env.MORALIS_MAINNET_APP_ID,
@@ -205,6 +205,8 @@ class Tickets {
                 return "bnbClaim"
             case 43114:
                 return "avaxClaim"
+            case 1:
+                return "ethClaim"
         }
     }
 
