@@ -170,11 +170,11 @@ const CrosschainSwapModal = ({
                     </table>
                 </TableContainer>
 
-                {process === 1 &&
+                {/* {process === 1 &&
                     <p style={{ color: "#333", marginTop: "1rem", marginBottom: "1rem", marginLeft: "auto", marginRight: "auto", textAlign: "center", fontSize: "12px", fontWeight: "600", letterSpacing: "-0.5px" }}>
                         Additional fees will be topped up at 1% of the price when using ERC-20 tokens to swap
                     </p>
-                }
+                } */}
 
                 {process >= 2 &&
                     <CountContainer style={{ marginTop: "5px" }}>

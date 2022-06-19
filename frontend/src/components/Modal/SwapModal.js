@@ -95,7 +95,7 @@ const SwapModal = ({
           </div>
         </Preview>
 
-        <p style={{ color: "#333", maxWidth: "400px", marginLeft: "auto", marginRight: "auto", textAlign: "center", fontSize: "14px", fontWeight: "600", letterSpacing: "-0.5px" }}>Additional fees will be topped up at 1% of the price when using ERC-20 tokens to swap</p>
+        {/* <p style={{ color: "#333", maxWidth: "400px", marginLeft: "auto", marginRight: "auto", textAlign: "center", fontSize: "14px", fontWeight: "600", letterSpacing: "-0.5px" }}>Additional fees will be topped up at 1% of the price when using ERC-20 tokens to swap</p> */}
 
         <hr style={{ background: "#333" }} />
 

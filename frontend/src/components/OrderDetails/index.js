@@ -5,6 +5,8 @@ import { FileText } from "react-feather";
 import { Tabs, Tab, Table } from "react-bootstrap"
 import ParticleBackground from 'react-particle-backgrounds'
 import useOrder from "../../hooks/useOrder";
+import useOpenSea from "../../hooks/useOpenSea";
+
 import {
     resolveNetworkName,
     shortAddress,
@@ -18,6 +20,9 @@ import useActivities from "../../hooks/useActivities";
 import Metadata from "./metadata"
 import Activities from "./activities";
 import Pending from "./pending"
+
+const AVALABLE_TESTNET_OPENSEA = ["Ropsten", "Rinksby", "Goerli", "Mumbai"];
+const AVALABLE_MAINNET_OPENSEA = ["Polygon", "Ethereum"];
 
 
 const Container = styled.div.attrs(() => ({ className: "container" }))`
@@ -37,6 +42,10 @@ export const ORDER_STATUS = {
     SOLD: 2,
     CANCELED: 3
 };
+
+const shorterName = (name) => {
+    return name.length > 28 ? `${name.slice(0, 15)}...${name.slice(-4)}` : name
+}
 
 const AssetDetailsContainer = styled.div.attrs(() => ({}))`
   
@@ -165,6 +174,50 @@ const SmartContractLink = styled(({ className, chainId, assetAddress }) => {
   `;
 
 
+const OpenSeaLink = styled(({ className, chainId, assetAddress, tokenId }) => {
+    const { getOpenSeaTestnetLink, getOpenSeaLink } = useOpenSea();
+
+    const seaLink = useMemo(() => {
+
+        const networkName = resolveNetworkName(chainId)
+
+        if (!networkName) {
+            return
+        }
+
+        if (networkName && assetAddress && tokenId) {
+            if (AVALABLE_TESTNET_OPENSEA.includes(networkName)) {
+                return getOpenSeaTestnetLink(networkName, assetAddress, tokenId)
+            } else if (AVALABLE_MAINNET_OPENSEA.includes(networkName)) {
+                return getOpenSeaLink(networkName, assetAddress, tokenId)
+            }
+        }
+
+        return
+
+    }, [chainId, assetAddress, tokenId])
+
+    return (
+        <div className={className}>
+            <a href={seaLink} target="_blank">
+                <img
+                    style={{ width: "28px" ,  opacity : !seaLink ? "0.63" : "1" }}
+                    src="/images/logo-opensea.png"
+                />
+            </a>
+        </div>
+    );
+})`
+    display: inline;
+    > a {
+      margin-left: 3px;
+      padding-left: 2px;
+      padding-right: 2px;
+      padding-bottom: 2px;
+      border: 0px;
+    }
+  `;
+
 const OrderDetails = () => {
 
 
@@ -252,11 +305,19 @@ const OrderDetails = () => {
         switch (chainId) {
             case 80001:
                 return "purple"
+            case 137:
+                return "purple"
             case 43113:
+                return "red"
+            case 43114:
                 return "red"
             case 97:
                 return "yellow"
+            case 56:
+                return "yellow"
             case 42:
+                return "blue"
+            case 1:
                 return "blue"
             default:
                 return ""
@@ -321,7 +382,7 @@ const OrderDetails = () => {
                     <div style={{ marginLeft: "2rem", flexGrow: 1 }}>
                         <h4 style={{ fontSize: "22px" }}>
                             {data ? (
-                                `${data.metadata.name} #${order.baseAssetTokenId} `
+                                `${data.metadata.name} #${shorterName(order.baseAssetTokenId)} `
                             ) : (
                                 <Skeleton />
                             )}
@@ -330,6 +391,13 @@ const OrderDetails = () => {
                                 <SmartContractLink
                                     chainId={order && order.chainId}
                                     assetAddress={order && order.baseAssetAddress}
+                                />
+                            )}
+                            {data && (
+                                <OpenSeaLink
+                                    chainId={order && order.chainId}
+                                    assetAddress={order && order.baseAssetAddress}
+                                    tokenId={order && order.baseAssetTokenId}
                                 />
                             )}
                         </h4>
@@ -359,14 +427,14 @@ const OrderDetails = () => {
 
             {/* CROSSCHAIN SWITCHER */}
 
-            {status === (2 || 3) && (
+            {[2,3].includes(status) && (
                 <AlertError>
                     Please be aware that the order is already fulfilled or canceled
                 </AlertError>
             )}
 
             {isPendingClaim && (
-                <Pending 
+                <Pending
                     activities={activities}
                     orderId={order && order.orderId}
                     order={order}

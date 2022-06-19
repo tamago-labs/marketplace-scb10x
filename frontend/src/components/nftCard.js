@@ -57,6 +57,10 @@ const LinkName = styled(Link)`
   }
 `;
 
+const shorterName = (name) => {
+  return name.length > 28 ? `${name.slice(0, 15)}...${name.slice(-4)}` : name
+}
+
 /* Component */
 const NFTCard = ({ order, delay }) => {
   const { resolveMetadata, getOwnerName } = useOrder();
@@ -112,7 +116,7 @@ const NFTCard = ({ order, delay }) => {
         <Link to={`/orders/collection/${order.baseAssetAddress}`}>
           <div className="name">
             {data ? (
-              `${data.metadata.name} #${order.baseAssetTokenId} `
+              `${data.metadata.name} #${shorterName(order.baseAssetTokenId)} `
             ) : (
               <Skeleton height="16px" />
             )}

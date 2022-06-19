@@ -12,7 +12,7 @@ import axios from "axios";
 import { ethers } from "ethers";
 import { MerkleTree } from "merkletreejs";
 import keccak256 from "keccak256";
-import { API_BASE, NFT_MARKETPLACE, MOCK_NFT } from "../constants";
+import { API_BASE, NFT_MARKETPLACE, MOCK_NFT, SUPPORT_CHAINS } from "../constants";
 import MarketplaceABI from "../abi/marketplace.json";
 import NFTABI from "../abi/nft.json";
 import ERC20ABI from "../abi/erc20.json";
@@ -38,13 +38,23 @@ const useOrder = () => {
   }, [tick])
 
   const getAllOrders = useCallback(async (
-    limit = 200,
-    offset = 0
+    {
+      limit = 200,
+    offset = 0,
+    isMainnet
+    }
   ) => {
+
+
+    let chain = "chain=42,97,80001,43113&"
+
+    if (isMainnet) {
+      chain = "chain=137,56,43114,1&"
+    }
 
     let result = []
 
-    const { data } = await axios.get(`${API_BASE}/orders?limit=${limit}&offset=${offset}`)
+    const { data } = await axios.get(`${API_BASE}/orders?${chain}limit=${limit}&offset=${offset}`)
 
     const { orders } = data
 
@@ -79,13 +89,13 @@ const useOrder = () => {
   }, [account])
 
   const getTopSellers = useCallback(async () => {
-    const { data } = await axios.get(`${API_BASE}/users?chain=80001,42`)
+    const { data } = await axios.get(`${API_BASE}/users?chain=42,97,80001,43113,137,56,43114,1`)
     const { users } = data
     return users
   }, [])
 
   const getTopCollections = useCallback(async () => {
-    const { data } = await axios.get(`${API_BASE}/collections?chain=80001,42`)
+    const { data } = await axios.get(`${API_BASE}/collections?chain=42,97,80001,43113,137,56,43114,1`)
     const { collections } = data
     return collections
   }, [])
@@ -591,20 +601,20 @@ const useOrder = () => {
   }, []);
 
   const getSellersTotal = useCallback(async () => {
-    const { data } = await axios.get(`${API_BASE}/users?chain=80001,42`);
+    const { data } = await axios.get(`${API_BASE}/users?chain=42,97,80001,43113,137,56,43114,1`);
     const { totalCount } = data;
     return totalCount;
   }, []);
 
   const getCollectionsTotal = useCallback(async () => {
-    const { data } = await axios.get(`${API_BASE}/collections?chain=80001,42`);
+    const { data } = await axios.get(`${API_BASE}/collections?chain=42,97,80001,43113,137,56,43114,1`);
     const { totalCount } = data;
     return totalCount;
   }, []);
 
   const getTopSellersByIndex = useCallback(async (startIndex, limitNum) => {
     const { data } = await axios.get(
-      `${API_BASE}/users?chain=80001,42&offset=${startIndex}&limit=${limitNum}`
+      `${API_BASE}/users?chain=42,97,80001,43113,137,56,43114,1&offset=${startIndex}&limit=${limitNum}`
     );
     const { users } = data;
     return users;
@@ -624,7 +634,7 @@ const useOrder = () => {
 
   const getTopCollectionsByIndex = useCallback(async (startIndex, limitNum) => {
     const { data } = await axios.get(
-      `${API_BASE}/collections?chain=80001,42&offset=${startIndex}&limit=${limitNum}`
+      `${API_BASE}/collections?chain=42,97,80001,43113,137,56,43114,1&offset=${startIndex}&limit=${limitNum}`
     );
     const { collections } = data;
     return collections;
