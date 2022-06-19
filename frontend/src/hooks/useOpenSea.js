@@ -13,18 +13,16 @@ const useOpenSea = () => {
   };
 
   const getOpenSeaLink = (chain, address, tokenId) => {
-    const chainName = chain.toLowerCase();
-
-    if (chain !== "Polygon") {
-      return ""
-    }
 
     if (tokenId === undefined) {
       tokenId = "";
     }
-    // Opensea supports only Matic
-    const url = `https://opensea.io/assets/matic/${address}/${tokenId}`;
-    return url;
+
+    if (chain==="Ethereum") {
+      return `https://opensea.io/assets/ethereum/${address}/${tokenId}`;
+    } else {
+      return `https://opensea.io/assets/matic/${address}/${tokenId}`;
+    }
   };
 
   return { getOpenSeaTestnetLink, getOpenSeaLink };

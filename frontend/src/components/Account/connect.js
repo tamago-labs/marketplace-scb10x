@@ -130,8 +130,7 @@ const ConnectPanel = () => {
                 <tbody>
                     <tr>
                         <td>Ethereum</td>
-                        <td>Kovan Testnet</td> 
-
+                        <td>Mainnet, Kovan Testnet</td> 
                     </tr>
                     <tr>
                         <td>Polygon</td>

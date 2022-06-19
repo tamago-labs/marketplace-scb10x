@@ -18,6 +18,8 @@ const useMoralisAPI = () => {
                 return "polygonSwap"
             case 43114:
                 return "avaxSwap"
+            case 1:
+                return "ethSwap"
         }
     }
 
@@ -37,6 +39,8 @@ const useMoralisAPI = () => {
                 return "bnbClaim"
             case 43114:
                 return "avaxClaim"
+            case 1:
+                return "ethClaim"
         }
     }
 

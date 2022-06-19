@@ -1,7 +1,7 @@
 
 exports.API_BASE = "https://asia-east2-sbc10x-hackatron-may2022.cloudfunctions.net/api"
 
-exports.SUPPORT_CHAINS = [42, 97, 80001, 43113, 137, 56, 43114]
+exports.SUPPORT_CHAINS = [42, 97, 80001, 43113, 137, 56, 43114, 1]
 
 exports.NFT_MARKETPLACE = [
     {
@@ -38,5 +38,10 @@ exports.NFT_MARKETPLACE = [
         chainId: 43114,
         gatewayAddress: "0x16EE94e3C07B24EbA6067eb9394BA70178aAc4c0",
         marketplaceAddress: "0x576430Ecadbd9729B32a4cA9Fed9F38331273924"
+    },
+    {
+        chainId: 1,
+        gatewayAddress: "0xA4d31FAD3D2b0b2777F639e6FBe125368Fd4d845",
+        marketplaceAddress: "0x0213468b5ED54826b363bbC4A90BBc0A5f972c39"
     }
 ]

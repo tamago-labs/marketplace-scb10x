@@ -31,7 +31,9 @@ exports.getProviders = (chainIds = []) => {
             url = process.env.POLYGON_RPC_SERVER
         } else if (chainId === 43114) {
             url = process.env.AVAX_RPC_SERVER
-        }
+        } else if ( chainId === 1) {
+            url = process.env.MAINNET_RPC_SERVER
+        }   
 
         if (!url) {
             return

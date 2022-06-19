@@ -1,19 +1,19 @@
 export const NETWORK = [
-  // {
-  //   chainId: "0x1",
-  //   chainName: "Ethereum",
-  //   icon: "https://raw.githubusercontent.com/sushiswap/icons/master/network/mainnet.jpg",
-  //   nativeCurrency: {
-  //     name: "Ethereum",
-  //     symbol: "ETH",
-  //     decimals: 18,
-  //   },
-  //   rpcUrls: ["https://mainnet.infura.io/v3"],
-  //   blockExplorerUrls: ["https://etherscan.com"],
-  // },
+  {
+    chainId: "0x1",
+    chainName: "Ethereum",
+    icon: "https://raw.githubusercontent.com/sushiswap/icons/master/network/mainnet.jpg",
+    nativeCurrency: {
+      name: "Ethereum",
+      symbol: "ETH",
+      decimals: 18,
+    },
+    rpcUrls: ["https://mainnet.infura.io/v3"],
+    blockExplorerUrls: ["https://etherscan.com"],
+  },
   {
     chainId: "0x89",
-    chainName: "Polygon Mainnet",
+    chainName: "Polygon",
     icon: "https://raw.githubusercontent.com/sushiswap/icons/master/network/polygon.jpg",
     nativeCurrency: {
       name: "Matic",
@@ -25,7 +25,7 @@ export const NETWORK = [
   },
   {
     chainId: '0x38',
-    chainName: 'BNB Smart Chain Mainnet',
+    chainName: 'BNB Smart Chain',
     icon: 'https://raw.githubusercontent.com/sushiswap/icons/master/network/bsc.jpg',
     nativeCurrency: {
       name: 'Binance Coin',
@@ -37,7 +37,7 @@ export const NETWORK = [
   },
   {
     chainId: '0xA86A',
-    chainName: 'Avalanche Mainnet',
+    chainName: 'Avalanche',
     icon: "https://raw.githubusercontent.com/sushiswap/icons/master/network/avalanche.jpg",
     nativeCurrency: {
       name: 'Avalanche',

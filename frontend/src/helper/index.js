@@ -47,6 +47,8 @@ export const resolveBlockexplorerLink = (networkId, assetAddress, isAddress = tr
   const prefix = isAddress ? "address" : "tx"
 
   switch (networkId) {
+    case 1:
+      return `https://etherscan.io/${prefix}/${assetAddress}`
     case 42:
       return `https://kovan.etherscan.io/${prefix}/${assetAddress}`
     case 97:
@@ -111,6 +113,8 @@ export const getProviders = () => {
       url = "https://nd-473-270-876.p2pify.com/613a7805f3d64a52349b6ca19b6e27a7/ext/bc/C/rpc"
     } else if (chainId === 43114) {
       url = "https://nd-752-163-197.p2pify.com/fd84ccbd64f32d8f8a99adb5d4557b0e/ext/bc/C/rpc"
+    } else if (chainId === 1) {
+      url = "https://nd-814-913-142.p2pify.com/cb3fe487ef9afa11bda3c38e54b868a3"
     }
 
     if (!url) {
