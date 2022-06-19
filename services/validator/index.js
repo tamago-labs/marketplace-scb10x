@@ -10,7 +10,7 @@ const axios = require("axios")
 
 logger.enableAll()
 
-const { delay, getProviders, generateRelayMessages, getValidatorKey } = require("../helper")
+const { delay, getProviders, generateRelayMessages, getValidatorKey, getGasPrices } = require("../helper")
 const { API_BASE, NFT_MARKETPLACE } = require("../constants")
 const { GATEWAY_ABI, MARKETPLACE_ABI } = require("../abi")
 const { Tickets } = require("./tickets")
@@ -97,18 +97,7 @@ async function run({
 
                         logger.debug("Current root on chain id :", chainId ," is : ", currentRoot)
 
-                        let BASE_GAS = 5 // 5 GWEI
-                        let gasLimit = 100000
-
-                        if ( [43113, 43114].includes(chainId)) {
-                            BASE_GAS = 27
-                            gasLimit = 200000
-                        }
-
-                        if ([1, 137].includes(chainId)) {
-                            BASE_GAS = 20
-                            gasLimit = 200000
-                        }
+                        let { BASE_GAS, gasLimit } = await getGasPrices(chainId)
 
                         if (currentRoot !== hexRoot) {
                             const tx = await gatewayContract.updateClaimMessage(hexRoot, {
