@@ -3,6 +3,8 @@ const express = require("express")
 const morgan = require("morgan")
 const cors = require("cors")
 const fs = require("fs")
+
+const { addFirestoreDataToAlgolia } = require("./services/add-firestore-data-to-algolia")
 const { orderTrails } = require("./services/order-trails")
 const { updateHistory } = require("./services/history-update")
 
@@ -46,6 +48,7 @@ app.use((err, req, res, next) => {
 // orderTrails()
 // updateHistory()
 
+addFirestoreDataToAlgolia()
 //The lines below provision cloud infrastructures
 exports.api = functions.region('asia-east2').https.onRequest(app)
 exports.pubsub = functions.region('asia-east2').pubsub.schedule('every 10 minutes').onRun(() => {
@@ -53,3 +56,5 @@ exports.pubsub = functions.region('asia-east2').pubsub.schedule('every 10 minute
   updateHistory()
   return null
 })
+exports.addFirestoreDataToAlgolia = functions.region('asia-east2').https.onRequest(
+)
