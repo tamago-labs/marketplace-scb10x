@@ -38,13 +38,23 @@ const useOrder = () => {
   }, [tick])
 
   const getAllOrders = useCallback(async (
-    limit = 200,
-    offset = 0
+    {
+      limit = 200,
+    offset = 0,
+    isMainnet
+    }
   ) => {
+
+
+    let chain = "chain=42,97,80001,43113&"
+
+    if (isMainnet) {
+      chain = "chain=137,56,43114,1&"
+    }
 
     let result = []
 
-    const { data } = await axios.get(`${API_BASE}/orders?limit=${limit}&offset=${offset}`)
+    const { data } = await axios.get(`${API_BASE}/orders?${chain}limit=${limit}&offset=${offset}`)
 
     const { orders } = data
 

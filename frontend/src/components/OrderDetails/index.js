@@ -427,7 +427,7 @@ const OrderDetails = () => {
 
             {/* CROSSCHAIN SWITCHER */}
 
-            {status === (2 || 3) && (
+            {[2,3].includes(status) && (
                 <AlertError>
                     Please be aware that the order is already fulfilled or canceled
                 </AlertError>

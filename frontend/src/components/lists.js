@@ -45,7 +45,9 @@ const ListContainer = styled.div`
 
 const MAX_ITEMS = 4;
 
-const Lists = () => {
+const Lists = ({
+  isMainnet
+}) => {
   const [orders, setOrders] = useState([]);
 
   const [max, setMax] = useState(MAX_ITEMS);
@@ -53,8 +55,10 @@ const Lists = () => {
   const { getAllOrders } = useOrder();
 
   useEffect(() => {
-    getAllOrders().then(setOrders);
-  }, []);
+    setOrders([])
+    setMax(MAX_ITEMS)
+    getAllOrders({isMainnet}).then(setOrders);
+  }, [isMainnet]);
 
   return (
     <div style={{ marginTop: 32, paddingBottom: 32 }} className="container">
