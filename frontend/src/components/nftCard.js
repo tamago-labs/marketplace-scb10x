@@ -37,7 +37,6 @@ const DisabledButton = styled.a.attrs(() => ({
   border-radius: 32px;
   margin-top: 12px;
   width: 100%;
-  cursor: pointer;
 `;
 
 const SecondaryDataRow = styled.div`
@@ -157,13 +156,13 @@ const NFTCard = ({ order, delay }) => {
         </SellerCol>
         {price && <PriceCol>{price}</PriceCol>}
       </SecondaryDataRow>
-      <Link to={`/order/${order.orderId}`}>
-        {orderStatus == "NEW" ? (
+      {orderStatus == "NEW" ? (
+        <Link to={`/order/${order.orderId}`}>
           <BuyButton>Buy</BuyButton>
-        ) : (
-          <DisabledButton>{orderStatus}</DisabledButton>
-        )}
-      </Link>
+        </Link>
+      ) : (
+        <DisabledButton>{orderStatus}</DisabledButton>
+      )}
     </BaseAssetCard>
   );
 };

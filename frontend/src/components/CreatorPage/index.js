@@ -1,10 +1,4 @@
-import {
-  useEffect,
-  useMemo,
-  useState,
-  useCallback,
-  isValidElement,
-} from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import styled from "styled-components";
 import NFTCard from "../nftCard";
@@ -142,10 +136,6 @@ const SortByOwner = () => {
           (order) => order.canceled === false && order.fulfilled === undefined
         );
         setOrders(filteredArr);
-        console.log(
-          "🚀 ~ file: index.js ~ line 143 ~ handleFilter ~ filteredArr",
-          filteredArr
-        );
         break;
       case "sold":
         setIsAll(false);
