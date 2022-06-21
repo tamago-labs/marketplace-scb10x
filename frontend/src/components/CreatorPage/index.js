@@ -1,4 +1,10 @@
-import { useEffect, useMemo, useState, useCallback } from "react";
+import {
+  useEffect,
+  useMemo,
+  useState,
+  useCallback,
+  isValidElement,
+} from "react";
 import { useParams } from "react-router-dom";
 import styled from "styled-components";
 import NFTCard from "../nftCard";
@@ -6,7 +12,6 @@ import useOrder from "../../hooks/useOrder";
 import { Button as MoreButton } from "../../components/buttons";
 import BlankProfile from "../../images/blank_profile.webp";
 import Skeleton from "react-loading-skeleton";
-import { ButtonGroup, Button } from "reactstrap";
 
 /** Styled Component */
 const ListContainer = styled.div`
@@ -64,14 +69,37 @@ const SellerName = styled.div`
   margin-bottom: 0.5rem;
 `;
 
-const StyleRadioButton = styled(Button)`
-  background-color: #fa58b6;
-  border-color: #fa58b6;
+const Switcher = styled.div`
+  text-align: center;
+  margin-top: 2rem;
+`;
 
-  :hover {
-    background-color: #ffff;
-    color: #fa58b6;
+const Button = styled.button`
+  background: transparent;
+  padding: 5px 30px;
+  color: white;
+  border: 1px solid white;
+
+  :disabled {
+    background-color: grey;
   }
+  :first-child {
+    border-right: 0px;
+    border-top-left-radius: 16px;
+    border-bottom-left-radius: 16px;
+  }
+  :last-child {
+    border-top-right-radius: 16px;
+    border-bottom-right-radius: 16px;
+  }
+
+  ${(props) =>
+    props.active &&
+    `
+  background: white;
+  color: #333;
+  
+  `}
 `;
 
 /** CONSTANT */
@@ -83,18 +111,69 @@ const SortByOwner = () => {
   const [sellerName, setSellerName] = useState("");
   const { getOrdersByOwner, getOwnerName } = useOrder();
   const { ownerAddress } = useParams();
+  const [isNew, setIsNew] = useState(false);
+  const [isSold, setIsSold] = useState(false);
+  const [isCanceled, setIsCanceled] = useState(false);
+  const [isAll, setIsAll] = useState(true);
+  const [allOrders, setAllOrders] = useState([]);
 
   useEffect(() => {
     ownerAddress && getOrdersByOwner(ownerAddress).then(setOrders);
+    ownerAddress && getOrdersByOwner(ownerAddress).then(setAllOrders);
     ownerAddress && getOwnerName(ownerAddress).then(setSellerName);
-
-    console.log("🚀 ~ file: index.js ~ line 83 ~ SortByOwner ~ orders", orders);
-    const networkNameSet = new Set();
   }, [ownerAddress]);
 
+  const handleFilter = (event) => {
+    let filteredArr;
+    switch (event.target.value) {
+      case "all":
+        setIsAll(true);
+        setIsNew(false);
+        setIsSold(false);
+        setIsCanceled(false);
+        setOrders(allOrders);
+        break;
+      case "new":
+        setIsAll(false);
+        setIsNew(true);
+        setIsSold(false);
+        setIsCanceled(false);
+        filteredArr = allOrders.filter(
+          (order) => order.canceled === false && order.fulfilled === undefined
+        );
+        setOrders(filteredArr);
+        console.log(
+          "🚀 ~ file: index.js ~ line 143 ~ handleFilter ~ filteredArr",
+          filteredArr
+        );
+        break;
+      case "sold":
+        setIsAll(false);
+        setIsNew(false);
+        setIsSold(true);
+        setIsCanceled(false);
+        filteredArr = allOrders.filter(
+          (order) => order.fulfilled === true && order.canceled === false
+        );
+        setOrders(filteredArr);
+        break;
+      case "cancel":
+        setIsAll(false);
+        setIsNew(false);
+        setIsSold(false);
+        setIsCanceled(true);
+        filteredArr = allOrders.filter((order) => order.canceled === true);
+        setOrders(filteredArr);
+        break;
+
+      default:
+        break;
+    }
+  };
+
   const collections = useMemo(() => {
-    if (orders && orders.length > 0) {
-      return orders.reduce((arr, item) => {
+    if (allOrders && allOrders.length > 0) {
+      return allOrders.reduce((arr, item) => {
         if (arr.indexOf(item.baseAssetAddress) === -1) {
           arr.push(item.baseAssetAddress);
         }
@@ -102,7 +181,7 @@ const SortByOwner = () => {
       }, []);
     }
     return [];
-  }, [orders]);
+  }, [allOrders]);
 
   return (
     <Container>
@@ -130,47 +209,34 @@ const SortByOwner = () => {
           >
             <BoardDetail>
               <h6>Items</h6>
-              <p>{orders.length}</p>
+              <p>{allOrders.length}</p>
             </BoardDetail>
             <BoardDetail>
               <h6>Collections</h6>
               <p>{collections.length}</p>
             </BoardDetail>
-            {/* <BoardDetail>
-              <h6>Traded</h6>
-              <p>-</p>
-            </BoardDetail>
-            <BoardDetail>
-              <h6>Fulfilled</h6>
-              <p>-</p>
-            </BoardDetail> */}
           </div>
         </NftNameBoard>
-        {/* <div>
-          <h5>Radio Buttons</h5>
-          <ButtonGroup>
-            <StyleRadioButton
-              color="primary"
-              onClick={function noRefCheck() {}}
-            >
-              Kovan
-            </StyleRadioButton>
-            <StyleRadioButton
-              color="primary"
-              onClick={function noRefCheck() {}}
-            >
-              fiji
-            </StyleRadioButton>
-            <StyleRadioButton
-              color="primary"
-              onClick={function noRefCheck() {}}
-            >
-              Three
-            </StyleRadioButton>
-          </ButtonGroup>
-        </div> */}
+        <Switcher>
+          <Button value="all" active={isAll} onClick={(e) => handleFilter(e)}>
+            All
+          </Button>
+          <Button value="new" active={isNew} onClick={(e) => handleFilter(e)}>
+            New
+          </Button>
+          <Button value="sold" active={isSold} onClick={(e) => handleFilter(e)}>
+            Sold
+          </Button>
+          <Button
+            value="cancel"
+            active={isCanceled}
+            onClick={(e) => handleFilter(e)}
+          >
+            Cancel
+          </Button>
+        </Switcher>
         <ListContainer>
-          {orders.length === 0 && <>Loading...</>}
+          {orders.length === 0 && <>No Item</>}
 
           {orders.length > 0 &&
             orders.map((order, index) => {
