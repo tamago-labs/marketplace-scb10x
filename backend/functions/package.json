@@ -13,6 +13,7 @@
   },
   "main": "index.js",
   "dependencies": {
+    "algoliasearch": "^4.13.1",
     "axios": "^0.27.2",
     "cors": "^2.8.5",
     "dotenv": "^16.0.1",
@@ -21,11 +22,11 @@
     "firebase-admin": "^10.0.2",
     "firebase-functions": "^3.18.0",
     "fs": "0.0.1-security",
+    "keccak256": "^1.0.6",
+    "merkletreejs": "^0.2.31",
     "moralis": "^1.7.0",
     "morgan": "^1.10.0",
-    "validator": "^13.7.0",
-    "keccak256": "^1.0.6",
-    "merkletreejs": "^0.2.31"
+    "validator": "^13.7.0"
   },
   "devDependencies": {
     "firebase-functions-test": "^0.2.0"
