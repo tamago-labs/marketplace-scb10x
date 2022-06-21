@@ -1,5 +1,5 @@
 const { db } = require("../firebase")
-
+const { algoliaClient } = require("../services/algolia")
 
 exports.getCollections = async (req, res, next) => {
   try {
@@ -46,13 +46,35 @@ exports.getCollectionByAddress = async (req, res, next) => {
     }
     let collection = await db.collection("collections").where("address", "==", address).get()
     if (collection.empty) {
-      return res.status(204).json({ message: "empty query return" })
+      return res.status(200).json({ message: "could not find colleciton with the given address" })
     }
     collection = collection.docs.map((doc) => ({
       ...doc.data(),
     }))[0]
 
     res.status(200).json({ status: "ok", collection })
+  } catch (error) {
+    next(error)
+  }
+}
+
+exports.searchCollections = async (req, res, next) => {
+  try {
+    const { query } = req.query
+    if (!query || (/^\s*$/.test(query)) || query.length < 3) {
+      return res.status(400).json({ message: "The query text cannot be empty and must have minimum length of 3." })
+    }
+    console.log(query)
+    const index = algoliaClient.initIndex("collections")
+    await index.setSettings({
+      searchableAttributes: [
+        'name',
+      ]
+    })
+    const results = await index.search(query)
+    // console.log(results.hits)
+
+    res.status(200).json({ status: "ok", collections: results.hits })
   } catch (error) {
     next(error)
   }
