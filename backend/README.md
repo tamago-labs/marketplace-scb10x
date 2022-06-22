@@ -1,13 +1,40 @@
 # MARKETPLACE-APIS
 
-## Test
+## Accounts
 
-| HTTP Method | path                     | RequestBody | Response                                               |
-| ----------- | ------------------------ | ----------- | ------------------------------------------------------ |
-| GET         | /testing                 | none        | {"message":"The testing endpoint functions correctly"} |
-| GET         | /test/get                | none        | { "message": "TESTGETJSON" }                           |
-| GET         | /test/ethers             | none        | {"status":"ok","blocknumber":14834871}                 |
-| GET         | /test/moralisNFTMETADATA | none        | {"status":"ok","metadata":{...metadata}}               |
+| HTTP Method | path               | RequestBody                                     | Response                       | Notes         |
+| ----------- | ------------------ | ----------------------------------------------- | ------------------------------ | ------------- |
+| GET         | /account/{address} | none                                            | { "status": "ok", account }    |               |
+| POST        | /account/          | { address, email, nickname,message, signature } | { "status": "ok", collection } | See Notes \*5 |
+
+---
+
+## Collections
+
+| HTTP Method | path                               | RequestBody | Response                                   | Notes         |
+| ----------- | ---------------------------------- | ----------- | ------------------------------------------ | ------------- |
+| GET         | /collections?chain=80001,42        | none        | { "status": "ok", collections,totalCount } | See Notes \*3 |
+| GET         | /collections/{address}             | none        | { "status": "ok", collection }             |               |
+| GET         | /collections/search/?query={query} | none        | { "status": "ok", collections }            |               |
+
+---
+
+## Disputes
+
+| HTTP Method | path                        | RequestBody                                                     | Response                                      | Notes         |
+| ----------- | --------------------------- | --------------------------------------------------------------- | --------------------------------------------- | ------------- |
+| GET         | /disputes                   | none                                                            | { "status": "ok", disputes }                  |               |
+| GET         | /disputes/address/{address} | none                                                            | { "status": "ok", disputes }                  |               |
+| GET         | /disputes/{id}              | none                                                            | { "status": "ok", dispute }                   |               |
+| POST        | /disputes/                  | {email, address, orderLink, type, comments, message, signature} | { "status": "ok", body: req.body, disputeId } | See Notes \*5 |
+
+---
+
+## NFTs
+
+| HTTP Method | path                                 | RequestBody | Response                                 | Notes                                  |
+| ----------- | ------------------------------------ | ----------- | ---------------------------------------- | -------------------------------------- |
+| GET         | /nft/metadata/{address}/{id}/{chain} | none        | {"status":"ok","metadata":{...metadata}} | chainId is in hexadecimal (eg. "0x89") |
 
 ---
 
@@ -36,32 +63,14 @@
 
 ---
 
-## NFTs
+## Test
 
-| HTTP Method | path                                 | RequestBody | Response                                 | Notes                                  |
-| ----------- | ------------------------------------ | ----------- | ---------------------------------------- | -------------------------------------- |
-| GET         | /nft/metadata/{address}/{id}/{chain} | none        | {"status":"ok","metadata":{...metadata}} | chainId is in hexadecimal (eg. "0x89") |
-
----
-
-## Disputes
-
-| HTTP Method | path                        | RequestBody                                                     | Response                                      | Notes         |
-| ----------- | --------------------------- | --------------------------------------------------------------- | --------------------------------------------- | ------------- |
-| GET         | /disputes                   | none                                                            | { "status": "ok", disputes }                  |               |
-| GET         | /disputes/address/{address} | none                                                            | { "status": "ok", disputes }                  |               |
-| GET         | /disputes/{id}              | none                                                            | { "status": "ok", dispute }                   |               |
-| POST        | /disputes/                  | {email, address, orderLink, type, comments, message, signature} | { "status": "ok", body: req.body, disputeId } | See Notes \*5 |
-
----
-
-## Collections
-
-| HTTP Method | path                               | RequestBody | Response                                   | Notes         |
-| ----------- | ---------------------------------- | ----------- | ------------------------------------------ | ------------- |
-| GET         | /collections?chain=80001,42        | none        | { "status": "ok", collections,totalCount } | See Notes \*3 |
-| GET         | /collections/{address}             | none        | { "status": "ok", collection }             |               |
-| GET         | /collections/search/?query={query} | none        | { "status": "ok", collections }            |               |
+| HTTP Method | path                     | RequestBody | Response                                               |
+| ----------- | ------------------------ | ----------- | ------------------------------------------------------ |
+| GET         | /testing                 | none        | {"message":"The testing endpoint functions correctly"} |
+| GET         | /test/get                | none        | { "message": "TESTGETJSON" }                           |
+| GET         | /test/ethers             | none        | {"status":"ok","blocknumber":14834871}                 |
+| GET         | /test/moralisNFTMETADATA | none        | {"status":"ok","metadata":{...metadata}}               |
 
 ---
 
