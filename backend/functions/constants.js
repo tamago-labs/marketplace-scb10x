@@ -1,8 +1,8 @@
 const MARKETPLACES = [
-    // {
-    //     chainId: 1,
-    //     contractAddress: "0x00"
-    // },
+    {
+        chainId: 1,
+        contractAddress: "0x0213468b5ED54826b363bbC4A90BBc0A5f972c39"
+    },
     {
         chainId: 42,
         contractAddress: "0xBa9c7eC462dB716E6F79B7D58a38D0b5E5f79141"
@@ -21,6 +21,10 @@ const MARKETPLACES = [
     },
     {
         chainId: 43113,
+        contractAddress: "0x576430Ecadbd9729B32a4cA9Fed9F38331273924"
+    },
+    {
+        chainId: 43114,
         contractAddress: "0x576430Ecadbd9729B32a4cA9Fed9F38331273924"
     },
     {
