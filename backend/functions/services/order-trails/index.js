@@ -1,13 +1,14 @@
 const { db } = require("../../firebase")
 const { ethers } = require("ethers");
 require("dotenv").config();
+
 const { getProvider } = require("../")
 const { MARKETPLACES } = require("../../constants")
 const { MARKETPLACE_ABI } = require("../../abi")
+const { supportedChains } = require("../../constants")
 
 const orderTrails = async () => {
   try {
-
     // check order entries in the system
     console.log("get all orders...")
     const allOrders = await db.collection("orders").where('version', '==', 1).get();
@@ -22,16 +23,6 @@ const orderTrails = async () => {
 
       const { chainId, orderId, DocID } = order
 
-      //update this array if new chain is to be implemented
-      const supportedChains = [
-        // 1,
-        42,
-        56,
-        97,
-        137,
-        43113,
-        80001
-      ]
 
       if (supportedChains.indexOf(chainId) !== -1) {
 

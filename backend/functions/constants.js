@@ -1,6 +1,4 @@
-exports.MARKETPLACES = [
-
-
+const MARKETPLACES = [
     // {
     //     chainId: 1,
     //     contractAddress: "0x00"
@@ -30,3 +28,12 @@ exports.MARKETPLACES = [
         contractAddress: "0xf2260B00250c772CB64606dBb88d9544F709308C"
     },
 ]
+
+const supportedChains = MARKETPLACES.map(chain => {
+    return chain.chainId
+})
+
+module.exports = {
+    MARKETPLACES,
+    supportedChains
+}
