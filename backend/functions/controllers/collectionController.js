@@ -1,6 +1,8 @@
+const validator = require("validator")
+
 const { db } = require("../firebase")
 const { algoliaClient } = require("../services/algolia")
-const validator = require("validator")
+const { supportedChains } = require("../constants")
 
 exports.getCollections = async (req, res, next) => {
   try {
@@ -89,6 +91,14 @@ exports.updateCollection = async (req, res) => {
     if (!address || !chainId) {
       return res.status(400).json({ message: "One or more required inputs are missing." })
     }
+    //validate valid wallet address
+    if (!validator.isEthereumAddress(address)) {
+      return res.status(400).json({ message: "Invalid wallet address." })
+    }
+    //validate that chain is supported
+    if (!supportedChains.includes(Number(chainId))) {
+      return res.status(400).json({ message: "Invalid chain or chain not supported." })
+    }
     const newData = {}
     if (collectionName) {
       newData.name = collectionName
@@ -98,8 +108,11 @@ exports.updateCollection = async (req, res) => {
     }
     if (slug) {
       //validates slug
-      if (!validator.isSlug(slug)) {
-        return res.status(400).json({ message: "slug can only contain lowercase letters, numbers, and hyphens." })
+      if (!(/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug))) {
+        return res.status(400).json({ message: "Slug can only contain lowercase letters, numbers, and hyphens. Hyphens can not be adjacent." })
+      }
+      if (slug.length < 3) {
+        return res.status(400).json({ message: "Slug needs to be at least 3 characters." })
       }
       if (validator.isEthereumAddress(slug)) {
         return res.status(400).json({ message: "slugs in wallet address format are not accepted to avoid potential technical errors." })
@@ -144,7 +157,7 @@ exports.updateCollection = async (req, res) => {
     console.log(newData)
 
     //search for existing document in collections database
-    let collection = await db.collection("collections").where("address", "==", address).where("chainId", "==", chainId).get()
+    let collection = await db.collection("collections").where("address", "==", address).where("chainId", "==", Number(chainId)).get()
 
     if (collection.empty) {
       //create new collection
@@ -156,6 +169,7 @@ exports.updateCollection = async (req, res) => {
         fulfilledOrders: [],
         fulfilledCount: 0
       }
+      console.log({ ...collectionDoc, ...newData })
       await db.collection("collections").add({ ...collectionDoc, ...newData, })
       return res.status(201).json({ status: "ok", message: "New collection added to database" })
     } else {
@@ -164,6 +178,7 @@ exports.updateCollection = async (req, res) => {
       collection.forEach(doc => {
         DocID = doc.id
       });
+      console.log({ ...newData })
       await db.collection("collections").doc(DocID).set({ ...newData }, { merge: true })
       return res.status(200).json({ status: "ok", message: "Data updated" })
     }
