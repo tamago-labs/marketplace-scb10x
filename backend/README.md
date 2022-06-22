@@ -2,10 +2,10 @@
 
 ## Accounts
 
-| HTTP Method | path               | RequestBody                                     | Response                       | Notes         |
-| ----------- | ------------------ | ----------------------------------------------- | ------------------------------ | ------------- |
-| GET         | /account/{address} | none                                            | { "status": "ok", account }    |               |
-| POST        | /account/          | { address, email, nickname,message, signature } | { "status": "ok", collection } | See Notes \*5 |
+| HTTP Method | path               | RequestBody                                     | Response                    | Notes         |
+| ----------- | ------------------ | ----------------------------------------------- | --------------------------- | ------------- |
+| GET         | /account/{address} | none                                            | { "status": "ok", account } |               |
+| POST        | /account/          | { address, email, nickname,message, signature } | { "status": "ok", address } | See Notes \*5 |
 
 ---
 
