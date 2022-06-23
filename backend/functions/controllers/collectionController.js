@@ -1,5 +1,8 @@
+const validator = require("validator")
+
 const { db } = require("../firebase")
 const { algoliaClient } = require("../services/algolia")
+const { supportedChains } = require("../constants")
 
 exports.getCollections = async (req, res, next) => {
   try {
@@ -46,7 +49,7 @@ exports.getCollectionByAddress = async (req, res, next) => {
     }
     let collection = await db.collection("collections").where("address", "==", address).get()
     if (collection.empty) {
-      return res.status(200).json({ message: "could not find colleciton with the given address" })
+      return res.status(200).json({ message: "could not find collection with the given address" })
     }
     collection = collection.docs.map((doc) => ({
       ...doc.data(),
@@ -75,6 +78,110 @@ exports.searchCollections = async (req, res, next) => {
     // console.log(results.hits)
 
     res.status(200).json({ status: "ok", collections: results.hits })
+  } catch (error) {
+    next(error)
+  }
+}
+
+exports.updateCollection = async (req, res) => {
+  try {
+    const { address, chainId, collectionName, slug, description, websiteLink, discordLink, instagramLink, mediumLink, telegramLink } = req.body
+
+    //validates missing inputs
+    if (!address || !chainId) {
+      return res.status(400).json({ message: "One or more required inputs are missing." })
+    }
+    //validate valid wallet address
+    if (!validator.isEthereumAddress(address)) {
+      return res.status(400).json({ message: "Invalid wallet address." })
+    }
+    //validate that chain is supported
+    if (!supportedChains.includes(Number(chainId))) {
+      return res.status(400).json({ message: "Invalid chain or chain not supported." })
+    }
+    const newData = {}
+    if (collectionName) {
+      newData.name = collectionName
+    }
+    if (description) {
+      newData.description = description
+    }
+    if (slug) {
+      //validates slug
+      if (!(/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug))) {
+        return res.status(400).json({ message: "Slug can only contain lowercase letters, numbers, and hyphens. Hyphens can not be adjacent." })
+      }
+      if (slug.length < 3) {
+        return res.status(400).json({ message: "Slug needs to be at least 3 characters." })
+      }
+      if (validator.isEthereumAddress(slug)) {
+        return res.status(400).json({ message: "slugs in wallet address format are not accepted to avoid potential technical errors." })
+      }
+      //check if the slug was already taken by other collection document
+      let duplicate = await db.collection("collections").where("slug", "==", slug).get()
+      if (!duplicate.empty) {
+        return res.status(409).json({ message: "Another collection with this slug already exists." })
+      }
+      newData.slug = slug
+    }
+    if (websiteLink) {
+      if (!validator.isURL(websiteLink)) {
+        return res.status(400).json({ message: "Link to your website is not in proper format." })
+      }
+      newData.websiteLink = websiteLink
+    }
+    if (discordLink) {
+      if (!validator.isURL(discordLink)) {
+        return res.status(400).json({ message: "Link to your Discord is not in proper format." })
+      }
+      newData.discordLink = discordLink
+    }
+    if (instagramLink) {
+      if (!validator.isURL(instagramLink)) {
+        return res.status(400).json({ message: "Link to your Instagram is not in proper format." })
+      }
+      newData.instagramLink = instagramLink
+    }
+    if (mediumLink) {
+      if (!validator.isURL(mediumLink)) {
+        return res.status(400).json({ message: "Link to your Medium is not in proper format." })
+      }
+      newData.mediumLink = mediumLink
+    }
+    if (telegramLink) {
+      if (!validator.isURL(telegramLink)) {
+        return res.status(400).json({ message: "Link to your Telegram is not in proper format." })
+      }
+      newData.telegramLink = telegramLink
+    }
+    console.log(newData)
+
+    //search for existing document in collections database
+    let collection = await db.collection("collections").where("address", "==", address).where("chainId", "==", Number(chainId)).get()
+
+    if (collection.empty) {
+      //create new collection
+      const collectionDoc = {
+        address: address,
+        chainId: chainId,
+        activeOrders: [],
+        activeCount: 0,
+        fulfilledOrders: [],
+        fulfilledCount: 0
+      }
+      console.log({ ...collectionDoc, ...newData })
+      await db.collection("collections").add({ ...collectionDoc, ...newData, })
+      return res.status(201).json({ status: "ok", message: "New collection added to database" })
+    } else {
+      //update existing collection
+      let DocID = ""
+      collection.forEach(doc => {
+        DocID = doc.id
+      });
+      console.log({ ...newData })
+      await db.collection("collections").doc(DocID).set({ ...newData }, { merge: true })
+      return res.status(200).json({ status: "ok", message: "Data updated" })
+    }
   } catch (error) {
     next(error)
   }
