@@ -126,41 +126,32 @@ const General = () => {
       <NameInput
         value={displayName}
         onChange={(e) => setDisplayName(e.target.value)}
-        disabled={disabled}
       />
       <h4>Email Address</h4>
-      <EmailInput
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        disabled={disabled}
-      />
+      <EmailInput value={email} onChange={(e) => setEmail(e.target.value)} />
 
       <hr />
-      {disabled ? (
-        "You have registered this account."
-      ) : (
-        <a
-          onClick={onSave}
-          disabled={disabled}
-          style={{
-            zIndex: 10,
-            color: "white",
-            borderRadius: "32px",
-            padding: "12px 24px",
-            marginRight: "8px",
-          }}
-          className="btn btn-primary shadow"
-        >
-          <div style={{ display: "flex", flexDirection: "row" }}>
-            {disabled ?? (
-              <span style={{ marginRight: "10px" }}>
-                <TailSpin color="#fff" height={24} width={24} />
-              </span>
-            )}
-            Save Changes
-          </div>
-        </a>
-      )}
+
+      <a
+        onClick={onSave}
+        style={{
+          zIndex: 10,
+          color: "white",
+          borderRadius: "32px",
+          padding: "12px 24px",
+          marginRight: "8px",
+        }}
+        className="btn btn-primary shadow"
+      >
+        <div style={{ display: "flex", flexDirection: "row" }}>
+          {loading ?? (
+            <span style={{ marginRight: "10px" }}>
+              <TailSpin color="#fff" height={24} width={24} />
+            </span>
+          )}
+          Save Changes
+        </div>
+      </a>
 
       {errorMessage && <span className="error-message">{errorMessage}</span>}
     </Wrapper>
