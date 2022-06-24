@@ -1,9 +1,11 @@
-import React, { useState, useRef } from "react"
+import React, { useState, useRef, useCallback } from "react"
 import styled from "styled-components"
 import { useWeb3React } from "@web3-react/core"
 import { TailSpin } from "react-loader-spinner"
 import { ethers } from "ethers"
 import { X } from "react-feather"
+import { toast } from "react-toastify"
+import ERC721Tamago from "../../abi/ERC721Tamago.json"
 import {
   shortAddress,
   resolveNetworkName,
@@ -129,6 +131,44 @@ const CreateCollection = () => {
     hiddenFileInput.current.click()
   }
 
+  const onCreate = useCallback(async () => {
+    setLoading(true)
+    try {
+      await window.ethereum.enable()
+      const provider = new ethers.providers.Web3Provider(window.ethereum)
+      const signer = provider.getSigner()
+      const erc721TamagoFactory = new ethers.ContractFactory(
+        ERC721Tamago.abi,
+        ERC721Tamago.bytecode,
+        signer
+      )
+      const erc721Contract = await erc721TamagoFactory.deploy(name, symbol)
+      await erc721Contract.deployed()
+      toast.success("Create collection completed!", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        progress: undefined,
+      })
+    } catch (e) {
+      console.log(e)
+      toast.error(`Can not create collection`, {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        progress: undefined,
+      })
+    } finally {
+      setLoading(false)
+      setName("")
+      setSymbol("")
+      setDescription("")
+      setImage()
+    }
+  }, [image, name, symbol, description, chainId, account, library])
+
   return (
     <div style={{ marginTop: 32 }} className="container d-flex">
       <div>
@@ -185,19 +225,32 @@ const CreateCollection = () => {
           <b>Name</b>
           <small className="mx-2">(required)</small>
         </h6>
-        <InputText value={name} onChange={e => setName(e.target.value)} placeholder="Enter collection name" />
+        <InputText
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="Enter collection name"
+        />
         <h6 className="mt-4">
           <b>Symbol</b>
           <small className="mx-2">(required)</small>
         </h6>
-        <InputText value={symbol} onChange={e => setSymbol(e.target.value)} placeholder="Enter token symbol" />
+        <InputText
+          value={symbol}
+          onChange={(e) => setSymbol(e.target.value)}
+          placeholder="Enter token symbol"
+        />
         <h6 className="mt-4">
           <b>Description</b>
           <small className="mx-2">(optional)</small>
         </h6>
-        <InputText value={description} onChange={e => setDescription(e.target.value)} placeholder="Enter description" />
+        <InputText
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          placeholder="Enter description"
+        />
         <div className="mt-4 d-flex">
           <a
+            onClick={onCreate}
             style={{
               zIndex: 10,
               color: "white",
