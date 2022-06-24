@@ -106,7 +106,8 @@ Notes \*4 :<br>
 
 Notes \*5 :<br>
 
-- this endpoint requires **message** and **signature** to recover address in backend server
+- this endpoint requires **message** and **signature** to recover address in backend server.
+- email and nickname are optional parameters but at least one of them are required.
 
 Notes \*6 :<br>
 
