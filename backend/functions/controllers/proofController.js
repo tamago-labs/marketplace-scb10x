@@ -107,7 +107,7 @@ exports.generateRelayMessages = async (req, res, next) => {
 exports.generateValidatorMessages = async (req, res, next) => {
   try {
     const claims = await generateValidatorMessages()
-    //TODO : decide on how to cache this proof
+    //TODO : (This task has been postponed for now) decide on how to cache this proof
     res.status(200).json({ status: "ok", claims })
   } catch (error) {
     next(error)
