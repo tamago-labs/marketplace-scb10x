@@ -1,13 +1,14 @@
 const { db } = require("../../firebase")
 const { ethers } = require("ethers");
 require("dotenv").config();
+
 const { getProvider } = require("../")
 const { MARKETPLACES } = require("../../constants")
 const { MARKETPLACE_ABI } = require("../../abi")
+const { supportedChains } = require("../../constants")
 
 const orderTrails = async () => {
   try {
-
     // check order entries in the system
     console.log("get all orders...")
     const allOrders = await db.collection("orders").where('version', '==', 1).get();
@@ -22,25 +23,15 @@ const orderTrails = async () => {
 
       const { chainId, orderId, DocID } = order
 
-      //update this array if new chain is to be implemented
-      const supportedChains = [
-        // 1,
-        42,
-        56,
-        97,
-        137,
-        43113,
-        80001
-      ]
 
       if (supportedChains.indexOf(chainId) !== -1) {
 
         let rpcUrl
 
         switch (chainId) {
-          // case 1:
-          //   rpcUrl = process.env.MAINNET_RPC_SERVER
-          //   break;
+          case 1:
+            rpcUrl = process.env.MAINNET_RPC_SERVER
+            break;
           case 42:
             rpcUrl = process.env.KOVAN_RPC_SERVER
             break;
@@ -55,6 +46,9 @@ const orderTrails = async () => {
             break;
           case 43113:
             rpcUrl = process.env.FUJI_RPC_SERVER
+            break;
+          case 43114:
+            rpcUrl = process.env.AVALANCHE_C_CHAIN_RPC
             break;
           case 80001:
             rpcUrl = process.env.MUMBAI_RPC_SERVER
