@@ -2,10 +2,12 @@ import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import styled from "styled-components";
 import Skeleton from "react-loading-skeleton";
+import ParticleBackground from 'react-particle-backgrounds'
 import NFTCard from "../nftCard";
 import useOrder from "../../hooks/useOrder";
 import { resolveNetworkName } from "../../helper";
 import { Button as MoreButton } from "../../components/buttons";
+import { AssetDetailsContainer } from "../OrderDetails/index"
 
 /** Styled Component */
 const ListContainer = styled.div`
@@ -95,6 +97,8 @@ const Button = styled.button`
   
   `}
 `;
+
+const Jumbotron = styled(AssetDetailsContainer)``
 
 /** CONSTANT */
 const MAX_ITEMS = 4;
@@ -188,10 +192,57 @@ const Collection = () => {
     }
   };
 
+  const settings = {
+    particle: {
+      particleCount: 150,
+      color: "#fff",
+      maxSize: 2
+    },
+    velocity: {
+      directionAngle: 180,
+      directionAngleVariance: 60,
+      minSpeed: 0.1,
+      maxSpeed: 0.3
+    },
+    opacity: {
+      minOpacity: 0,
+      maxOpacity: 0.4,
+      opacityTransitionTime: 10000
+    }
+  }
+
+  const resolveColor = (chainId) => {
+    switch (chainId) {
+      case 80001:
+        return "purple"
+      case 137:
+        return "purple"
+      case 43113:
+        return "red"
+      case 43114:
+        return "red"
+      case 97:
+        return "yellow"
+      case 56:
+        return "yellow"
+      case 42:
+        return "blue"
+      case 1:
+        return "blue"
+      default:
+        return ""
+    }
+  }
+
+
   return (
     <Container>
-      <div>
-        <NftNameBoard>
+      <div> 
+
+        <Jumbotron
+          color={data && data.chainId && resolveColor(data.chainId)}
+        >
+          <ParticleBackground style={{ position: "absolute", zIndex: 1 }} settings={settings} />
           <div style={{ textAlign: "center" }}>
             {data ? (
               <RoundImg src={data.metadata.image} />
@@ -216,7 +267,7 @@ const Collection = () => {
             }}
           >
             <BoardDetail>
-              <h6>Items</h6>
+              <h6>All</h6>
               <p>{allOrders.length}</p>
             </BoardDetail>
             <BoardDetail>
@@ -230,7 +281,7 @@ const Collection = () => {
               <p>{sellers.length}</p>
             </BoardDetail>
           </div>
-        </NftNameBoard>
+        </Jumbotron>
 
         <Switcher>
           <Button value="all" active={isAll} onClick={(e) => handleFilter(e)}>

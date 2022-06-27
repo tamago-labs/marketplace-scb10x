@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import styled from "styled-components";
+import ParticleBackground from 'react-particle-backgrounds'
 import NFTCard from "../nftCard";
 import useOrder from "../../hooks/useOrder";
 import { Button as MoreButton } from "../../components/buttons";
@@ -96,6 +97,32 @@ const Button = styled.button`
   `}
 `;
 
+const Jumbotron = styled.div`
+
+background: rgb(34, 193, 195);
+background: linear-gradient(
+  0deg,
+  rgba(34, 193, 195, 1) 0%,
+  rgba(253, 187, 45, 1) 100%
+);
+
+  padding: 1rem 2rem; 
+  margin-left: auto;
+  margin-right: auto;
+  color: white;
+  font-weight: 600;
+  border-radius: 12px;
+  text-shadow: 1px 1px #333; 
+  position: relative;
+  overflow: hidden;
+  min-height: 235px;
+  margin-bottom: 2rem;
+
+  @media only screen and (max-width: 1000px) {
+    padding: 1rem 2rem; 
+  }
+`
+
 /** CONSTANT */
 const MAX_ITEMS = 4;
 
@@ -173,10 +200,30 @@ const SortByOwner = () => {
     return [];
   }, [allOrders]);
 
+  const settings = {
+    particle: {
+      particleCount: 100,
+      color: "#fff",
+      minSize: 2,
+      maxSize: 4
+    },
+    velocity: {
+      directionAngle: 0,
+      directionAngleVariance: 30,
+      minSpeed: 0.2,
+      maxSpeed: 4
+    },
+    opacity: {
+      minOpacity: 0,
+      maxOpacity: 0.5,
+      opacityTransitionTime: 5000
+    }
+  }
+
   return (
     <Container>
       <div>
-        <NftNameBoard>
+        {/* <NftNameBoard>
           <div style={{ textAlign: "center" }}>
             <RoundImg src={BlankProfile} />
 
@@ -206,7 +253,39 @@ const SortByOwner = () => {
               <p>{collections.length}</p>
             </BoardDetail>
           </div>
-        </NftNameBoard>
+        </NftNameBoard> */}
+        <Jumbotron>
+          <ParticleBackground style={{ position: "absolute", zIndex: 1 }} settings={settings} />
+          <div style={{ textAlign: "center", zIndex: 10 }}>
+            <RoundImg src={BlankProfile} />
+
+            {sellerName ? (
+              <SellerName>@{sellerName}</SellerName>
+            ) : (
+              <Skeleton
+                style={{ marginTop: "0.5rem", marginBottom: "0.5rem" }}
+                height="20px"
+                width="80px"
+              />
+            )}
+          </div>
+          <div
+            style={{
+              position: "relative",
+              display: "flex",
+              justifyContent: "center",
+            }}
+          >
+            <BoardDetail>
+              <h6>All</h6>
+              <p>{allOrders.length}</p>
+            </BoardDetail>
+            <BoardDetail>
+              <h6>Collections</h6>
+              <p>{collections.length}</p>
+            </BoardDetail>
+          </div>
+        </Jumbotron>
         <Switcher>
           <Button value="all" active={isAll} onClick={(e) => handleFilter(e)}>
             All
