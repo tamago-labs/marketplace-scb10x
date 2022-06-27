@@ -56,11 +56,13 @@
 
 ## Proofs
 
-| HTTP Method | path                | RequestBody                | Response                                          |
-| ----------- | ------------------- | -------------------------- | ------------------------------------------------- |
-| POST        | /proof/swap         | {order,chainId,tokenIndex} | { "status": "ok", order,chainId,tokenIndex,proof} |
-| POST        | /proof/partial-swap | {order,token}              | { "status": "ok", order,token,proof}              |
-| POST        | /proof/claim        | {order,account,token}      | { "status": "ok", order,account,proof}            |
+| HTTP Method | path                      | RequestBody                | Response                                          |
+| ----------- | ------------------------- | -------------------------- | ------------------------------------------------- |
+| POST        | /proof/swap               | {order,chainId,tokenIndex} | { "status": "ok", order,chainId,tokenIndex,proof} |
+| POST        | /proof/partial-swap       | {order,token}              | { "status": "ok", order,token,proof}              |
+| POST        | /proof/claim              | {order,account,token}      | { "status": "ok", order,account,proof}            |
+| GET         | /proof/relay-messages     | none                       | { "status": "ok", messages}                       |
+| GET         | /proof/validator-messages | none                       | { "status": "ok", claims}                         |
 
 ---
 

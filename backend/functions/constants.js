@@ -37,7 +37,12 @@ const supportedChains = MARKETPLACES.map(chain => {
     return chain.chainId
 })
 
+const MAINNET_CHAINS = [137, 56, 43114, 1]
+const TESTNET_CHAINS = [42, 97, 80001, 43113]
+
 module.exports = {
     MARKETPLACES,
-    supportedChains
+    supportedChains,
+    MAINNET_CHAINS,
+    TESTNET_CHAINS
 }
