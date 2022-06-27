@@ -153,8 +153,8 @@ const AccountDetails = () => {
                   marginRight: "auto",
                 }}
               >
-                <AccountTab defaultActiveKey="orders" className="mt-3 mb-3">
-                  <Tab eventKey="general" title="General">
+                <AccountTab defaultActiveKey="general" className="mt-3 mb-3">
+                  <Tab eventKey="general" title="Profile">
                     <General />
                   </Tab>
                   <Tab eventKey="orders" title="Your Orders">

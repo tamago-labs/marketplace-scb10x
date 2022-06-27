@@ -127,8 +127,9 @@ const General = () => {
         value={displayName}
         onChange={(e) => setDisplayName(e.target.value)}
       />
-      <h4>Email Address</h4>
+      <h4 style={{ marginTop: "10px" }}>Email Address</h4>
       <EmailInput value={email} onChange={(e) => setEmail(e.target.value)} />
+      <p style={{marginTop :"20px"}}>Register your email to receive notifications about updates to your listing and orders</p>
 
       <hr />
 
@@ -144,11 +145,11 @@ const General = () => {
         className="btn btn-primary shadow"
       >
         <div style={{ display: "flex", flexDirection: "row" }}>
-          {loading ?? (
+          {loading ? (
             <span style={{ marginRight: "10px" }}>
               <TailSpin color="#fff" height={24} width={24} />
             </span>
-          )}
+          ) : <></>}
           Save Changes
         </div>
       </a>
