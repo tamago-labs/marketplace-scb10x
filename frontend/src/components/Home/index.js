@@ -38,15 +38,11 @@ const Button = styled.button`
 
 const Home = () => {
 
-  const [isMainnet, setMainnet] = useState(false)
+  const [isMainnet, setMainnet] = useState(true)
 
   return (
     <>
       <Jumbotron />
-
-
-
-      <RankBoard />
 
       <Switcher>
         <Button active={isMainnet} onClick={() => setMainnet(true)}>
@@ -56,6 +52,10 @@ const Home = () => {
           Testnet
         </Button>
       </Switcher>
+
+      <RankBoard 
+        isMainnet={isMainnet}
+      />
 
       <Lists
         isMainnet={isMainnet}
