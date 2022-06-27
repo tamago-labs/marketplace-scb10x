@@ -64,6 +64,25 @@ const ChainInfo = styled.div`
   }
 `;
 
+const NewRibbon = styled.div`
+  position: absolute;
+  top: 30px;
+  left: -30px;
+  z-index: 10;
+  width: 50%;
+  display: flex;
+  background: #ffc107;
+  height: 20px;
+  border-radius: 20px 20px 0px 0px;
+  transform: rotate(-45deg);
+  div {
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 16px;
+    color: #000;
+  }
+`;
+
 const ChainBadge = styled(Badge).attrs(() => ({ color: "success" }))`
   margin-left: auto;
   margin-right: auto;
@@ -76,38 +95,53 @@ const ThreeDotsButton = styled.button`
   }
 `;
 
-const AVALABLE_TESTNET_OPENSEA = ["Ropsten", "Rinksby", "Goerli", "Mumbai"];
-const AVALABLE_MAINNET_OPENSEA = ["Polygon", "Ethereum" ];
+const SoldBanner = styled.div`
+  position: absolute;
+  top: 25%;
+  left: 25%;
+  z-index: 10;
+  width: 50%;
+  display: flex;
+  background: #adb5bd;
+  height: 20px;
+  /* border-radius: 20px 20px 0px 0px; */
+  transform: rotate(-20deg);
 
+  div {
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 16px;
+    color: #000;
+  }
+`;
+
+const AVALABLE_TESTNET_OPENSEA = ["Ropsten", "Rinksby", "Goerli", "Mumbai"];
+const AVALABLE_MAINNET_OPENSEA = ["Polygon", "Ethereum"];
 
 export const MoreInfo = styled(
   ({ className, chainId, assetAddress, isERC20, tokenId }) => {
     const [menuVisible, setMenuVisible] = useState(false);
 
-
     const blockExplorerLink = resolveBlockexplorerLink(chainId, assetAddress);
     const { getOpenSeaTestnetLink, getOpenSeaLink } = useOpenSea();
 
     const seaLink = useMemo(() => {
-
-      const networkName = resolveNetworkName(chainId)
+      const networkName = resolveNetworkName(chainId);
 
       if (!networkName) {
-        return
+        return;
       }
 
       if (networkName && assetAddress && tokenId) {
         if (AVALABLE_TESTNET_OPENSEA.includes(networkName)) {
-          return getOpenSeaTestnetLink(networkName, assetAddress, tokenId)
+          return getOpenSeaTestnetLink(networkName, assetAddress, tokenId);
         } else if (AVALABLE_MAINNET_OPENSEA.includes(networkName)) {
-          return getOpenSeaLink(networkName, assetAddress, tokenId)
+          return getOpenSeaLink(networkName, assetAddress, tokenId);
         }
       }
 
-      return
-
-    }, [chainId, assetAddress, tokenId])
-
+      return;
+    }, [chainId, assetAddress, tokenId]);
 
     return (
       <div className={className}>
@@ -130,7 +164,11 @@ export const MoreInfo = styled(
             <div>
               <>
                 <hr style={{ margin: "5px" }} />
-                <a href={seaLink} target="_blank" className={`--menu-item ${!seaLink && "--disabled"}`}>
+                <a
+                  href={seaLink}
+                  target="_blank"
+                  className={`--menu-item ${!seaLink && "--disabled"}`}
+                >
                   On OpenSea
                 </a>
               </>
@@ -142,7 +180,7 @@ export const MoreInfo = styled(
   }
 )`
   position: absolute;
-  top: 5px; 
+  top: 5px;
   right: 5px;
   z-index: 10;
   width: 60%;
@@ -161,7 +199,6 @@ export const MoreInfo = styled(
       cursor: none;
     }
   }
-
 
   .--menu {
     margin-top: 5px;
@@ -193,8 +230,19 @@ export const BaseAssetCard = ({
   assetAddress,
   tokenId,
   orderId,
+  orderStatus,
 }) => (
   <BaseAssetCardContainer>
+    {orderStatus == "NEW" ? (
+      <NewRibbon>
+        <div>{orderStatus}</div>
+      </NewRibbon>
+    ) : (
+      <SoldBanner>
+        <div>{orderStatus}</div>
+      </SoldBanner>
+    )}
+
     <PreviewContainer>
       {image ? (
         <Link to={`/order/${orderId}`}>

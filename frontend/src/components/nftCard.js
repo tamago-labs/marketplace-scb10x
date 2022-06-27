@@ -17,7 +17,6 @@ const BuyButton = styled.a.attrs(() => ({
 }))`
   color: #7a0bc0;
   background: #ffffff;
-  /* border-color: "transparent"; */
   font-weight: 600;
   border-radius: 32px;
   margin-top: 12px;
@@ -27,6 +26,17 @@ const BuyButton = styled.a.attrs(() => ({
     color: #ffffff;
     background: #fa58b6;
   }
+`;
+
+const DisabledButton = styled.a.attrs(() => ({
+  className: "btn shadow",
+}))`
+  color: #ffff;
+  background: #adb5bd;
+  font-weight: 600;
+  border-radius: 32px;
+  margin-top: 12px;
+  width: 100%;
 `;
 
 const SecondaryDataRow = styled.div`
@@ -58,14 +68,15 @@ const LinkName = styled(Link)`
 `;
 
 const shorterName = (name) => {
-  return name.length > 28 ? `${name.slice(0, 15)}...${name.slice(-4)}` : name
-}
+  return name.length > 28 ? `${name.slice(0, 15)}...${name.slice(-4)}` : name;
+};
 
 /* Component */
 const NFTCard = ({ order, delay }) => {
   const { resolveMetadata, getOwnerName } = useOrder();
   const [data, setData] = useState();
   const [sellerName, setSellerName] = useState("");
+  const [orderStatus, setOrderStatus] = useState("");
 
   useEffect(() => {
     if (order) {
@@ -83,6 +94,16 @@ const NFTCard = ({ order, delay }) => {
       setSellerName(name);
     };
     fetchOwnerName();
+
+    if (order.canceled === false) {
+      setOrderStatus("NEW");
+    }
+    if (order.canceled === true) {
+      setOrderStatus("CANCEL");
+    }
+    if (order.fulfilled === true) {
+      setOrderStatus("SOLD");
+    }
   }, [order, delay]);
 
   const sellerLink = resolveBlockexplorerLink(
@@ -111,6 +132,7 @@ const NFTCard = ({ order, delay }) => {
       chainId={order && order.chainId}
       assetAddress={order && order.baseAssetAddress}
       tokenId={order && order.baseAssetTokenId}
+      orderStatus={order && orderStatus}
     >
       <SellerCol>
         <Link to={`/orders/collection/${order.baseAssetAddress}`}>
@@ -134,9 +156,13 @@ const NFTCard = ({ order, delay }) => {
         </SellerCol>
         {price && <PriceCol>{price}</PriceCol>}
       </SecondaryDataRow>
-      <Link to={`/order/${order.orderId}`}>
-        <BuyButton>Buy</BuyButton>
-      </Link>
+      {orderStatus == "NEW" ? (
+        <Link to={`/order/${order.orderId}`}>
+          <BuyButton>Buy</BuyButton>
+        </Link>
+      ) : (
+        <DisabledButton>{orderStatus}</DisabledButton>
+      )}
     </BaseAssetCard>
   );
 };

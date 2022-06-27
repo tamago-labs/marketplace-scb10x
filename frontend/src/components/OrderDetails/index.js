@@ -47,7 +47,7 @@ const shorterName = (name) => {
     return name.length > 28 ? `${name.slice(0, 15)}...${name.slice(-4)}` : name
 }
 
-const AssetDetailsContainer = styled.div.attrs(() => ({}))`
+export const AssetDetailsContainer = styled.div.attrs(() => ({}))`
   
 ${props => props.color === "purple" && `
 /* Created with https://www.css-gradient.com */
