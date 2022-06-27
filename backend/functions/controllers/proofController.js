@@ -94,3 +94,22 @@ exports.generateClaimProof = async (req, res, next) => {
     next(error)
   }
 }
+
+exports.generateRelayMessages = async (req, res, next) => {
+  try {
+    const messages = await generateRelayMessages()
+    res.status(200).json({ status: "ok", messages })
+  } catch (error) {
+    next(error)
+  }
+}
+
+exports.generateValidatorMessages = async (req, res, next) => {
+  try {
+    const claims = await generateValidatorMessages()
+    //TODO : (This task has been postponed for now) decide on how to cache this proof
+    res.status(200).json({ status: "ok", claims })
+  } catch (error) {
+    next(error)
+  }
+}

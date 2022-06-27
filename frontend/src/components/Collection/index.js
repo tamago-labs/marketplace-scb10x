@@ -2,10 +2,12 @@ import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import styled from "styled-components";
 import Skeleton from "react-loading-skeleton";
+import ParticleBackground from 'react-particle-backgrounds'
 import NFTCard from "../nftCard";
 import useOrder from "../../hooks/useOrder";
-import { Button } from "../buttons";
 import { resolveNetworkName } from "../../helper";
+import { Button as MoreButton } from "../../components/buttons";
+import { AssetDetailsContainer } from "../OrderDetails/index"
 
 /** Styled Component */
 const ListContainer = styled.div`
@@ -63,6 +65,41 @@ const Container = styled.div.attrs(() => ({ className: "container" }))`
   margin-bottom: 2rem;
 `;
 
+const Switcher = styled.div`
+  text-align: center;
+  margin-top: 2rem;
+`;
+
+const Button = styled.button`
+  background: transparent;
+  padding: 5px 30px;
+  color: white;
+  border: 1px solid white;
+
+  :disabled {
+    background-color: grey;
+  }
+  :first-child {
+    border-right: 0px;
+    border-top-left-radius: 16px;
+    border-bottom-left-radius: 16px;
+  }
+  :last-child {
+    border-top-right-radius: 16px;
+    border-bottom-right-radius: 16px;
+  }
+
+  ${(props) =>
+    props.active &&
+    `
+  background: white;
+  color: #333;
+  
+  `}
+`;
+
+const Jumbotron = styled(AssetDetailsContainer)``
+
 /** CONSTANT */
 const MAX_ITEMS = 4;
 
@@ -73,9 +110,15 @@ const Collection = () => {
   const [data, setData] = useState();
   const { getOrdersByCollection, resolveMetadata } = useOrder();
   const { address } = useParams();
+  const [isNew, setIsNew] = useState(false);
+  const [isSold, setIsSold] = useState(false);
+  const [isCanceled, setIsCanceled] = useState(false);
+  const [isAll, setIsAll] = useState(true);
+  const [allOrders, setAllOrders] = useState([]);
 
   useEffect(() => {
     address && getOrdersByCollection(address).then(setOrders);
+    address && getOrdersByCollection(address).then(setAllOrders);
   }, [address]);
 
   useEffect(() => {
@@ -84,20 +127,18 @@ const Collection = () => {
         assetAddress: orders[0].baseAssetAddress,
         tokenId: orders[0].baseAssetTokenId,
         chainId: orders[0].chainId,
-      }).then(
-        (data) => {
-          setData({
-            ...data,
-            chainId: orders[0].chainId
-          })
-        }
-      );
+      }).then((data) => {
+        setData({
+          ...data,
+          chainId: orders[0].chainId,
+        });
+      });
     }
   }, [orders]);
 
   const sellers = useMemo(() => {
-    if (orders && orders.length > 0) {
-      return orders.reduce((arr, item) => {
+    if (allOrders && allOrders.length > 0) {
+      return allOrders.reduce((arr, item) => {
         if (arr.indexOf(item.ownerAddress) === -1) {
           arr.push(item.ownerAddress);
         }
@@ -105,12 +146,103 @@ const Collection = () => {
       }, []);
     }
     return [];
-  }, [orders]);
+  }, [allOrders]);
+
+  const handleFilter = (event) => {
+    let filteredArr;
+    switch (event.target.value) {
+      case "all":
+        setIsAll(true);
+        setIsNew(false);
+        setIsSold(false);
+        setIsCanceled(false);
+        setOrders(allOrders);
+        break;
+      case "new":
+        setIsAll(false);
+        setIsNew(true);
+        setIsSold(false);
+        setIsCanceled(false);
+        filteredArr = allOrders.filter(
+          (order) => order.canceled === false && order.fulfilled === undefined
+        );
+        setOrders(filteredArr);
+        break;
+      case "sold":
+        setIsAll(false);
+        setIsNew(false);
+        setIsSold(true);
+        setIsCanceled(false);
+        filteredArr = allOrders.filter(
+          (order) => order.fulfilled === true && order.canceled === false
+        );
+        setOrders(filteredArr);
+        break;
+      case "cancel":
+        setIsAll(false);
+        setIsNew(false);
+        setIsSold(false);
+        setIsCanceled(true);
+        filteredArr = allOrders.filter((order) => order.canceled === true);
+        setOrders(filteredArr);
+        break;
+
+      default:
+        break;
+    }
+  };
+
+  const settings = {
+    particle: {
+      particleCount: 150,
+      color: "#fff",
+      maxSize: 2
+    },
+    velocity: {
+      directionAngle: 180,
+      directionAngleVariance: 60,
+      minSpeed: 0.1,
+      maxSpeed: 0.3
+    },
+    opacity: {
+      minOpacity: 0,
+      maxOpacity: 0.4,
+      opacityTransitionTime: 10000
+    }
+  }
+
+  const resolveColor = (chainId) => {
+    switch (chainId) {
+      case 80001:
+        return "purple"
+      case 137:
+        return "purple"
+      case 43113:
+        return "red"
+      case 43114:
+        return "red"
+      case 97:
+        return "yellow"
+      case 56:
+        return "yellow"
+      case 42:
+        return "blue"
+      case 1:
+        return "blue"
+      default:
+        return ""
+    }
+  }
+
 
   return (
     <Container>
-      <div>
-        <NftNameBoard>
+      <div> 
+
+        <Jumbotron
+          color={data && data.chainId && resolveColor(data.chainId)}
+        >
+          <ParticleBackground style={{ position: "absolute", zIndex: 1 }} settings={settings} />
           <div style={{ textAlign: "center" }}>
             {data ? (
               <RoundImg src={data.metadata.image} />
@@ -135,30 +267,43 @@ const Collection = () => {
             }}
           >
             <BoardDetail>
-              <h6>Items</h6>
-              <p>{orders.length}</p>
+              <h6>All</h6>
+              <p>{allOrders.length}</p>
             </BoardDetail>
             <BoardDetail>
               <h6>Chain</h6>
-              <p>{data && data.chainId ? resolveNetworkName(data.chainId) : "--"}</p>
+              <p>
+                {data && data.chainId ? resolveNetworkName(data.chainId) : "--"}
+              </p>
             </BoardDetail>
             <BoardDetail>
               <h6>Sellers</h6>
               <p>{sellers.length}</p>
             </BoardDetail>
-            {/* <BoardDetail>
-              <h6>Floor Price</h6>
-              <p>-</p>
-            </BoardDetail>
-            <BoardDetail>
-              <h6>Chain</h6>
-              <p>Kovan/Mumbai</p>
-            </BoardDetail> */}
           </div>
-        </NftNameBoard>
+        </Jumbotron>
+
+        <Switcher>
+          <Button value="all" active={isAll} onClick={(e) => handleFilter(e)}>
+            All
+          </Button>
+          <Button value="new" active={isNew} onClick={(e) => handleFilter(e)}>
+            New
+          </Button>
+          <Button value="sold" active={isSold} onClick={(e) => handleFilter(e)}>
+            Sold
+          </Button>
+          <Button
+            value="cancel"
+            active={isCanceled}
+            onClick={(e) => handleFilter(e)}
+          >
+            Cancel
+          </Button>
+        </Switcher>
 
         <ListContainer>
-          {orders.length === 0 && <>Loading...</>}
+          {orders.length === 0 && <>No Item</>}
 
           {orders.length > 0 &&
             orders.map((order, index) => {
@@ -175,7 +320,7 @@ const Collection = () => {
           style={{ padding: "20px", marginTop: "1rem", textAlign: "center" }}
         >
           {orders.length > max && (
-            <Button onClick={() => setMax(max + 4)}>More...</Button>
+            <MoreButton onClick={() => setMax(max + 4)}>More...</MoreButton>
           )}
         </div>
       </div>
