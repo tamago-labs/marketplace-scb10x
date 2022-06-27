@@ -12,8 +12,7 @@ import { MAINNET_CHAINS } from "../constants";
 /* Styled Component */
 const Container = styled.div.attrs(() => ({ className: "container" }))`
   margin-top: 2rem;
-  display: flex;
-  max-width: 900px;
+  display: flex; 
 
   min-height: 250px;
 
@@ -64,16 +63,19 @@ const Loading = () => {
   )
 }
 
-const RankBoard = () => {
+const RankBoard = ({
+  isMainnet
+}) => {
   const [sellers, setSellers] = useState([]);
   const [collections, setCollections] = useState([]);
 
   const { getTopSellers, getTopCollections } = useOrder();
 
   useEffect(() => {
-    getTopCollections(5).then(setCollections);
+    setCollections([])
+    getTopCollections(isMainnet).then(setCollections);
     getTopSellers(5).then(setSellers);
-  }, []);
+  }, [isMainnet]);
 
   return (
     <Container>
@@ -86,7 +88,7 @@ const RankBoard = () => {
                 if (index >= 5) {
                   return;
                 }
-                
+
                 return (
                   <TR key={`collection-${index}`}>
                     <TH>#{index + 1}</TH>
@@ -94,7 +96,7 @@ const RankBoard = () => {
                       <Link to={`/orders/collection/${item.address}`}>
                         {item.name || shortAddress(item.address, 10, -6)}
                       </Link>{` `}
-                      <Badge color={ MAINNET_CHAINS.includes(item.chainId) ? "primary" : "secondary"} >{resolveNetworkName(item.chainId)}</Badge>
+                      <Badge color={MAINNET_CHAINS.includes(item.chainId) ? "primary" : "secondary"} >{resolveNetworkName(item.chainId)}</Badge>
 
                     </td>
                     <td>
