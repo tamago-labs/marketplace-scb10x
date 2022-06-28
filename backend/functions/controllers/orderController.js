@@ -1,5 +1,7 @@
-const { db } = require("../firebase")
 const { ethers } = require("ethers");
+
+const { db } = require("../firebase")
+const { sgMail, msg } = require("../sendgrid")
 
 exports.getOrders = async (req, res, next) => {
   console.log("get all orders...")
@@ -99,7 +101,7 @@ exports.createOrder = async (req, res, next) => {
       "timestamp": Math.floor(new Date().valueOf() / 1000)
     }
 
-    console.log(orderItem)
+    // console.log(orderItem)
 
     await db.collection('orders').add(orderItem)
 
@@ -142,6 +144,24 @@ exports.confirmOrder = async (req, res, next) => {
     console.log("Saving: \n", Item)
     await db.collection("orders").doc(DocID).set({ confirmed: true, visible: true }, { merge: true })
 
+    //SEND EMAIL UPON ORDER CONFIRMATION
+    let account = await db.collection("accounts").where("address", "==", ownerAddress).get()
+
+    if (!account.empty) {
+      account = account.docs.map((doc) => ({
+        ...doc.data(),
+      }))[0]
+      if (
+        account.email === "pongzthor@gmail.com" // TODO: Important! this needs to be changed!
+      ) {
+        msg.to = account.email
+        msg.subject = "Your Order was created and signed successfully"
+        msg.html = `<p>Your Order was created with Id: ${orderId} </p><br><strong>Tamago Team</strong>`
+        await sgMail.send(msg)
+      }
+    }
+
+
     res.status(200).json({ status: "ok", orderId })
   } catch (error) {
     next(error)
@@ -180,6 +200,24 @@ exports.cancelOrder = async (req, res, next) => {
     }
     console.log("Saving: \n", Item)
     await db.collection("orders").doc(DocID).set({ cancelled: true }, { merge: true })
+
+    //SEND EMAIL UPON ORDER CANCELLATION
+    let account = await db.collection("accounts").where("address", "==", ownerAddress).get()
+
+    if (!account.empty) {
+      account = account.docs.map((doc) => ({
+        ...doc.data(),
+      }))[0]
+      if (
+        account.email === "pongzthor@gmail.com" // TODO: Important! this needs to be changed!
+      ) {
+        msg.to = account.email
+        msg.subject = "Your Order was cancelled"
+        msg.html = `<p>Your Order with Id: ${orderId} was cancelled </p><br><strong>Tamago Team</strong>`
+        await sgMail.send(msg)
+      }
+    }
+
 
     res.status(200).json({ status: "ok", orderId })
   } catch (error) {

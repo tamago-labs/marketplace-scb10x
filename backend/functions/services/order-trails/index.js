@@ -1,11 +1,10 @@
-const { db } = require("../../firebase")
 const { ethers } = require("ethers");
 require("dotenv").config();
 
+const { db } = require("../../firebase")
 const { getProvider } = require("../")
-const { MARKETPLACES } = require("../../constants")
+const { MARKETPLACES, supportedChains } = require("../../constants")
 const { MARKETPLACE_ABI } = require("../../abi")
-const { supportedChains } = require("../../constants")
 const { sgMail, msg } = require("../../sendgrid")
 
 const orderTrails = async () => {
