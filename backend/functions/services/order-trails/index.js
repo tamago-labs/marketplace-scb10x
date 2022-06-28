@@ -6,6 +6,7 @@ const { getProvider } = require("../")
 const { MARKETPLACES } = require("../../constants")
 const { MARKETPLACE_ABI } = require("../../abi")
 const { supportedChains } = require("../../constants")
+const { sgMail, msg } = require("../../sendgrid")
 
 const orderTrails = async () => {
   try {
@@ -21,7 +22,7 @@ const orderTrails = async () => {
     const updated = []
     for (let order of orders) {
 
-      const { chainId, orderId, DocID } = order
+      const { chainId, orderId, DocID, ownerAddress } = order
 
 
       if (supportedChains.indexOf(chainId) !== -1) {
@@ -79,6 +80,22 @@ const orderTrails = async () => {
           await db.collection("orders").doc(DocID).set({ fulfilled: true, }, { merge: true })
 
           console.log("Order ID : ", orderId, " updated successfully")
+
+          //SEND EMAIL UPON ORDER FULFILLMENT
+          let account = await db.collection("accounts").where("address", "==", ownerAddress).get()
+          if (!account.empty) {
+            account = account.docs.map((doc) => ({
+              ...doc.data(),
+            }))[0]
+            if (
+              account.email === "pongzthor@gmail.com" // TODO: Important! this needs to be changed!
+            ) {
+              msg.to = account.email
+              msg.subject = "Your order was fulfilled"
+              msg.html = `<p>Congratulations! Your order with Id: ${order.orderId} was fulfilled.</p><br><strong>Tamago Team</strong>`
+              await sgMail.send(msg)
+            }
+          }
 
         }
 
