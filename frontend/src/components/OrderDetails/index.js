@@ -368,15 +368,17 @@ const OrderDetails = () => {
         <AssetDetails>
           <div>
             {data ? (
-              <Image
-                src={
-                  data.metadata && data.metadata.image
-                    ? data.metadata.image
-                    : "https://via.placeholder.com/200x200"
-                }
-                width="100%"
-                height="220"
-              />
+              <Link to={`/orders/collection/${order.baseAssetAddress}`}>
+                <Image
+                  src={
+                    data.metadata && data.metadata.image
+                      ? data.metadata.image
+                      : "https://via.placeholder.com/200x200"
+                  }
+                  width="100%"
+                  height="220"
+                />
+              </Link>
             ) : (
               <Skeleton width="200px" height="200px" />
             )}
