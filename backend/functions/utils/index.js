@@ -286,19 +286,22 @@ const generateValidatorMessages = async () => {
 }
 
 const getOwnerName = async (ownerAddress) => {
-  const { data } = await axios.get(
-    `https://api.tamago.finance/v2/account/${ownerAddress}`
-  );
-  if (data.status != "ok") {
-    return "Unknown";
+  let account = await db.collection("accounts").where("address", "==", String(ownerAddress)).get()
+  if (nickname.empty) {
+    const { data } = await axios.get(
+      `https://api.tamago.finance/v2/account/${ownerAddress}`
+    );
+    if (data.status != "ok") {
+      return "Unknown";
+    }
+    return data.nickname || "Unknown"
+  } else {
+    account = account.docs.map(doc => ({
+      ...doc.data()
+    }))[0]
+    return account.nickname || "Unknown"
   }
-
-  return data.nickname || "Unknown"
-
 }
-
-
-
 
 module.exports = {
   getMetadata,
