@@ -31,13 +31,6 @@ const SearchPage = () => {
     query && getCollectionsSearch(query).then(setOrders);
   }, [query]);
 
-  useEffect(() => {
-    console.log(
-      "🚀 ~ file: index.js ~ line 36 ~ SearchPage ~ collections",
-      orders
-    );
-  }, [orders]);
-
   return (
     <Container>
       <div style={{ textAlign: "center" }}>
