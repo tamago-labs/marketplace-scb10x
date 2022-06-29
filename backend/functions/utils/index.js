@@ -287,7 +287,7 @@ const generateValidatorMessages = async () => {
 
 const getOwnerName = async (ownerAddress) => {
   let account = await db.collection("accounts").where("address", "==", String(ownerAddress)).get()
-  if (nickname.empty) {
+  if (account.empty) {
     const { data } = await axios.get(
       `https://api.tamago.finance/v2/account/${ownerAddress}`
     );
