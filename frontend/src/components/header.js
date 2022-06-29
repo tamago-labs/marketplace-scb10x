@@ -8,11 +8,12 @@ import {
   shortAddress,
   resolveNetworkName,
   resolveNetworkIconUrl,
-} from "../helper"
+} from "../helper";
 // import WalletsModal from "./Modal/WalletConnectModal"
-import SwitchChainModal from "./Modal/SwitchChainModal"
-import useEagerConnect from "../hooks/useEagerConnect"
-import useInactiveListener from "../hooks/useInactiveListener"
+import SwitchChainModal from "./Modal/SwitchChainModal";
+import useEagerConnect from "../hooks/useEagerConnect";
+import useInactiveListener from "../hooks/useInactiveListener";
+import SearchBar from "./searchBar";
 
 const NetworkBadge = styled(({ className, toggleSwitchChain, chainId }) => {
   return (
@@ -79,27 +80,33 @@ const StyledBadge = styled(Badge)`
   }
 `;
 
-const ConnectWalletButton = styled(Link).attrs(() => ({ className: "btn btn-primary shadow", to: "/account" }))`
+const ConnectWalletButton = styled(Link).attrs(() => ({
+  className: "btn btn-primary shadow",
+  to: "/account",
+}))`
   z-index: 10;
   color: white;
-  background-image: linear-gradient(to right, #f55f8d 0, #f8ae56 51%, #f55f8d 100%);
+  background-image: linear-gradient(
+    to right,
+    #f55f8d 0,
+    #f8ae56 51%,
+    #f55f8d 100%
+  );
   border-radius: 32px;
   padding: 12px;
+`;
 
-`
-
-const Wrapper = styled.header.attrs(() => ({ className: "site-header mo-left header-transparent" }))`
-   
-`
+const Wrapper = styled.header.attrs(() => ({
+  className: "site-header mo-left header-transparent",
+}))``;
 
 const MobileHidden = styled.span`
-@media only screen and (max-width: 1000px) {
-  display: none;
-}
-`
+  @media only screen and (max-width: 1000px) {
+    display: none;
+  }
+`;
 
 const Menu = styled.div`
-
   a {
     color: inherit;
     text-decoration: none;
@@ -108,24 +115,25 @@ const Menu = styled.div`
     }
   }
 
-@media only screen and (max-width: 1000px) {
-  display: none;
-}
-`
+  @media only screen and (max-width: 1000px) {
+    display: none;
+  }
+`;
+
+const SearchContainer = styled.div``;
 
 function Header() {
   const { account, chainId, library } = useWeb3React();
 
+  const [switchChainVisible, setSwitchChainVisible] = useState(false);
 
-  const [switchChainVisible, setSwitchChainVisible] = useState(false)
-
-  const toggleSwitchChain = () => setSwitchChainVisible(!switchChainVisible)
+  const toggleSwitchChain = () => setSwitchChainVisible(!switchChainVisible);
 
   // handle logic to eagerly connect to the injected ethereum provider, if it exists and has granted access already
-  const triedEager = useEagerConnect()
+  const triedEager = useEagerConnect();
 
   // handle logic to connect in reaction to certain events on the injected ethereum provider, if it exists
-  useInactiveListener(!triedEager)
+  useInactiveListener(!triedEager);
 
   return (
     <>
@@ -168,14 +176,16 @@ function Header() {
 
               <Menu>
                 <Link to="/faucet">
-                  <MobileHidden>Testnet</MobileHidden>{` `}Faucet
+                  <MobileHidden>Testnet</MobileHidden>
+                  {` `}Faucet
                 </Link>
                 {` `}|{` `}
-                <Link to="/createOrder">
-                  Create Order
-                </Link>
+                <Link to="/createOrder">Create Order</Link>
                 {` `}|{` `}
-                <a target="_blank" href="https://docs.tamago.finance/tamago-finance/multi-chain-marketplace">
+                <a
+                  target="_blank"
+                  href="https://docs.tamago.finance/tamago-finance/multi-chain-marketplace"
+                >
                   Docs
                 </a>
               </Menu>
@@ -189,32 +199,48 @@ function Header() {
                   alignItems: "center",
                 }}
               >
-                {
-                  <>
-                    {!account ? (
+                <div style={{ display: "block" }}>
+                  <div style={{ marginBottom: "10px" }}>
+                    <Menu>
+                      <SearchBar />
+                    </Menu>
+                  </div>
+                  <div>
+                    {
                       <>
-                        <ConnectWalletButton  >
-                          Connect{` `}<MobileHidden>Wallet</MobileHidden>
-                        </ConnectWalletButton>
+                        {!account ? (
+                          <>
+                            <ConnectWalletButton>
+                              Connect{` `}
+                              <MobileHidden>Wallet</MobileHidden>
+                            </ConnectWalletButton>
+                          </>
+                        ) : (
+                          <>
+                            <NetworkBadge
+                              chainId={chainId}
+                              toggleSwitchChain={toggleSwitchChain}
+                            />
+                            <Link to="/account">
+                              <a
+                                style={{
+                                  color: "white",
+                                  backgroundImage:
+                                    "linear-gradient(to right, #f55f8d 0, #f8ae56 51%, #f55f8d 100%)",
+                                  borderRadius: "32px",
+                                  padding: 12,
+                                }}
+                                className="btn btn-primary shadow mx-4"
+                              >
+                                {shortAddress(account)}
+                              </a>
+                            </Link>
+                          </>
+                        )}
                       </>
-                    ) : (
-                      <>
-                        <NetworkBadge
-                          chainId={chainId}
-                          toggleSwitchChain={toggleSwitchChain}
-                        />
-                        <Link to="/account">
-                          <a
-                            style={{ color: "white", backgroundImage: "linear-gradient(to right, #f55f8d 0, #f8ae56 51%, #f55f8d 100%)", borderRadius: "32px", padding: 12 }}
-                            className="btn btn-primary shadow mx-4"
-                          >
-                            {shortAddress(account)}
-                          </a>
-                        </Link>
-                      </>
-                    )}
-                  </>
-                }
+                    }
+                  </div>
+                </div>
               </div>
             </Navbar>
           </div>
