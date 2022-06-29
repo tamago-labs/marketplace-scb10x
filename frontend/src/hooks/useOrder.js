@@ -40,8 +40,8 @@ const useOrder = () => {
   const getAllOrders = useCallback(async (
     {
       limit = 200,
-    offset = 0,
-    isMainnet
+      offset = 0,
+      isMainnet
     }
   ) => {
 
@@ -94,8 +94,16 @@ const useOrder = () => {
     return users
   }, [])
 
-  const getTopCollections = useCallback(async () => {
-    const { data } = await axios.get(`${API_BASE}/collections?chain=42,97,80001,43113,137,56,43114,1`)
+  const getTopCollections = useCallback(async (isMainnet) => {
+
+    let chain = "42,97,80001,43113"
+
+    if (isMainnet) {
+      chain = "137,56,43114,1"
+    }
+
+
+    const { data } = await axios.get(`${API_BASE}/collections?chain=${chain}`)
     const { collections } = data
     return collections
   }, [])
@@ -148,7 +156,7 @@ const useOrder = () => {
     if (metadata && !metadata.image && metadata['image_url']) {
       metadata.image = metadata['image_url']
     }
- 
+
     return {
       ...nft,
       metadata,
@@ -663,7 +671,7 @@ const useOrder = () => {
     getTopCollections,
     getTopCollectionsByIndex,
     getTopSellers,
-    getTopSellersByIndex, 
+    getTopSellersByIndex,
     getSellersTotal,
     getCollectionsTotal
   }

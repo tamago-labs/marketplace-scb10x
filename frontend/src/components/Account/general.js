@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useCallback, useContext } from "react"
-import styled from "styled-components"
-import { ToastContainer, toast } from "react-toastify"
-import { TailSpin } from 'react-loader-spinner'
-import { AccountContext } from "../../hooks/useAccount"
-import "react-toastify/dist/ReactToastify.css"
+import React, { useState, useEffect, useCallback, useContext } from "react";
+import styled from "styled-components";
+import { ToastContainer, toast } from "react-toastify";
+import { TailSpin } from "react-loader-spinner";
+import { AccountContext } from "../../hooks/useAccount";
+import "react-toastify/dist/ReactToastify.css";
 
 const Wrapper = styled.div.attrs(() => ({
   className: "rounded-md",
@@ -29,7 +29,7 @@ const Wrapper = styled.div.attrs(() => ({
     font-size: 14px;
     color: var(--danger);
   }
-`
+`;
 
 const EmailInput = styled.input.attrs(() => ({
   type: "text",
@@ -47,7 +47,7 @@ const EmailInput = styled.input.attrs(() => ({
   ::placeholder {
     color: rgba(255, 255, 255, 0.7);
   }
-`
+`;
 
 const NameInput = styled.input.attrs(() => ({
   type: "text",
@@ -65,49 +65,51 @@ const NameInput = styled.input.attrs(() => ({
   ::placeholder {
     color: rgba(255, 255, 255, 0.7);
   }
-`
+`;
 
 const General = () => {
-  const [email, setEmail] = useState()
-  const [displayName, setDisplayName] = useState()
-  const [errorMessage, setErrorMessage] = useState()
-  const [loading, setLoading] = useState()
-  const accountContext = useContext(AccountContext)
+  const [email, setEmail] = useState();
+  const [displayName, setDisplayName] = useState();
+  const [errorMessage, setErrorMessage] = useState();
+  const [loading, setLoading] = useState(false);
+  const accountContext = useContext(AccountContext);
 
   useEffect(() => {
     if (accountContext) {
-      setDisplayName(accountContext.nickname)
-      setEmail(accountContext.email)
+      setDisplayName(accountContext.nickname);
+      setEmail(accountContext.email);
     }
-  }, [accountContext])
+  }, [accountContext]);
 
   const onSave = useCallback(async () => {
-    setErrorMessage()
+    setErrorMessage();
     if (email) {
       if (
         email.match(
           /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
         )
       ) {
-        setLoading(true)
-        
+        setLoading(true);
+
         try {
           await accountContext.updateAccount({
             email,
-            nickName: displayName
-          })
+            nickname: displayName,
+          });
+          setEmail("");
+          setDisplayName("");
         } catch (e) {
-          console.log(e)
+          console.log(e);
         }
 
-        setLoading(false)
+        setLoading(false);
       } else {
-        setErrorMessage("Email is not valid")
+        setErrorMessage("Email is not valid");
       }
     }
-  }, [email, displayName, accountContext])
+  }, [email, displayName, accountContext]);
 
-  const disabled = !accountContext.email || loading
+  const disabled = accountContext.email !== "" || loading;
 
   return (
     <Wrapper>
@@ -124,23 +126,15 @@ const General = () => {
       <NameInput
         value={displayName}
         onChange={(e) => setDisplayName(e.target.value)}
-        disabled={disabled}
       />
-      <h4>Email Address</h4>
-      <EmailInput
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        disabled={disabled}
-      />
-      {/* <p style={{ marginTop: "2rem" }}>
-        Register your email address with us to receive notification when there
-        are any updates to your orders
-      </p> */}
+      <h4 style={{ marginTop: "10px" }}>Email Address</h4>
+      <EmailInput value={email} onChange={(e) => setEmail(e.target.value)} />
+      <p style={{marginTop :"20px"}}>Register your email to receive notifications about updates to your listing and orders</p>
 
       <hr />
+
       <a
         onClick={onSave}
-        disabled={disabled}
         style={{
           zIndex: 10,
           color: "white",
@@ -151,15 +145,18 @@ const General = () => {
         className="btn btn-primary shadow"
       >
         <div style={{ display: "flex", flexDirection: "row" }}>
-          {disabled && <span style={{ marginRight: "10px" }}><TailSpin color="#fff" height={24} width={24} /></span>}
-
+          {loading ? (
+            <span style={{ marginRight: "10px" }}>
+              <TailSpin color="#fff" height={24} width={24} />
+            </span>
+          ) : <></>}
           Save Changes
         </div>
       </a>
-      {errorMessage && <span className="error-message">{errorMessage}</span>}
-      {!accountContext.email && <span className="ml-2">Checking...</span>}
-    </Wrapper>
-  )
-}
 
-export default General
+      {errorMessage && <span className="error-message">{errorMessage}</span>}
+    </Wrapper>
+  );
+};
+
+export default General;
