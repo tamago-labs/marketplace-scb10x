@@ -61,7 +61,7 @@ exports.getCollectionByAddress = async (req, res, next) => {
   }
 }
 
-exports.searchCollections = async (req, res, next) => {
+exports.searchByCollections = async (req, res, next) => {
   try {
     const { query } = req.query
     if (!query || (/^\s*$/.test(query)) || query.length < 3) {
@@ -74,10 +74,38 @@ exports.searchCollections = async (req, res, next) => {
         'name',
       ]
     })
-    const results = await index.search(query)
-    // console.log(results.hits)
+    const searchResults = await index.search(query)
 
-    res.status(200).json({ status: "ok", collections: results.hits })
+    if (!searchResults.hits.length) {
+      return res.status(404).json({ message: "Sorry, we could not find items matching your search." })
+    } else {
+      //reducing orderIds to an array
+      const orderIds = searchResults.hits.reduce((acc, result) => {
+        console.log({ acc })
+        return [...acc, ...result.activeOrders]
+      }, [])
+
+      orderIds.sort((a, b) => b - a)
+      const results = []
+      while (orderIds.length > 0) {
+        const currentQuery = orderIds.splice(0, 10)
+        if (currentQuery.length > 0) {
+          let subQuery = await db.collection("orders").where('orderId', 'in', currentQuery).get()
+          subQuery = subQuery.docs.map(doc => ({
+            ...doc.data()
+          })
+          )
+          results.push(...subQuery)
+        }
+      }
+
+      if (results.empty) {
+        return res.status(404).json({ message: "Sorry, we could not find items matching your search." })
+      } else {
+        console.log(results)
+        return res.status(200).json({ status: "ok", orders: results })
+      }
+    }
   } catch (error) {
     next(error)
   }
