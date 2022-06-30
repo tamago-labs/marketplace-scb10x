@@ -116,6 +116,11 @@ const updateHistory = async () => {
         await db.collection("users").add(collectionDoc)
       } else {
 
+        user = user.docs.map((doc) => ({
+          DocID: doc.id,
+          ...doc.data(),
+        }))[0]
+
         // UPDATING USER'S NAME, not required in most cases
         // const name = await getOwnerName(order.ownerAddress)
         // console.log(name)
@@ -124,11 +129,6 @@ const updateHistory = async () => {
         // }
 
         // updating existing collection doc
-        user = user.docs.map((doc) => ({
-          DocID: doc.id,
-          ...doc.data(),
-        }))[0]
-
         if (order.fulfilled) {
           await db.collection("users").doc(user.DocID).update({ sold: FieldValue.arrayUnion(order.orderId), soldCount: user.sold.length })
           await db.collection("users").doc(user.DocID).update({ activeSells: FieldValue.arrayRemove(order.orderId), activeSellCount: user.activeSells.length })
