@@ -142,7 +142,7 @@ exports.updateCollection = async (req, res, next) => {
     try {
       owner = await contract.owner()
     } catch (error) {
-      return res.status(400).json({ message: "Could not get owner address of this collection" })
+
     }
     console.log({ owner })
     const newData = {}
@@ -217,7 +217,7 @@ exports.updateCollection = async (req, res, next) => {
       }
       console.log({ ...collectionDoc, ...newData })
       await db.collection("collections").add({ ...collectionDoc, ...newData, })
-      return res.status(201).json({ status: "ok", created: { ...collectionDoc, ...newData }, ownerAddress: owner })
+      return res.status(201).json({ status: "ok", created: { ...collectionDoc, ...newData }, ownerAddress: owner || "" })
     } else {
       //update existing collection
       let DocID = ""
@@ -226,7 +226,7 @@ exports.updateCollection = async (req, res, next) => {
       });
       console.log({ ...newData })
       await db.collection("collections").doc(DocID).set({ ...newData }, { merge: true })
-      return res.status(200).json({ status: "ok", updated: newData, ownerAddress: owner })
+      return res.status(200).json({ status: "ok", updated: newData, ownerAddress: owner || "" })
     }
   } catch (error) {
     next(error)
