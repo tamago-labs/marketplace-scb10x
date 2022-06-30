@@ -108,8 +108,8 @@ Notes \*4 :<br>
 
 Notes \*5 :<br>
 
-- this endpoint requires **message** and **signature** to recover address in backend server.
-- email and nickname are optional parameters but at least one of them are required.
+- this endpoint requires **message** and **signature** to recover address in backend server
+- email and nickname are optional parameters but at least one of them are required
 
 Notes \*6 :<br>
 
@@ -121,5 +121,6 @@ Notes \*6 :<br>
 - **websiteLink**, **discordLink**, **instagramLink**, **mediumLink**, **telegramLink** should be in proper URL format
 - this endpoint creates new document in the collections database if **address** and **chainId** does **not match** existing entries and respond with status code **201** upon successful operation
 - if **address** and **chainId** matches with existing entries in the database, the new data is then **merged** into existing document and respond with status code **200** upon successful operation
+- if ownerAddress can not be found using the provided address, returns owner as empty string ""
 
 #### Development Started During SCB10X - MAY 2022 - METATHON (when we made new cool friends!)
