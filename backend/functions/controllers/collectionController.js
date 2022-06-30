@@ -1,8 +1,13 @@
 const validator = require("validator")
-
+const { ethers } = require("ethers")
+const { getRpcUrl } = require("../utils")
+const { getProvider } = require("../services")
 const { db } = require("../firebase")
 const { algoliaClient } = require("../services/algolia")
 const { supportedChains } = require("../constants")
+const { OWNER_ABI } = require("../abi")
+
+
 
 exports.getCollections = async (req, res, next) => {
   try {
@@ -111,7 +116,7 @@ exports.searchByCollections = async (req, res, next) => {
   }
 }
 
-exports.updateCollection = async (req, res) => {
+exports.updateCollection = async (req, res, next) => {
   try {
     const { address, chainId, collectionName, slug, description, websiteLink, discordLink, instagramLink, mediumLink, telegramLink } = req.body
 
@@ -123,10 +128,23 @@ exports.updateCollection = async (req, res) => {
     if (!validator.isEthereumAddress(address)) {
       return res.status(400).json({ message: "Invalid wallet address." })
     }
+
     //validate that chain is supported
     if (!supportedChains.includes(Number(chainId))) {
       return res.status(400).json({ message: "Invalid chain or chain not supported." })
     }
+
+    //get the owner's address from the smart contract
+    const rpcUrl = getRpcUrl(chainId)
+    const provider = getProvider(rpcUrl)
+    const contract = new ethers.Contract(address, OWNER_ABI, provider)
+    let owner
+    try {
+      owner = await contract.owner()
+    } catch (error) {
+      return res.status(400).json({ message: "Could not get owner address of this collection" })
+    }
+    console.log({ owner })
     const newData = {}
     if (collectionName) {
       newData.name = collectionName
@@ -199,7 +217,7 @@ exports.updateCollection = async (req, res) => {
       }
       console.log({ ...collectionDoc, ...newData })
       await db.collection("collections").add({ ...collectionDoc, ...newData, })
-      return res.status(201).json({ status: "ok", message: "New collection added to database" })
+      return res.status(201).json({ status: "ok", created: { ...collectionDoc, ...newData }, ownerAddress: owner })
     } else {
       //update existing collection
       let DocID = ""
@@ -208,7 +226,7 @@ exports.updateCollection = async (req, res) => {
       });
       console.log({ ...newData })
       await db.collection("collections").doc(DocID).set({ ...newData }, { merge: true })
-      return res.status(200).json({ status: "ok", message: "Data updated" })
+      return res.status(200).json({ status: "ok", updated: newData, ownerAddress: owner })
     }
   } catch (error) {
     next(error)
