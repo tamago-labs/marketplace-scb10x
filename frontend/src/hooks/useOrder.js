@@ -620,6 +620,12 @@ const useOrder = () => {
     return totalCount;
   }, []);
 
+  const getCollectionByAddress = useCallback(async (address) => {
+    const { data } = await axios.get(`${API_BASE}/collections/${address}`);
+    const { collection } = data;
+    return collection;
+  }, []);
+
   const getTopSellersByIndex = useCallback(async (startIndex, limitNum) => {
     const { data } = await axios.get(
       `${API_BASE}/users?chain=42,97,80001,43113,137,56,43114,1&offset=${startIndex}&limit=${limitNum}`
@@ -673,7 +679,8 @@ const useOrder = () => {
     getTopSellers,
     getTopSellersByIndex,
     getSellersTotal,
-    getCollectionsTotal
+    getCollectionsTotal,
+    getCollectionByAddress
   }
 };
 

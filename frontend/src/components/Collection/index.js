@@ -3,11 +3,13 @@ import { useParams } from "react-router-dom";
 import styled from "styled-components";
 import Skeleton from "react-loading-skeleton";
 import ParticleBackground from 'react-particle-backgrounds'
+import { useWeb3React } from "@web3-react/core"
 import NFTCard from "../nftCard";
 import useOrder from "../../hooks/useOrder";
 import { resolveNetworkName } from "../../helper";
 import { Button as MoreButton } from "../../components/buttons";
 import { AssetDetailsContainer } from "../OrderDetails/index"
+import EditCollectionModal from "../../components/Modal/EditCollectionModal"
 
 /** Styled Component */
 const ListContainer = styled.div`
@@ -98,7 +100,24 @@ const Button = styled.button`
   `}
 `;
 
-const Jumbotron = styled(AssetDetailsContainer)``
+const Jumbotron = styled(AssetDetailsContainer)`
+    position: relative;
+`
+
+const EditButton = styled.div`
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: #fa58b6;
+    border-radius: 12px;
+    padding: 8px;
+    cursor: pointer;
+    z-index: 10;
+
+    &:hover {
+      opacity: 0.83;
+    }
+`
 
 /** CONSTANT */
 const MAX_ITEMS = 4;
@@ -108,17 +127,24 @@ const Collection = () => {
   const [max, setMax] = useState(MAX_ITEMS);
   const [orders, setOrders] = useState([]);
   const [data, setData] = useState();
-  const { getOrdersByCollection, resolveMetadata } = useOrder();
+  const { getOrdersByCollection, resolveMetadata, getCollectionByAddress } = useOrder();
   const { address } = useParams();
+  const { account, library, chainId } = useWeb3React()
   const [isNew, setIsNew] = useState(false);
   const [isSold, setIsSold] = useState(false);
   const [isCanceled, setIsCanceled] = useState(false);
   const [isAll, setIsAll] = useState(true);
+  const [isOwner, setIsOwner] = useState(true);
   const [allOrders, setAllOrders] = useState([]);
+  const [collectionDetail, setCollectionDetail] = useState()
+  const [editCollectionVisible, setEditCollectionVisible] = useState(false)
+
+  const toggleEditCollectionModal = () => setEditCollectionVisible(!editCollectionVisible)
 
   useEffect(() => {
     address && getOrdersByCollection(address).then(setOrders);
     address && getOrdersByCollection(address).then(setAllOrders);
+    address && getCollectionByAddress(address).then(setCollectionDetail);
   }, [address]);
 
   useEffect(() => {
@@ -234,15 +260,20 @@ const Collection = () => {
     }
   }
 
-
   return (
     <Container>
-      <div> 
+      <EditCollectionModal
+        toggleModal={toggleEditCollectionModal}
+        modalVisible={editCollectionVisible}
+        metadata={data && data.metadata}
+      />
+      <div>
 
         <Jumbotron
           color={data && data.chainId && resolveColor(data.chainId)}
         >
           <ParticleBackground style={{ position: "absolute", zIndex: 1 }} settings={settings} />
+          {isOwner && <EditButton onClick={toggleEditCollectionModal}>Edit Collection</EditButton>}
           <div style={{ textAlign: "center" }}>
             {data ? (
               <RoundImg src={data.metadata.image} />
