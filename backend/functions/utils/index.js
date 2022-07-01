@@ -1,4 +1,7 @@
 const axios = require('axios')
+
+require("dotenv").config()
+
 const { db } = require('../firebase')
 const { MARKETPLACES } = require('../constants')
 const { ethers } = require('ethers')
@@ -286,23 +289,61 @@ const generateValidatorMessages = async () => {
 }
 
 const getOwnerName = async (ownerAddress) => {
-  const { data } = await axios.get(
-    `https://api.tamago.finance/v2/account/${ownerAddress}`
-  );
-  if (data.status != "ok") {
-    return "Unknown";
+  let account = await db.collection("accounts").where("address", "==", String(ownerAddress)).get()
+  if (account.empty) {
+    const { data } = await axios.get(
+      `https://api.tamago.finance/v2/account/${ownerAddress}`
+    );
+    if (data.status != "ok") {
+      return "Unknown";
+    }
+    return data.nickname || "Unknown"
+  } else {
+    account = account.docs.map(doc => ({
+      ...doc.data()
+    }))[0]
+    return account.nickname || "Unknown"
   }
-
-  return data.nickname || "Unknown"
-
 }
 
-
+const getRpcUrl = (chainId) => {
+  let rpcUrl
+  switch (chainId) {
+    case 1:
+      rpcUrl = process.env.MAINNET_RPC_SERVER
+      break;
+    case 42:
+      rpcUrl = process.env.KOVAN_RPC_SERVER
+      break;
+    case 56:
+      rpcUrl = process.env.BNB_RPC_SERVER
+      break;
+    case 97:
+      rpcUrl = process.env.BNB_TESTNET_RPC_SERVER
+      break;
+    case 137:
+      rpcUrl = process.env.POLYGON_RPC_SERVER
+      break;
+    case 43113:
+      rpcUrl = process.env.FUJI_RPC_SERVER
+      break;
+    case 43114:
+      rpcUrl = process.env.AVALANCHE_C_CHAIN_RPC
+      break;
+    case 80001:
+      rpcUrl = process.env.MUMBAI_RPC_SERVER
+      break;
+    default:
+      break;
+  }
+  return rpcUrl
+}
 
 
 module.exports = {
   getMetadata,
   generateRelayMessages,
   generateValidatorMessages,
-  getOwnerName
+  getOwnerName,
+  getRpcUrl
 }
