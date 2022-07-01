@@ -1,7 +1,6 @@
 const axios = require('axios')
 
 require("dotenv").config()
-
 const { db } = require('../firebase')
 const { MARKETPLACES } = require('../constants')
 const { ethers } = require('ethers')
@@ -308,7 +307,7 @@ const getOwnerName = async (ownerAddress) => {
 
 const getRpcUrl = (chainId) => {
   let rpcUrl
-  switch (chainId) {
+  switch (Number(chainId)) {
     case 1:
       rpcUrl = process.env.MAINNET_RPC_SERVER
       break;
@@ -339,11 +338,15 @@ const getRpcUrl = (chainId) => {
   return rpcUrl
 }
 
+const recoverAddressFromMessageAndSignature = (message, signature) => {
+  return ethers.utils.verifyMessage(message, signature)
+}
 
 module.exports = {
   getMetadata,
   generateRelayMessages,
   generateValidatorMessages,
   getOwnerName,
-  getRpcUrl
+  getRpcUrl,
+  recoverAddressFromMessageAndSignature
 }
