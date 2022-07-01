@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from "react";
 import { Search } from "react-feather";
-import { Link, Navigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import styled from "styled-components";
 
 /** Styled Component */
@@ -36,17 +36,17 @@ const SearchBar = () => {
     setText(e.currentTarget.value);
   };
 
-  const handlePressEnter = useCallback((e) => {
-    if (e.key === "Enter") {
-      setIsPressEnter(true);
-    }
-  }, []);
+  const handlePressEnter = useCallback(
+    (e) => {
+      if (e.key === "Enter") {
+        window.open(`/collections/search/${text}`, "_self");
+      }
+    },
+    [text]
+  );
 
   return (
     <div>
-      {/* {isPressEnter && (
-        <Navigate to={`/collections/search/${text}`} replace={true} />
-      )} */}
       <Link to={`/collections/search/${text}`} style={{ color: "#ffff" }}>
         <SearchIcon>
           <Search />
@@ -58,7 +58,7 @@ const SearchBar = () => {
         id="search"
         placeholder="search"
         onChange={(e) => handleSearchChange(e)}
-        // onKeyDown={(e) => handlePressEnter(e)}
+        onKeyDown={(e) => handlePressEnter(e)}
       />
     </div>
   );
