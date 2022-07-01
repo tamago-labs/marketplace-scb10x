@@ -620,8 +620,8 @@ const useOrder = () => {
     return totalCount;
   }, []);
 
-  const getCollectionByAddress = useCallback(async (address) => {
-    const { data } = await axios.get(`${API_BASE}/collections/${address}`);
+  const getCollectionByAddress = useCallback(async (address, chainId) => {
+    const { data } = await axios.get(`${API_BASE}/collections/${address}/${chainId}`);
     const { collection } = data;
     return collection;
   }, []);

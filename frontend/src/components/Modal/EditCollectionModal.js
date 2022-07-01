@@ -1,8 +1,12 @@
 import React, { useState, useEffect, useCallback, useContext } from "react"
+import { useParams } from "react-router-dom"
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap"
 import { useWeb3React } from "@web3-react/core"
 import styled from "styled-components"
 import { X } from "react-feather"
+import { TailSpin } from "react-loader-spinner"
+import axios from "axios"
+import { API_BASE } from "../../constants"
 
 const CloseIcon = styled(X)`
   cursor: pointer;
@@ -54,12 +58,31 @@ const InputTextArea = styled.textarea.attrs(() => ({
   }
 `
 
-function EditCollectionModal({ toggleModal, modalVisible, metadata }) {
+function EditCollectionModal({ toggleModal, modalVisible, data }) {
   const { account, chainId, library } = useWeb3React()
-  const [name, setName] = useState(metadata && metadata.name)
+  const [name, setName] = useState(data && data.metadata.name)
+  const { address } = useParams()
   const [description, setDescription] = useState(
-    metadata && metadata.description
+    data && data.metadata.description
   )
+  const [loading, setLoading] = useState(false)
+
+  const onSubmit = useCallback(async () => {
+    try {
+      setLoading(true)
+      await axios.post(`${API_BASE}/collections/update`, {
+        address,
+        chainId: data.chainId,
+        collectionName: name,
+        description,
+      })
+    } catch (err) {
+      console.log(err)
+    } finally {
+      toggleModal()
+      setLoading(false)
+    }
+  }, [name, description, data])
 
   return (
     <Modal
@@ -75,13 +98,13 @@ function EditCollectionModal({ toggleModal, modalVisible, metadata }) {
       <ModalBody style={{ color: "#000" }}>
         <h5>Name</h5>
         <InputText
-          placeholder={metadata && metadata.name}
+          placeholder={data && data.metadata.name}
           value={name}
           onChange={(e) => setName(e.target.value)}
         />
         <h5>Description</h5>
         <InputTextArea
-          placeholder={metadata && metadata.description}
+          placeholder={data && data.metadata.description}
           value={description}
           onChange={(e) => setDescription(e.target.value)}
         />
@@ -90,7 +113,12 @@ function EditCollectionModal({ toggleModal, modalVisible, metadata }) {
         <Button color="secondary" onClick={toggleModal}>
           Close
         </Button>
-        <Button style={{ background: "#fa58b6" }} onClick={toggleModal}>
+        <Button style={{ background: "#fa58b6", width: 120 }} onClick={onSubmit}>
+          {loading && (
+            <span style={{ marginRight: "10px" }}>
+              <TailSpin color="#fff" height={24} width={24} />
+            </span>
+          )}
           Submit
         </Button>
       </ModalFooter>

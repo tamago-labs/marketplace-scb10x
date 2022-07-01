@@ -134,18 +134,26 @@ const Collection = () => {
   const [isSold, setIsSold] = useState(false);
   const [isCanceled, setIsCanceled] = useState(false);
   const [isAll, setIsAll] = useState(true);
-  const [isOwner, setIsOwner] = useState(true);
   const [allOrders, setAllOrders] = useState([]);
   const [collectionDetail, setCollectionDetail] = useState()
   const [editCollectionVisible, setEditCollectionVisible] = useState(false)
+  const isOwner = useMemo(() => {
+    if(!collectionDetail || !account) return false;
+    return collectionDetail.ownerAddress === account
+  }, [collectionDetail])
 
   const toggleEditCollectionModal = () => setEditCollectionVisible(!editCollectionVisible)
 
   useEffect(() => {
     address && getOrdersByCollection(address).then(setOrders);
     address && getOrdersByCollection(address).then(setAllOrders);
-    address && getCollectionByAddress(address).then(setCollectionDetail);
   }, [address]);
+
+  useEffect(() => {
+    if(address && data) {
+      getCollectionByAddress(address, data.chainId).then(setCollectionDetail);
+    }
+  }, [data])
 
   useEffect(() => {
     if (orders.length !== 0) {
@@ -265,7 +273,7 @@ const Collection = () => {
       <EditCollectionModal
         toggleModal={toggleEditCollectionModal}
         modalVisible={editCollectionVisible}
-        metadata={data && data.metadata}
+        data={data}
       />
       <div>
 
