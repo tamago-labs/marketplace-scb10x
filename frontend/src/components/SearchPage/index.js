@@ -37,7 +37,7 @@ const SearchPage = () => {
         <h2>search keyword = "{query}"</h2>
       </div>
       <ListContainer>
-        {orders.length === 0 && <>No Item</>}
+        {orders.length === 0 && <>No Item Found</>}
 
         {orders.length > 0 &&
           orders.map((order, index) => {

@@ -832,10 +832,15 @@ const useOrder = () => {
   }, []);
 
   const getCollectionsSearch = useCallback(async (text) => {
-    const { data } = await axios.get(
-      `${API_BASE}/collections/search/?query=${text}`
-    );
-    return data.orders;
+    try {
+      const { data } = await axios.get(
+        `${API_BASE}/collections/search/?query=${text}`
+      );
+
+      return data.orders;
+    } catch (error) {
+      return [];
+    }
   }, []);
 
   return {

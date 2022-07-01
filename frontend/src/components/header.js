@@ -188,7 +188,9 @@ function Header() {
                 >
                   Docs
                 </a>
+                {` `}|{` `}
               </Menu>
+              <SearchBar />
 
               {/* <!-- Extra Nav --> */}
               <div
@@ -199,48 +201,39 @@ function Header() {
                   alignItems: "center",
                 }}
               >
-                <div style={{ display: "block" }}>
-                  <div style={{ marginBottom: "10px" }}>
-                    <Menu>
-                      <SearchBar />
-                    </Menu>
-                  </div>
-                  <div>
-                    {
+                {
+                  <>
+                    {!account ? (
                       <>
-                        {!account ? (
-                          <>
-                            <ConnectWalletButton>
-                              Connect{` `}
-                              <MobileHidden>Wallet</MobileHidden>
-                            </ConnectWalletButton>
-                          </>
-                        ) : (
-                          <>
-                            <NetworkBadge
-                              chainId={chainId}
-                              toggleSwitchChain={toggleSwitchChain}
-                            />
-                            <Link to="/account">
-                              <a
-                                style={{
-                                  color: "white",
-                                  backgroundImage:
-                                    "linear-gradient(to right, #f55f8d 0, #f8ae56 51%, #f55f8d 100%)",
-                                  borderRadius: "32px",
-                                  padding: 12,
-                                }}
-                                className="btn btn-primary shadow mx-4"
-                              >
-                                {shortAddress(account)}
-                              </a>
-                            </Link>
-                          </>
-                        )}
+                        <ConnectWalletButton>
+                          Connect{` `}
+                          <MobileHidden>Wallet</MobileHidden>
+                        </ConnectWalletButton>
                       </>
-                    }
-                  </div>
-                </div>
+                    ) : (
+                      <>
+                        <NetworkBadge
+                          chainId={chainId}
+                          toggleSwitchChain={toggleSwitchChain}
+                        />
+                        <Link to="/account">
+                          <a
+                            style={{
+                              color: "white",
+                              backgroundImage:
+                                "linear-gradient(to right, #f55f8d 0, #f8ae56 51%, #f55f8d 100%)",
+                              borderRadius: "32px",
+                              padding: 12,
+                            }}
+                            className="btn btn-primary shadow mx-4"
+                          >
+                            {shortAddress(account)}
+                          </a>
+                        </Link>
+                      </>
+                    )}
+                  </>
+                }
               </div>
             </Navbar>
           </div>
