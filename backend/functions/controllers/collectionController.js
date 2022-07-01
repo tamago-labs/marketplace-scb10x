@@ -1,11 +1,12 @@
 const validator = require("validator")
 const { ethers } = require("ethers")
-const { getRpcUrl } = require("../utils")
+const { getRpcUrl, recoverAddressFromMessageAndSignature } = require("../utils")
 const { getProvider } = require("../services")
 const { db } = require("../firebase")
 const { algoliaClient } = require("../services/algolia")
 const { supportedChains } = require("../constants")
 const { OWNER_ABI } = require("../abi")
+const { WHITELISTED_ADDRESSES } = require("../constants")
 
 
 
@@ -48,19 +49,51 @@ exports.getCollections = async (req, res, next) => {
 
 exports.getCollectionByAddress = async (req, res, next) => {
   try {
-    const { address } = req.params
-    if (!address) {
-      return res.status(400).json({ message: "address is required" })
+    const { address, chainId } = req.params
+    if (!address || !chainId) {
+      return res.status(400).json({ message: "address and chainId are required" })
     }
-    let collection = await db.collection("collections").where("address", "==", address).get()
+    if (!validator.isEthereumAddress(address)) {
+      return res.status(400).json({ message: "Invalid wallet address." })
+    }
+    if (!supportedChains.includes(Number(chainId))) {
+      return res.status(400).json({ message: "Invalid chain or chain not supported." })
+    }
+    //get the owner's address from the smart contract
+    console.log(chainId)
+    const rpcUrl = getRpcUrl(chainId)
+    console.log({ rpcUrl })
+    const provider = getProvider(rpcUrl)
+    const contract = new ethers.Contract(address, OWNER_ABI, provider)
+    let ownerAddress
+    try {
+      ownerAddress = await contract.owner()
+    } catch (error) {
+      console.log(error)
+    }
+    console.log({ ownerAddress })
+
+    let collection = await db.collection("collections").where("address", "==", address).where("chainId", "==", Number(chainId)).get()
     if (collection.empty) {
-      return res.status(200).json({ message: "could not find collection with the given address" })
+
+      return res.status(200).json({ status: "ok", collection: { ownerAddress, address, chainId } })
     }
     collection = collection.docs.map((doc) => ({
       ...doc.data(),
     }))[0]
 
-    res.status(200).json({ status: "ok", collection })
+    res.status(200).json({ status: "ok", collection: { ...collection, ownerAddress } })
+  } catch (error) {
+    next(error)
+  }
+}
+
+exports, getOwnerAddress = async (req, res, next) => {
+  try {
+    const { address, chain } = req.params
+    if (!address) {
+      return res.status(400).json({ message: "address is required" })
+    }
   } catch (error) {
     next(error)
   }
@@ -118,7 +151,7 @@ exports.searchByCollections = async (req, res, next) => {
 
 exports.updateCollection = async (req, res, next) => {
   try {
-    const { address, chainId, collectionName, slug, description, websiteLink, discordLink, instagramLink, mediumLink, telegramLink } = req.body
+    const { address, chainId, collectionName, slug, description, websiteLink, discordLink, instagramLink, mediumLink, telegramLink, message, signature } = req.body
 
     //validates missing inputs
     if (!address || !chainId) {
@@ -128,7 +161,6 @@ exports.updateCollection = async (req, res, next) => {
     if (!validator.isEthereumAddress(address)) {
       return res.status(400).json({ message: "Invalid wallet address." })
     }
-
     //validate that chain is supported
     if (!supportedChains.includes(Number(chainId))) {
       return res.status(400).json({ message: "Invalid chain or chain not supported." })
@@ -145,6 +177,17 @@ exports.updateCollection = async (req, res, next) => {
 
     }
     console.log({ owner })
+
+    // //message and signature for authentication
+    // if (!message || !signature) {
+    //   return res.status(400).json({ message: "Message and signature are required for authentication." })
+    // }
+    // const recoveredAddress = recoverAddressFromMessageAndSignature(message, signature).toLowerCase()
+
+    // if (recoveredAddress !== owner?.toLowerCase() || WHITELISTED_ADDRESSES.findIndex((item) => item.toLowerCase() === recoveredAddress) === -1) {
+    //   return res.status(403).json({ message: "You are not allowed to edit this collection." })
+    // }
+
     const newData = {}
     if (collectionName) {
       newData.name = collectionName
@@ -217,7 +260,7 @@ exports.updateCollection = async (req, res, next) => {
       }
       console.log({ ...collectionDoc, ...newData })
       await db.collection("collections").add({ ...collectionDoc, ...newData, })
-      return res.status(201).json({ status: "ok", created: { ...collectionDoc, ...newData }, ownerAddress: owner || "" })
+      return res.status(201).json({ status: "ok", created: { ...collectionDoc, ...newData } })
     } else {
       //update existing collection
       let DocID = ""
@@ -226,7 +269,7 @@ exports.updateCollection = async (req, res, next) => {
       });
       console.log({ ...newData })
       await db.collection("collections").doc(DocID).set({ ...newData }, { merge: true })
-      return res.status(200).json({ status: "ok", updated: newData, ownerAddress: owner || "" })
+      return res.status(200).json({ status: "ok", updated: newData })
     }
   } catch (error) {
     next(error)
