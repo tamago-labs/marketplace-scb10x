@@ -96,6 +96,12 @@ module.exports = {
       accounts: [process.env.PRIVATEKEY_DEPLOYER, process.env.PRIVATEKEY_DEV],
       timeout: 500000,
     },
+    avax: {
+      allowUnlimitedContractSize: true,
+      url: "https://api.avax.network/ext/bc/C/rpc",
+      accounts: [process.env.PRIVATEKEY_DEPLOYER, process.env.PRIVATEKEY_DEV],
+      timeout: 500000,
+    },
   },
   namedAccounts: {
     deployer: {
@@ -106,6 +112,6 @@ module.exports = {
     },
   },
   etherscan: {
-    apiKey: process.env.BSC_API_KEY,
+    apiKey: process.env.MAINNET_API_KEY,
   },
 };
