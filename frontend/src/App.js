@@ -8,6 +8,7 @@ import OrderDetails from "./components/OrderDetails";
 import CreateOrder from "./components/CreateOrder";
 import Collection from "./components/Collection";
 import CreatorPage from "./components/CreatorPage";
+import CreateCollection from "./components/CreateCollection";
 import Account from "./components/Account";
 import Faucet from "./components/Faucet";
 import AllCollectionPage from "./components/AllCollectionPage";
@@ -53,6 +54,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/order/:id" element={<OrderDetails />} />
         <Route path="/createOrder" element={<CreateOrder />} />
+        <Route path="/createCollection" element={<CreateCollection />} />
         <Route path="/orders/collection/:address" element={<Collection />} />
         <Route path="/orders/owner/:ownerAddress" element={<CreatorPage />} />
         <Route path="/account" element={<Account />} />
