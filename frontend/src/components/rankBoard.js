@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { Table } from "react-bootstrap";
-import { Badge } from "reactstrap"
+import { Badge } from "reactstrap";
 import { Link } from "react-router-dom";
 import useOrder from "../hooks/useOrder";
 import { ChevronsRight } from "react-feather";
@@ -12,7 +12,7 @@ import { MAINNET_CHAINS } from "../constants";
 /* Styled Component */
 const Container = styled.div.attrs(() => ({ className: "container" }))`
   margin-top: 2rem;
-  display: flex; 
+  display: flex;
 
   min-height: 250px;
 
@@ -30,6 +30,13 @@ const Row = styled.div`
     flex: 1;
     text-align: left;
     padding: 10px;
+  }
+  @media only screen and (max-width: 1000px) {
+    display: block;
+
+    h4 {
+      text-align: center;
+    }
   }
 `;
 
@@ -60,19 +67,17 @@ const Loading = () => {
       <Skeleton style={{ marginBottom: "4px" }} height="28px" />
       <Skeleton style={{ marginBottom: "26px" }} height="28px" />
     </>
-  )
-}
+  );
+};
 
-const RankBoard = ({
-  isMainnet
-}) => {
+const RankBoard = ({ isMainnet }) => {
   const [sellers, setSellers] = useState([]);
   const [collections, setCollections] = useState([]);
 
   const { getTopSellers, getTopCollections } = useOrder();
 
   useEffect(() => {
-    setCollections([])
+    setCollections([]);
     getTopCollections(isMainnet).then(setCollections);
     getTopSellers(5).then(setSellers);
   }, [isMainnet]);
@@ -95,9 +100,17 @@ const RankBoard = ({
                     <td>
                       <Link to={`/orders/collection/${item.address}`}>
                         {item.name || shortAddress(item.address, 10, -6)}
-                      </Link>{` `}
-                      <Badge color={MAINNET_CHAINS.includes(item.chainId) ? "primary" : "secondary"} >{resolveNetworkName(item.chainId)}</Badge>
-
+                      </Link>
+                      {` `}
+                      <Badge
+                        color={
+                          MAINNET_CHAINS.includes(item.chainId)
+                            ? "primary"
+                            : "secondary"
+                        }
+                      >
+                        {resolveNetworkName(item.chainId)}
+                      </Badge>
                     </td>
                     <td>
                       {item.activeCount}
@@ -108,7 +121,7 @@ const RankBoard = ({
               })}
             </tbody>
           </RankTable>
-          {(collections.length === 0) && <Loading />}
+          {collections.length === 0 && <Loading />}
           <Link to={`/all-collection`} style={{ color: "#ffff" }}>
             Full List<ChevronsRight></ChevronsRight>{" "}
           </Link>
@@ -126,7 +139,9 @@ const RankBoard = ({
                     <TH>#{index + 1}</TH>
                     <td>
                       <Link to={`/orders/owner/${item.address}`}>
-                        {item.name ? `@${item.name}` : shortAddress(item.address, 10, -6)}
+                        {item.name
+                          ? `@${item.name}`
+                          : shortAddress(item.address, 10, -6)}
                       </Link>
                     </td>
                     <td>
@@ -138,7 +153,7 @@ const RankBoard = ({
               })}
             </tbody>
           </RankTable>
-          {(sellers.length === 0) && <Loading />}
+          {sellers.length === 0 && <Loading />}
           <Link to={`/all-sellers`} style={{ color: "#ffff" }}>
             Full List<ChevronsRight></ChevronsRight>{" "}
           </Link>
