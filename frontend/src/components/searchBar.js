@@ -27,6 +27,13 @@ const SearchIcon = styled.a`
   left: 30px;
 `;
 
+const Wrapper = styled.div`
+  @media only screen and (max-width: 600px) {
+    display: none;
+  }
+
+`
+
 /** Component */
 const SearchBar = () => {
   const [text, setText] = useState("");
@@ -46,7 +53,7 @@ const SearchBar = () => {
   );
 
   return (
-    <div>
+    <Wrapper>
       <Link to={`/collections/search/${text}`} style={{ color: "#ffff" }}>
         <SearchIcon>
           <Search />
@@ -56,11 +63,11 @@ const SearchBar = () => {
         type="search"
         name="search"
         id="search"
-        placeholder="search"
+        placeholder="Search..."
         onChange={(e) => handleSearchChange(e)}
         onKeyDown={(e) => handlePressEnter(e)}
       />
-    </div>
+    </Wrapper>
   );
 };
 
