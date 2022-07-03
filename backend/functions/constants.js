@@ -40,9 +40,12 @@ const supportedChains = MARKETPLACES.map(chain => {
 const MAINNET_CHAINS = [137, 56, 43114, 1]
 const TESTNET_CHAINS = [42, 97, 80001, 43113]
 
+const WHITELISTED_ADDRESSES = ["0x64E489BF82b8aF1fbd609ECE3b7dadFF2e2380A9"]
+
 module.exports = {
     MARKETPLACES,
     supportedChains,
     MAINNET_CHAINS,
-    TESTNET_CHAINS
+    TESTNET_CHAINS,
+    WHITELISTED_ADDRESSES
 }
