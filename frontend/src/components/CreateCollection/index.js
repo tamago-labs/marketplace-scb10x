@@ -175,7 +175,7 @@ const CreateCollection = () => {
         <h1>
           <b>Create Collection</b>
         </h1>
-        <h5 className="mt-4">ERC-721 On {resolveNetworkName(chainId)}</h5>
+        <p style={{maxWidth : "600px"}} className="mt-4">The portal allows to deploy ERC-721 contract that the individual NFT can be minted from the collection portal</p>
         <h6 className="mt-5">
           <b>Choose wallet</b>
         </h6>
