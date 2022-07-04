@@ -178,17 +178,20 @@ exports.updateCollection = async (req, res, next) => {
     }
     console.log({ owner })
 
-    // //message and signature for authentication
-    // if (!message || !signature) {
-    //   return res.status(400).json({ message: "Message and signature are required for authentication." })
-    // }
-    // const recoveredAddress = recoverAddressFromMessageAndSignature(message, signature).toLowerCase()
+    //message and signature for authentication
+    if (!message || !signature) {
+      return res.status(400).json({ message: "Message and signature are required for authentication." })
+    }
+    const recoveredAddress = recoverAddressFromMessageAndSignature(message, signature).toLowerCase()
 
-    // if (recoveredAddress !== owner?.toLowerCase() || WHITELISTED_ADDRESSES.findIndex((item) => item.toLowerCase() === recoveredAddress) === -1) {
-    //   return res.status(403).json({ message: "You are not allowed to edit this collection." })
-    // }
+    if (recoveredAddress !== owner?.toLowerCase() || WHITELISTED_ADDRESSES.findIndex((item) => item.toLowerCase() === recoveredAddress) === -1) {
+      return res.status(403).json({ message: "You are not allowed to edit this collection." })
+    }
 
     const newData = {}
+
+    newData.lastEditedBy = recoveredAddress
+
     if (collectionName) {
       newData.name = collectionName
     }
@@ -256,7 +259,8 @@ exports.updateCollection = async (req, res, next) => {
         activeOrders: [],
         activeCount: 0,
         fulfilledOrders: [],
-        fulfilledCount: 0
+        fulfilledCount: 0,
+        lastEditedBy: recoveredAddress
       }
       console.log({ ...collectionDoc, ...newData })
       await db.collection("collections").add({ ...collectionDoc, ...newData, })
