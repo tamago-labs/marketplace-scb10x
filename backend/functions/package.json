@@ -23,6 +23,7 @@
     "firebase-admin": "^10.0.2",
     "firebase-functions": "^3.18.0",
     "fs": "0.0.1-security",
+    "handlebars": "^4.7.7",
     "keccak256": "^1.0.6",
     "merkletreejs": "^0.2.31",
     "moralis": "^1.7.0",
