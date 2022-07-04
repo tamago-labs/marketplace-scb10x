@@ -11,12 +11,12 @@
 
 ## Collections
 
-| HTTP Method | path                               | RequestBody                                                                                                                | Response                                                                                            | Notes         |
-| ----------- | ---------------------------------- | -------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- | ------------- |
-| GET         | /collections?chain=80001,42        | none                                                                                                                       | { "status": "ok", collections: [{...},{...},{...}],totalCount }                                     | See Notes \*3 |
-| GET         | /collections/{address}/{chainId}   | none                                                                                                                       | { "status": "ok", collection : {...collection, ownerAddress} }                                      |               |
-| GET         | /collections/search/?query={query} | none                                                                                                                       | { "status": "ok", collections: [{...},{...},{...}] }                                                |               |
-| UPDATE      | /collections/update                | { address, chainId, collectionName, slug, description, websiteLink, discordLink, instagramLink, mediumLink, telegramLink } | 201 { status: "ok", updated, ownerAddress } <br> **OR** 200 { status: "ok", created, ownerAddress } | See Notes \*6 |
+| HTTP Method | path                               | RequestBody                                                                                                                                    | Response                                                                                    | Notes         |
+| ----------- | ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- | ------------- |
+| GET         | /collections?chain=80001,42        | none                                                                                                                                           | { "status": "ok", collections: [{...},{...},{...}],totalCount }                             | See Notes \*3 |
+| GET         | /collections/{address}/{chainId}   | none                                                                                                                                           | { "status": "ok", collection : {...collection, ownerAddress} }                              |               |
+| GET         | /collections/search/?query={query} | none                                                                                                                                           | { "status": "ok", collections: [{...},{...},{...}] }                                        |               |
+| UPDATE      | /collections/update                | { address, chainId, message, signature, collectionName, slug, description, websiteLink, discordLink, instagramLink, mediumLink, telegramLink } | 201 { status: "ok", {updated fields} } <br> **OR** 200 { status: "ok", {created document} } | See Notes \*6 |
 
 ---
 
@@ -121,6 +121,7 @@ Notes \*6 :<br>
 - **websiteLink**, **discordLink**, **instagramLink**, **mediumLink**, **telegramLink** should be in proper URL format
 - this endpoint creates new document in the collections database if **address** and **chainId** does **not match** existing entries and respond with status code **201** upon successful operation
 - if **address** and **chainId** matches with existing entries in the database, the new data is then **merged** into existing document and respond with status code **200** upon successful operation
-- if ownerAddress can not be found using the provided address, returns owner as empty string ""
+- message and signature are required to authorize data update
+- the database keeps track of the owner address / dev address that last updated the NFT collection
 
 #### Development Started During SCB10X - MAY 2022 - METATHON (when we made new cool friends!)
