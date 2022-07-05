@@ -166,39 +166,13 @@ exports.confirmOrder = async (req, res, next) => {
         } else {
           nickname = account.nickname
         }
-        console.log(Item.baseAssetAddress)
-        console.log(convertDecimalToHexadecimal(Item.chainId))
-        console.log(Item.baseAssetTokenId)
+        //get images of NFT
         let nft = await db.collection("nfts").where("address", "==", Item.baseAssetAddress).where("chain", "==", convertDecimalToHexadecimal(Item.chainId)).where("id", "==", Item.baseAssetTokenId).get()
-        if (nft.empty) {
-          // console.log("fetching metadata from Moralis...")
-          await Moralis.start({ ...MoralisOptions })
-
-          const options = {
-            address: Item.baseAssetAddress,
-            token_id: Item.baseAssetTokenId,
-            chain: convertDecimalToHexadecimal(Item.chainId),
-          };
-          let tokenIdMetadata
-          try {
-            tokenIdMetadata = await Moralis.Web3API.token.getTokenIdMetadata(options);
-            console.log({ tokenIdMetadata })
-
-            const result = await getMetadata(tokenIdMetadata)
-            const metadata = result.metadata
-            // console.log("saving nft to firestore database...")
-            await db.collection('nfts').add({ address: Item.baseAssetAddress, id: Item.baseAssetTokenId, chain: convertDecimalToHexadecimal(Item.chainId), metadata })
-            nft.metadata = metadata
-          } catch (error) {
-
-          }
-
-        } else {
+        if (!nft.empty) {
           nft = nft.docs.map((doc) => ({ ...doc.data() }))[0]
           console.log(nft)
         }
-
-        msg.html = await composeOrderConfirm(nickname || account.email, orderId, nft.metadata.image, CLIENT_BASE + orderId)
+        msg.html = await composeOrderConfirm(nickname || account.email, orderId, nft?.metadata?.image || "", `${CLIENT_BASE}/order/${orderId}`)
         console.log(msg)
         await sgMail.send(msg)
       }
