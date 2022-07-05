@@ -2,6 +2,8 @@ const { ethers } = require("ethers");
 
 const { db } = require("../firebase")
 const { sgMail, msg } = require("../sendgrid")
+const { composeOrderConfirm } = require("../utils/emailComposer")
+const { CLIENT_BASE } = require("../constants")
 
 exports.getOrders = async (req, res, next) => {
   console.log("get all orders...")
@@ -156,12 +158,18 @@ exports.confirmOrder = async (req, res, next) => {
       ) {
         msg.to = account.email
         msg.subject = "Your Order was created and signed successfully"
-        msg.html = `<p>Your Order was created with Id: ${orderId} </p><br><strong>Tamago Team</strong>`
+        let nickname
+        if (account.nickname === "Unknown" || !account.nickname) {
+          nickname = account.email.split('@')[0]
+        } else {
+          nickname = account.nickname
+        }
+        let nft = await db.collection("nfts").where("address", "==", Item.baseAssetAddress).get()
+        nft = nft.docs.map((doc) => ({ ...doc.data() }))[0]
+        msg.html = await composeOrderConfirm(nickname || account.email, orderId, nft.metadata.image, CLIENT_BASE + orderId)
         await sgMail.send(msg)
       }
     }
-
-
     res.status(200).json({ status: "ok", orderId })
   } catch (error) {
     next(error)

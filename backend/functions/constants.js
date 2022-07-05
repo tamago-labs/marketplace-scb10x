@@ -46,10 +46,13 @@ const WHITELISTED_ADDRESSES = [
     "0x27dDF44eC9E32343599F7B939e4c35c034f78076",
 ]
 
+const CLIENT_BASE = "https://marketplace-10x.tamago.finance/"
+
 module.exports = {
     MARKETPLACES,
     supportedChains,
     MAINNET_CHAINS,
     TESTNET_CHAINS,
-    WHITELISTED_ADDRESSES
+    WHITELISTED_ADDRESSES,
+    CLIENT_BASE
 }

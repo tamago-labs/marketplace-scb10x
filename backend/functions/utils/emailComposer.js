@@ -2,11 +2,11 @@ const fs = require('fs')
 const path = require('path')
 const Handlebars = require("handlebars")
 
-exports.composeOrderConfirm = async (username, orderId, orderLink) => {
+exports.composeOrderConfirm = async (username, orderId, nftImage, orderLink) => {
   try {
     const source = fs.readFileSync(path.resolve(__dirname, "..", "templates", "sendgrid", "orderConfirmation.html"))
     const template = Handlebars.compile(source)
-    const data = { username, orderId, orderLink }
+    const data = { username, orderId, nftImage, orderLink }
     return template(data)
   } catch (error) {
     console.log(error)
