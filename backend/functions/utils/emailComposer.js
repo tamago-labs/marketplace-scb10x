@@ -2,18 +2,19 @@ const fs = require('fs')
 const path = require('path')
 const Handlebars = require("handlebars")
 
-exports.composeOrderConfirm = async (username, orderId, nftImage, orderLink) => {
+const composeOrderConfirm = async (username, orderId, nftImage, orderLink) => {
   try {
     const source = fs.readFileSync(path.resolve(__dirname, "..", "templates", "sendgrid", "orderConfirmation.html"))
-    const template = Handlebars.compile(source)
+    const template = Handlebars.compile(String(source))
     const data = { username, orderId, nftImage, orderLink }
+    console.log(template(data))
     return template(data)
   } catch (error) {
     console.log(error)
   }
 }
 
-exports.composeOrderCancel = async (
+const composeOrderCancel = async (
   //TODO
 ) => {
   try {
@@ -23,7 +24,7 @@ exports.composeOrderCancel = async (
   }
 }
 
-exports.composeOrderFulfill = async (
+const composeOrderFulfill = async (
   //TODO 
 ) => {
   try {
@@ -33,3 +34,8 @@ exports.composeOrderFulfill = async (
   }
 }
 
+module.exports = {
+  composeOrderConfirm,
+  composeOrderCancel,
+  composeOrderFulfill
+}
