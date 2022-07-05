@@ -159,7 +159,7 @@ exports.confirmOrder = async (req, res, next) => {
         account.email === "pongzthor@gmail.com" // TODO: Important! this needs to be changed!
       ) {
         msg.to = account.email
-        msg.subject = "Your Order was created and signed successfully"
+        msg.subject = `Order ID:${orderId} was created and signed successfully`
         let nickname
         if (account.nickname === "Unknown" || !account.nickname) {
           nickname = account.email.split('@')[0]
