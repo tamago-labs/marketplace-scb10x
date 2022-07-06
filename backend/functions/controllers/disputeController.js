@@ -1,11 +1,10 @@
 const { db } = require("../firebase")
 const { ethers } = require("ethers");
-
-
-
+const { WHITELISTED_ADDRESSES } = require("../constants")
 
 exports.getDisputes = async (req, res, next) => {
   try {
+
     allDisputes = await db.collection("disputes").get();
     let result = []
     allDisputes.forEach(doc => {
@@ -109,7 +108,6 @@ exports.createDispute = async (req, res, next) => {
     console.log("Creating dispute with ID:", disputeId)
 
     const disputeItem = {
-      ...req.body,
       "disputeId": disputeId,
       "email": email,
       "address": address,
@@ -144,9 +142,19 @@ exports.updateDispute = async (req, res, next) => {
     if (Object.keys(req.body).length === 0) {
       return res.status(400).json({ message: " req.body missing " })
     }
-    const { resolved, adminComment } = req.body
+    const { resolved, adminComment, message, signature } = req.body
 
-    if (!Object.keys(req.body).length) {
+    if (!message || !signature) {
+      return res.status(400).json({ message: "message and signature required" })
+    }
+
+    const recoveredAddress = ethers.utils.verifyMessage(message, signature)
+    console.log("Recovered address : ", recoveredAddress)
+    if (WHITELISTED_ADDRESSES.findIndex(item => item.toLowerCase() === recoveredAddress.toLowerCase()) === -1) {
+      return res.status(403).json({ message: "Access Denied." })
+    }
+
+    if (!Object.keys(req.body).length < 3) {
       return res.status(400).json({ message: "update failed. At least one input is required." })
     }
 
@@ -174,7 +182,7 @@ exports.updateDispute = async (req, res, next) => {
 
     await db.collection("disputes").doc(DocID).set(Item, { merge: true })
 
-    res.status(200).json({ status: "ok", Item })
+    res.status(200).json({ status: "ok", updated: Item, })
   } catch (error) {
     next(error)
   }
