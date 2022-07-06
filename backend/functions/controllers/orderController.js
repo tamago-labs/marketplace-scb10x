@@ -214,7 +214,7 @@ exports.cancelOrder = async (req, res, next) => {
       return res.status(400).json({ message: "You are not authorized to cancel the order" })
     }
     console.log("Saving: \n", Item)
-    await db.collection("orders").doc(DocID).set({ cancelled: true }, { merge: true })
+    await db.collection("orders").doc(DocID).set({ canceled: true }, { merge: true })
 
     //SEND EMAIL UPON ORDER CANCELLATION
     let account = await db.collection("accounts").where("address", "==", ownerAddress).get()
@@ -227,13 +227,24 @@ exports.cancelOrder = async (req, res, next) => {
         account.email === "pongzthor@gmail.com" // TODO: Important! this needs to be changed!
       ) {
         msg.to = account.email
-        msg.subject = "Your Order was cancelled"
-        msg.html = `<p>Your Order with Id: ${orderId} was cancelled </p><br><strong>Tamago Team</strong>`
+        msg.subject = `Order ID:${orderId} was cancelled`
+        let nickname
+        if (account.nickname === "Unknown" || !account.nickname) {
+          nickname = account.email.split('@')[0]
+        } else {
+          nickname = account.nickname
+        }
+        //get images of NFT
+        let nft = await db.collection("nfts").where("address", "==", Item.baseAssetAddress).where("chain", "==", convertDecimalToHexadecimal(Item.chainId)).where("id", "==", Item.baseAssetTokenId).get()
+        if (!nft.empty) {
+          nft = nft.docs.map((doc) => ({ ...doc.data() }))[0]
+          console.log(nft)
+        }
+        msg.html = await composeOrderConfirm(nickname || account.email, orderId, nft?.metadata?.image || "", `${CLIENT_BASE}/order/${orderId}`)
+        console.log(msg)
         await sgMail.send(msg)
       }
     }
-
-
     res.status(200).json({ status: "ok", orderId })
   } catch (error) {
     next(error)
