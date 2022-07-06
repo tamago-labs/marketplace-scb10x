@@ -11,10 +11,6 @@ const useCoingecko = () => {
     const priceData = await axios.get(
       `${COIN_GECKO_API_BASE}/simple/price?ids=wmatic,weth,dai,busd,wbnb&vs_currencies=usd`
     );
-    console.log(
-      "🚀 ~ file: useCoingecko.js ~ line 10 ~ getLowestPrice ~ priceData",
-      priceData.data
-    );
 
     //change token price to usd and keep it in array
     orders.map((order) => {
@@ -50,25 +46,13 @@ const useCoingecko = () => {
             tokenUsdPrice = parseFloat(tokenPrice);
             break;
         }
-        console.log(
-          "🚀 ~ file: useCoingecko.js ~ line 29 ~ orders.map ~ tokenUsdPrice",
-          tokenUsdPrice
-        );
 
         usdPrice.push(tokenUsdPrice);
       }
-      console.log(
-        "🚀 ~ file: useCoingecko.js ~ line 13 ~ getLowestPrice ~ usdPrice",
-        usdPrice
-      );
     });
 
     //sort
     usdPrice.sort((a, b) => a - b);
-    console.log(
-      "🚀 ~ file: useCoingecko.js ~ line 72 ~ getLowestPrice ~ usdPrice",
-      usdPrice
-    );
 
     return usdPrice[0];
   }, []);

@@ -129,13 +129,6 @@ const Collection = () => {
   }, [allOrders]);
 
   useEffect(() => {
-    console.log(
-      "🚀 ~ file: index.js ~ line 118 ~ Collection ~ lowestPrice",
-      lowestPrice
-    );
-  }, []);
-
-  useEffect(() => {
     if (orders.length !== 0) {
       resolveMetadata({
         assetAddress: orders[0].baseAssetAddress,
@@ -281,7 +274,7 @@ const Collection = () => {
           >
             <BoardDetail>
               <h6>Floor Price</h6>
-              <p>{lowestPrice} USD</p>
+              <p>$ {lowestPrice}</p>
             </BoardDetail>
             <BoardDetail>
               <h6>Chain</h6>
