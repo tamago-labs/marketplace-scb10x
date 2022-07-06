@@ -29,10 +29,14 @@ const composeOrderCancel = async (
 }
 
 const composeOrderFulfill = async (
-  //TODO add the required parameter
+  username, orderId, nftImage, orderLink
 ) => {
   try {
-    //TODO
+    const source = fs.readFileSync(path.resolve(__dirname, "..", "templates", "sendgrid", "orderFulfillment.html"))
+    const template = Handlebars.compile(String(source))
+    const data = { username, orderId, nftImage, orderLink }
+    // console.log(template(data))
+    return template(data)
   } catch (error) {
     console.log(error)
   }

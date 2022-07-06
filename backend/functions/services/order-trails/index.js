@@ -7,7 +7,7 @@ const { MARKETPLACES, supportedChains, CLIENT_BASE } = require("../../constants"
 const { MARKETPLACE_ABI } = require("../../abi")
 const { sgMail, msg } = require("../../sendgrid")
 const { getRpcUrl, convertDecimalToHexadecimal } = require("../../utils")
-const { composeOrderCancel } = require("../../utils/emailComposer")
+const { composeOrderCancel, composeOrderFulfill } = require("../../utils/emailComposer")
 
 const orderTrails = async () => {
   try {
@@ -63,8 +63,19 @@ const orderTrails = async () => {
               account.email === "pongzthor@gmail.com" // TODO: Important! this needs to be changed!
             ) {
               msg.to = account.email
-              msg.subject = "Your order was fulfilled"
-              msg.html = `<p>Congratulations! Your order with Id: ${order.orderId} was fulfilled.</p><br><strong>Tamago Team</strong>`
+              msg.subject = `Order ID:${orderId} was fulfilled`
+              let nickname
+              if (account.nickname === "Unknown" || !account.nickname) {
+                nickname = account.email.split('@')[0]
+              } else {
+                nickname = account.nickname
+              }
+              let nft = await db.collection("nfts").where("address", "==", baseAssetAddress).where("chain", "==", convertDecimalToHexadecimal(chainId)).where("id", "==", baseAssetTokenId).get()
+              if (!nft.empty) {
+                nft = nft.docs.map((doc) => ({ ...doc.data() }))[0]
+                console.log(nft)
+              }
+              msg.html = await composeOrderFulfill(nickname || account.email, orderId, nft?.metadata?.image || "", `${CLIENT_BASE}/order/${orderId}`)
               await sgMail.send(msg)
             }
           }
@@ -99,7 +110,7 @@ const orderTrails = async () => {
                 console.log(nft)
               }
               msg.html = await composeOrderCancel(nickname || account.email, orderId, nft?.metadata?.image || "", `${CLIENT_BASE}/order/${orderId}`)
-              console.log(msg)
+              // console.log(msg)
               await sgMail.send(msg)
             }
           }
