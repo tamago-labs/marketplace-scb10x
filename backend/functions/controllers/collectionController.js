@@ -1,8 +1,14 @@
 const validator = require("validator")
-
+const { ethers } = require("ethers")
+const { getRpcUrl, recoverAddressFromMessageAndSignature } = require("../utils")
+const { getProvider } = require("../services")
 const { db } = require("../firebase")
 const { algoliaClient } = require("../services/algolia")
 const { supportedChains } = require("../constants")
+const { OWNER_ABI } = require("../abi")
+const { WHITELISTED_ADDRESSES } = require("../constants")
+
+
 
 exports.getCollections = async (req, res, next) => {
   try {
@@ -43,25 +49,57 @@ exports.getCollections = async (req, res, next) => {
 
 exports.getCollectionByAddress = async (req, res, next) => {
   try {
-    const { address } = req.params
-    if (!address) {
-      return res.status(400).json({ message: "address is required" })
+    const { address, chainId } = req.params
+    if (!address || !chainId) {
+      return res.status(400).json({ message: "address and chainId are required" })
     }
-    let collection = await db.collection("collections").where("address", "==", address).get()
+    if (!validator.isEthereumAddress(address)) {
+      return res.status(400).json({ message: "Invalid wallet address." })
+    }
+    if (!supportedChains.includes(Number(chainId))) {
+      return res.status(400).json({ message: "Invalid chain or chain not supported." })
+    }
+    //get the owner's address from the smart contract
+    console.log(chainId)
+    const rpcUrl = getRpcUrl(chainId)
+    console.log({ rpcUrl })
+    const provider = getProvider(rpcUrl)
+    const contract = new ethers.Contract(address, OWNER_ABI, provider)
+    let ownerAddress
+    try {
+      ownerAddress = await contract.owner()
+    } catch (error) {
+      console.log(error)
+    }
+    console.log({ ownerAddress })
+
+    let collection = await db.collection("collections").where("address", "==", address).where("chainId", "==", Number(chainId)).get()
     if (collection.empty) {
-      return res.status(200).json({ message: "could not find collection with the given address" })
+
+      return res.status(200).json({ status: "ok", collection: { ownerAddress, address, chainId } })
     }
     collection = collection.docs.map((doc) => ({
       ...doc.data(),
     }))[0]
 
-    res.status(200).json({ status: "ok", collection })
+    res.status(200).json({ status: "ok", collection: { ...collection, ownerAddress } })
   } catch (error) {
     next(error)
   }
 }
 
-exports.searchCollections = async (req, res, next) => {
+exports, getOwnerAddress = async (req, res, next) => {
+  try {
+    const { address, chain } = req.params
+    if (!address) {
+      return res.status(400).json({ message: "address is required" })
+    }
+  } catch (error) {
+    next(error)
+  }
+}
+
+exports.searchByCollections = async (req, res, next) => {
   try {
     const { query } = req.query
     if (!query || (/^\s*$/.test(query)) || query.length < 3) {
@@ -74,18 +112,46 @@ exports.searchCollections = async (req, res, next) => {
         'name',
       ]
     })
-    const results = await index.search(query)
-    // console.log(results.hits)
+    const searchResults = await index.search(query)
 
-    res.status(200).json({ status: "ok", collections: results.hits })
+    if (!searchResults.hits.length) {
+      return res.status(404).json({ message: "Sorry, we could not find items matching your search." })
+    } else {
+      //reducing orderIds to an array
+      const orderIds = searchResults.hits.reduce((acc, result) => {
+        console.log({ acc })
+        return [...acc, ...result.activeOrders]
+      }, [])
+
+      orderIds.sort((a, b) => b - a)
+      const results = []
+      while (orderIds.length > 0) {
+        const currentQuery = orderIds.splice(0, 10)
+        if (currentQuery.length > 0) {
+          let subQuery = await db.collection("orders").where('orderId', 'in', currentQuery).get()
+          subQuery = subQuery.docs.map(doc => ({
+            ...doc.data()
+          })
+          )
+          results.push(...subQuery)
+        }
+      }
+
+      if (results.empty) {
+        return res.status(404).json({ message: "Sorry, we could not find items matching your search." })
+      } else {
+        console.log(results)
+        return res.status(200).json({ status: "ok", orders: results })
+      }
+    }
   } catch (error) {
     next(error)
   }
 }
 
-exports.updateCollection = async (req, res) => {
+exports.updateCollection = async (req, res, next) => {
   try {
-    const { address, chainId, collectionName, slug, description, websiteLink, discordLink, instagramLink, mediumLink, telegramLink } = req.body
+    const { address, chainId, collectionName, slug, description, websiteLink, discordLink, instagramLink, mediumLink, telegramLink, message, signature } = req.body
 
     //validates missing inputs
     if (!address || !chainId) {
@@ -99,7 +165,33 @@ exports.updateCollection = async (req, res) => {
     if (!supportedChains.includes(Number(chainId))) {
       return res.status(400).json({ message: "Invalid chain or chain not supported." })
     }
+
+    //get the owner's address from the smart contract
+    const rpcUrl = getRpcUrl(chainId)
+    const provider = getProvider(rpcUrl)
+    const contract = new ethers.Contract(address, OWNER_ABI, provider)
+    let owner
+    try {
+      owner = await contract.owner()
+    } catch (error) {
+
+    }
+    console.log({ owner })
+
+    //message and signature for authentication
+    if (!message || !signature) {
+      return res.status(400).json({ message: "Message and signature are required for authentication." })
+    }
+    const recoveredAddress = recoverAddressFromMessageAndSignature(message, signature).toLowerCase()
+
+    if (recoveredAddress !== owner?.toLowerCase() || WHITELISTED_ADDRESSES.findIndex((item) => item.toLowerCase() === recoveredAddress) === -1) {
+      return res.status(403).json({ message: "You are not allowed to edit this collection." })
+    }
+
     const newData = {}
+
+    newData.lastEditedBy = recoveredAddress
+
     if (collectionName) {
       newData.name = collectionName
     }
@@ -167,11 +259,12 @@ exports.updateCollection = async (req, res) => {
         activeOrders: [],
         activeCount: 0,
         fulfilledOrders: [],
-        fulfilledCount: 0
+        fulfilledCount: 0,
+        lastEditedBy: recoveredAddress
       }
       console.log({ ...collectionDoc, ...newData })
       await db.collection("collections").add({ ...collectionDoc, ...newData, })
-      return res.status(201).json({ status: "ok", message: "New collection added to database" })
+      return res.status(201).json({ status: "ok", created: { ...collectionDoc, ...newData } })
     } else {
       //update existing collection
       let DocID = ""
@@ -180,7 +273,7 @@ exports.updateCollection = async (req, res) => {
       });
       console.log({ ...newData })
       await db.collection("collections").doc(DocID).set({ ...newData }, { merge: true })
-      return res.status(200).json({ status: "ok", message: "Data updated" })
+      return res.status(200).json({ status: "ok", updated: newData })
     }
   } catch (error) {
     next(error)
