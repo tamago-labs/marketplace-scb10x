@@ -342,11 +342,19 @@ const recoverAddressFromMessageAndSignature = (message, signature) => {
   return ethers.utils.verifyMessage(message, signature)
 }
 
+const convertDecimalToHexadecimal = (number) => {
+  if (typeof number !== "number" && typeof number !== "string") {
+    throw new Error("invalid argument type.")
+  }
+  return "0x" + number.toString(16)
+}
+
 module.exports = {
   getMetadata,
   generateRelayMessages,
   generateValidatorMessages,
   getOwnerName,
   getRpcUrl,
-  recoverAddressFromMessageAndSignature
+  recoverAddressFromMessageAndSignature,
+  convertDecimalToHexadecimal
 }

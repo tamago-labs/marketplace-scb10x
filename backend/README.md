@@ -9,6 +9,14 @@
 
 ---
 
+## Admins
+
+| HTTP Method | path                       | RequestBody | Response                    | Notes                                                         |
+| ----------- | -------------------------- | ----------- | --------------------------- | ------------------------------------------------------------- |
+| GET         | //admin/is-admin/{address} | none        | { "status": "ok", isAdmin } | returns boolean type data if the user is whitelisted as admin |
+
+---
+
 ## Collections
 
 | HTTP Method | path                               | RequestBody                                                                                                                                    | Response                                                                                    | Notes         |
@@ -28,6 +36,7 @@
 | GET         | /disputes/address/{address} | none                                                            | { "status": "ok", disputes: [{...},{...},{...}] } |               |
 | GET         | /disputes/{id}              | none                                                            | { "status": "ok", dispute }                       |               |
 | POST        | /disputes/                  | {email, address, orderLink, type, comments, message, signature} | { "status": "ok", body: req.body, disputeId }     | See Notes \*5 |
+| POST        | /disputes/update/{id}       | {resolved, adminComment, message, signature}                    | { "status": "ok", body: req.body, disputeId }     | See Notes \*5 |
 
 ---
 
@@ -41,16 +50,16 @@
 
 ## Orders
 
-| HTTP Method | path                                    | RequestBody                 | Response                                                             | Notes         |
-| ----------- | --------------------------------------- | --------------------------- | -------------------------------------------------------------------- | ------------- |
-| GET         | /orders                                 | none                        | { "status": "ok", "orders": [{...},{...},{...}],"totalCount":number} |               |
-| GET         | /orders?chain=42&limit=20&offset=10     | none                        | { "status": "ok", "orders": [{...},{...},{...}],"totalCount":number} | See Notes \*1 |
-| GET         | /orders/{id}                            | none                        | { "status": "ok", "order": {...}}                                    |               |
-| GET         | /orders/collection/{collection_address} | none                        | { "status": "ok", "orders": [{...},{...},{...}]}                     |               |
-| GET         | /orders/owner/{owner_address}           | none                        | { "status": "ok", "orders": [{...},{...},{...}]}                     |               |
-| POST        | /orders                                 | \*required                  | { "status": "ok", "body": {...req.body} , "orderId": 1}              |               |
-| POST        | /orders/confirm                         | {orderId,message,signature} | { "status": "ok", "orderId": 1}                                      | See Notes \*5 |
-| POST        | /orders/cancel                          | {orderId,message,signature} | { "status": "ok", "orderId": 1}                                      | See Notes \*5 |
+| HTTP Method | path                                    | RequestBody                 | Response                                                             | Notes             |
+| ----------- | --------------------------------------- | --------------------------- | -------------------------------------------------------------------- | ----------------- |
+| GET         | /orders                                 | none                        | { "status": "ok", "orders": [{...},{...},{...}],"totalCount":number} |                   |
+| GET         | /orders?chain=42&limit=20&offset=10     | none                        | { "status": "ok", "orders": [{...},{...},{...}],"totalCount":number} | See Notes \*1     |
+| GET         | /orders/{id}                            | none                        | { "status": "ok", "order": {...}}                                    |                   |
+| GET         | /orders/collection/{collection_address} | none                        | { "status": "ok", "orders": [{...},{...},{...}]}                     |                   |
+| GET         | /orders/owner/{owner_address}           | none                        | { "status": "ok", "orders": [{...},{...},{...}]}                     |                   |
+| POST        | /orders                                 | \*required                  | { "status": "ok", "body": {...req.body} , "orderId": 1}              |                   |
+| POST        | /orders/confirm                         | {orderId,message,signature} | { "status": "ok", "orderId": 1}                                      | See Notes \*5     |
+| POST        | /orders/cancel                          | {orderId,message,signature} | { "status": "ok", "orderId": 1}                                      | See Notes \*5,\*7 |
 
 ---
 
@@ -66,7 +75,7 @@
 
 ---
 
-## Test
+## Tests
 
 | HTTP Method | path                     | RequestBody | Response                                               |
 | ----------- | ------------------------ | ----------- | ------------------------------------------------------ |
@@ -123,5 +132,9 @@ Notes \*6 :<br>
 - if **address** and **chainId** matches with existing entries in the database, the new data is then **merged** into existing document and respond with status code **200** upon successful operation
 - message and signature are required to authorize data update
 - the database keeps track of the owner address / dev address that last updated the NFT collection
+
+Notes \*7 :<br>
+
+- this endpoint is currently not being used by the frontend, it is disabled to avoid potential bugs.
 
 #### Development Started During SCB10X - MAY 2022 - METATHON (when we made new cool friends!)

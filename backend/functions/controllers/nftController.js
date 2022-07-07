@@ -2,6 +2,7 @@ const { db } = require("../firebase")
 const { Moralis, MoralisOptions } = require("../moralis")
 const { getMetadata } = require("../utils")
 const validator = require('validator')
+const axios = require("axios")
 
 exports.getMetadata = async (req, res, next) => {
   try {
@@ -9,7 +10,7 @@ exports.getMetadata = async (req, res, next) => {
     if (!req || !req.params) {
       return res.status(400).json({ message: "missing query params" })
     }
-    console.log(req.params)
+    // console.log(req.params)
     const { address, id, chain } = req.params
 
     if (!address || !id || !chain) {
@@ -38,9 +39,18 @@ exports.getMetadata = async (req, res, next) => {
       let tokenIdMetadata
       try {
         tokenIdMetadata = await Moralis.Web3API.token.getTokenIdMetadata(options);
-        console.log({ tokenIdMetadata })
+        // console.log({ tokenIdMetadata })
         if (!tokenIdMetadata.metadata) {
-          return res.status(424).json({ message: "Moralis API returns no metadata" })
+          if (tokenIdMetadata.token_uri) {
+            // console.log(tokenIdMetadata.token_uri)
+            const metadata = (await axios.get(tokenIdMetadata.token_uri)).data
+            // console.log(typeof metadata)
+            console.log(metadata)
+            await db.collection("nfts").add({ address, id, chain, metadata })
+            return res.status(200).json({ status: "ok", metadata: metadata })
+          } else {
+            return res.status(424).json({ message: "Moralis API returns no metadata" })
+          }
         }
         const result = await getMetadata(tokenIdMetadata)
         const metadata = result.metadata

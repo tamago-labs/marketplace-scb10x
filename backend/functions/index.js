@@ -7,7 +7,7 @@ const fs = require("fs")
 const { addFirestoreDataToAlgolia } = require("./services/algolia")
 const { orderTrails } = require("./services/order-trails")
 const { updateHistory } = require("./services/history-update")
-
+// const { testSendingMail } = require("./sendgrid")
 // initialize app
 const app = express();
 app.use(express.json({ limit: "50mb" }))
@@ -40,14 +40,16 @@ app.use((err, req, res, next) => {
 })
 
 // (Important!)DISABLE THE LINES BELOW BEFORE DEPLOYMENT
-//The invocation below for local API development and testing
+//LOCAL DEV ONLY : run node server on port 3000
 // app.listen(process.env.PORT || 3000, () => {
 //   console.log(`listening on port ${process.env.PORT || 3000}`)
 // })
-//The invocation below for local order fulfillment update 
+//LOCAL DEV ONLY : order fulfillment update 
 // orderTrails()
 // updateHistory()
 // addFirestoreDataToAlgolia()
+//LOCAL DEV ONLY : test sending email
+// testSendingMail()
 
 //The lines below provision cloud infrastructures
 exports.api = functions.region('asia-east2').https.onRequest(app)
