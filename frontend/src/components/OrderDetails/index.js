@@ -6,11 +6,7 @@ import { Tabs, Tab, Table } from "react-bootstrap";
 import ParticleBackground from "react-particle-backgrounds";
 import useOrder from "../../hooks/useOrder";
 import useOpenSea from "../../hooks/useOpenSea";
-import {
-  resolveNetworkName,
-  shortAddress,
-  resolveBlockexplorerLink,
-} from "../../helper";
+import { resolveNetworkName, resolveBlockexplorerLink } from "../../helper";
 import AssetCard from "./assetCard";
 import { AlertWarning, AlertError } from "../alert";
 import Skeleton from "react-loading-skeleton";
@@ -20,6 +16,8 @@ import Metadata from "./metadata";
 import Activities from "./activities";
 import Pending from "./pending";
 import { Link } from "react-router-dom";
+import { ChevronsLeft } from "react-feather";
+import { ImageGroup, Image as ImageFullScreen } from "react-fullscreen-image";
 
 const AVALABLE_TESTNET_OPENSEA = ["Ropsten", "Rinksby", "Goerli", "Mumbai"];
 const AVALABLE_MAINNET_OPENSEA = ["Polygon", "Ethereum"];
@@ -104,12 +102,13 @@ background: linear-gradient(to bottom right, #262626, #9B9B9B);
   border-radius: 12px;
   text-shadow: 1px 1px #333;
   position: relative;
-  overflow: hidden;
+  /* overflow: hidden; */
   min-height: 235px;
   margin-bottom: 2rem;
 
   @media only screen and (max-width: 1000px) {
     padding: 1rem 2rem;
+    /* font-size: 0.5rem; */
   }
 `;
 
@@ -124,6 +123,8 @@ const Image = styled.img`
   width: 200px;
   height: 200px;
 `;
+
+// const ImageContainer = styled.div``
 
 export const Info = styled(({ className, name, value, link }) => {
   return (
@@ -368,17 +369,15 @@ const OrderDetails = () => {
         <AssetDetails>
           <div>
             {data ? (
-              <Link to={`/orders/collection/${order.baseAssetAddress}`}>
-                <Image
-                  src={
-                    data.metadata && data.metadata.image
-                      ? data.metadata.image
-                      : "https://via.placeholder.com/200x200"
-                  }
-                  width="100%"
-                  height="220"
-                />
-              </Link>
+              <Image
+                src={
+                  data.metadata && data.metadata.image
+                    ? data.metadata.image
+                    : "https://via.placeholder.com/200x200"
+                }
+                width="100%"
+                height="220"
+              />
             ) : (
               <Skeleton width="200px" height="200px" />
             )}
@@ -435,6 +434,12 @@ const OrderDetails = () => {
                 ).toLocaleString()}
               />
             </div>
+            <Link
+              to={`/orders/collection/${order.baseAssetAddress}`}
+              style={{ textDecoration: "none", color: "#ffff" }}
+            >
+              <ChevronsLeft /> go to collection
+            </Link>
           </div>
         </AssetDetails>
       </AssetDetailsContainer>
