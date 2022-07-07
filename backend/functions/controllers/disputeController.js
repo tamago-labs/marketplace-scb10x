@@ -154,10 +154,6 @@ exports.updateDispute = async (req, res, next) => {
       return res.status(403).json({ message: "Access Denied." })
     }
 
-    if (!Object.keys(req.body).length < 3) {
-      return res.status(400).json({ message: "update failed. At least one input is required." })
-    }
-
     console.log("getting dispute with ID: ", id)
 
     const dispute = await db.collection('disputes').where('disputeId', '==', Number(id)).get()
