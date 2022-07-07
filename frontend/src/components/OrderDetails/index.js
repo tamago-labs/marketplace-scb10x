@@ -17,7 +17,7 @@ import Activities from "./activities";
 import Pending from "./pending";
 import { Link } from "react-router-dom";
 import { ChevronsLeft } from "react-feather";
-import { ImageGroup, Image as ImageFullScreen } from "react-fullscreen-image";
+import { Modal } from "reactstrap";
 
 const AVALABLE_TESTNET_OPENSEA = ["Ropsten", "Rinksby", "Goerli", "Mumbai"];
 const AVALABLE_MAINNET_OPENSEA = ["Polygon", "Ethereum"];
@@ -102,13 +102,12 @@ background: linear-gradient(to bottom right, #262626, #9B9B9B);
   border-radius: 12px;
   text-shadow: 1px 1px #333;
   position: relative;
-  /* overflow: hidden; */
+  overflow: hidden;
   min-height: 235px;
   margin-bottom: 2rem;
 
   @media only screen and (max-width: 1000px) {
     padding: 1rem 2rem;
-    /* font-size: 0.5rem; */
   }
 `;
 
@@ -122,9 +121,12 @@ const AssetDetails = styled.div`
 const Image = styled.img`
   width: 200px;
   height: 200px;
-`;
 
-// const ImageContainer = styled.div``
+  @media only screen and (max-width: 1000px) {
+    width: 80px;
+    height: 80px;
+  }
+`;
 
 export const Info = styled(({ className, name, value, link }) => {
   return (
@@ -234,13 +236,19 @@ const OrderDetails = () => {
   const [sellerName, setSellerName] = useState();
 
   const [activities, setActivities] = useState();
+  const [fullImageVisible, setFullImageVisible] = useState(false);
 
   const { getActivitiesFromOrder } = useActivities();
 
   const { id } = useParams();
 
+  const toggleFullImage = () => {
+    setFullImageVisible(!fullImageVisible);
+  };
+
   useEffect(() => {
     id && getOrder(id).then(setOrder);
+    // console.log(data.metadata.image);
   }, [id, getOrder]);
 
   useEffect(() => {
@@ -361,6 +369,19 @@ const OrderDetails = () => {
 
   return (
     <Container>
+      <Modal isOpen={fullImageVisible} toggle={toggleFullImage}>
+        {data ? (
+          <img
+            src={
+              data.metadata && data.metadata.image
+                ? data.metadata.image
+                : "https://via.placeholder.com/200x200"
+            }
+          />
+        ) : (
+          <Skeleton width="200px" height="200px" />
+        )}
+      </Modal>
       <AssetDetailsContainer color={resolveColor(order.chainId)}>
         <ParticleBackground
           style={{ position: "absolute", zIndex: 1 }}
@@ -377,6 +398,7 @@ const OrderDetails = () => {
                 }
                 width="100%"
                 height="220"
+                onClick={toggleFullImage}
               />
             ) : (
               <Skeleton width="200px" height="200px" />
