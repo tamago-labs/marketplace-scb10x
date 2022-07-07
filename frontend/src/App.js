@@ -13,6 +13,7 @@ import Account from "./components/Account";
 import Faucet from "./components/Faucet";
 import AllCollectionPage from "./components/AllCollectionPage";
 import AllSellerPage from "./components/AllSellerPage";
+import SearchPage from "./components/SearchPage";
 
 import "react-toastify/dist/ReactToastify.css";
 
@@ -60,6 +61,7 @@ function App() {
         <Route path="/faucet" element={<Faucet />} />
         <Route path="/all-collection" element={<AllCollectionPage />} />
         <Route path="/all-sellers" element={<AllSellerPage />} />
+        <Route path="/collections/search/:query" element={<SearchPage />} />
       </Routes>
       <Footer />
     </div>

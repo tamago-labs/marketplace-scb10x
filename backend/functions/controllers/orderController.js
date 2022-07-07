@@ -1,5 +1,11 @@
-const { db } = require("../firebase")
 const { ethers } = require("ethers");
+
+const { Moralis, MoralisOptions } = require("../moralis")
+const { getMetadata, convertDecimalToHexadecimal } = require("../utils")
+const { db } = require("../firebase")
+const { sgMail, msg } = require("../sendgrid")
+const { composeOrderConfirm } = require("../utils/emailComposer")
+const { CLIENT_BASE } = require("../constants")
 
 exports.getOrders = async (req, res, next) => {
   console.log("get all orders...")
@@ -99,7 +105,7 @@ exports.createOrder = async (req, res, next) => {
       "timestamp": Math.floor(new Date().valueOf() / 1000)
     }
 
-    console.log(orderItem)
+    // console.log(orderItem)
 
     await db.collection('orders').add(orderItem)
 
@@ -142,6 +148,35 @@ exports.confirmOrder = async (req, res, next) => {
     console.log("Saving: \n", Item)
     await db.collection("orders").doc(DocID).set({ confirmed: true, visible: true }, { merge: true })
 
+    //SEND EMAIL UPON ORDER CONFIRMATION
+    let account = await db.collection("accounts").where("address", "==", ownerAddress).get()
+
+    if (!account.empty) {
+      account = account.docs.map((doc) => ({
+        ...doc.data(),
+      }))[0]
+      if (
+        account.email === "pongzthor@gmail.com" // TODO: Important! this needs to be changed!
+      ) {
+        msg.to = account.email
+        msg.subject = `Order ID:${orderId} was created and signed successfully`
+        let nickname
+        if (account.nickname === "Unknown" || !account.nickname) {
+          nickname = account.email.split('@')[0]
+        } else {
+          nickname = account.nickname
+        }
+        //get images of NFT
+        let nft = await db.collection("nfts").where("address", "==", Item.baseAssetAddress).where("chain", "==", convertDecimalToHexadecimal(Item.chainId)).where("id", "==", Item.baseAssetTokenId).get()
+        if (!nft.empty) {
+          nft = nft.docs.map((doc) => ({ ...doc.data() }))[0]
+          console.log(nft)
+        }
+        msg.html = await composeOrderConfirm(nickname || account.email, orderId, nft?.metadata?.image || "", `${CLIENT_BASE}/order/${orderId}`)
+        console.log(msg)
+        await sgMail.send(msg)
+      }
+    }
     res.status(200).json({ status: "ok", orderId })
   } catch (error) {
     next(error)
@@ -179,8 +214,37 @@ exports.cancelOrder = async (req, res, next) => {
       return res.status(400).json({ message: "You are not authorized to cancel the order" })
     }
     console.log("Saving: \n", Item)
-    await db.collection("orders").doc(DocID).set({ cancelled: true }, { merge: true })
+    await db.collection("orders").doc(DocID).set({ canceled: true }, { merge: true })
 
+    //SEND EMAIL UPON ORDER CANCELLATION
+    let account = await db.collection("accounts").where("address", "==", ownerAddress).get()
+
+    if (!account.empty) {
+      account = account.docs.map((doc) => ({
+        ...doc.data(),
+      }))[0]
+      if (
+        account.email === "pongzthor@gmail.com" // TODO: Important! this needs to be changed!
+      ) {
+        msg.to = account.email
+        msg.subject = `Order ID:${orderId} was cancelled`
+        let nickname
+        if (account.nickname === "Unknown" || !account.nickname) {
+          nickname = account.email.split('@')[0]
+        } else {
+          nickname = account.nickname
+        }
+        //get images of NFT
+        let nft = await db.collection("nfts").where("address", "==", Item.baseAssetAddress).where("chain", "==", convertDecimalToHexadecimal(Item.chainId)).where("id", "==", Item.baseAssetTokenId).get()
+        if (!nft.empty) {
+          nft = nft.docs.map((doc) => ({ ...doc.data() }))[0]
+          console.log(nft)
+        }
+        msg.html = await composeOrderConfirm(nickname || account.email, orderId, nft?.metadata?.image || "", `${CLIENT_BASE}/order/${orderId}`)
+        console.log(msg)
+        await sgMail.send(msg)
+      }
+    }
     res.status(200).json({ status: "ok", orderId })
   } catch (error) {
     next(error)

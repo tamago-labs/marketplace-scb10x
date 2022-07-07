@@ -1,11 +1,13 @@
-const { db } = require("../../firebase")
 const { ethers } = require("ethers");
 require("dotenv").config();
 
+const { db } = require("../../firebase")
 const { getProvider } = require("../")
-const { MARKETPLACES } = require("../../constants")
+const { MARKETPLACES, supportedChains, CLIENT_BASE } = require("../../constants")
 const { MARKETPLACE_ABI } = require("../../abi")
-const { supportedChains } = require("../../constants")
+const { sgMail, msg } = require("../../sendgrid")
+const { getRpcUrl, convertDecimalToHexadecimal } = require("../../utils")
+const { composeOrderCancel, composeOrderFulfill } = require("../../utils/emailComposer")
 
 const orderTrails = async () => {
   try {
@@ -21,41 +23,13 @@ const orderTrails = async () => {
     const updated = []
     for (let order of orders) {
 
-      const { chainId, orderId, DocID } = order
+      const { chainId, orderId, DocID, ownerAddress, baseAssetAddress, baseAssetTokenId } = order
 
 
       if (supportedChains.indexOf(chainId) !== -1) {
 
-        let rpcUrl
+        let rpcUrl = getRpcUrl(chainId)
 
-        switch (chainId) {
-          case 1:
-            rpcUrl = process.env.MAINNET_RPC_SERVER
-            break;
-          case 42:
-            rpcUrl = process.env.KOVAN_RPC_SERVER
-            break;
-          case 56:
-            rpcUrl = process.env.BNB_RPC_SERVER
-            break;
-          case 97:
-            rpcUrl = process.env.BNB_TESTNET_RPC_SERVER
-            break;
-          case 137:
-            rpcUrl = process.env.POLYGON_RPC_SERVER
-            break;
-          case 43113:
-            rpcUrl = process.env.FUJI_RPC_SERVER
-            break;
-          case 43114:
-            rpcUrl = process.env.AVALANCHE_C_CHAIN_RPC
-            break;
-          case 80001:
-            rpcUrl = process.env.MUMBAI_RPC_SERVER
-            break;
-          default:
-            break;
-        }
         // console.log({ rpcUrl })
         const provider = getProvider(rpcUrl)
         // console.log(MARKETPLACE_ABI)
@@ -67,19 +41,79 @@ const orderTrails = async () => {
 
         // console.log({ contract })
         const payload = await contract.orders(orderId)
-
         // console.log({ payload })
 
-        // update order status
-        if (payload["ended"] === true) {
+        if (payload["ended"] === true && payload["canceled"] === false) {
+          // update order status - fulfilled
 
-          console.log('This order has ended orderId:', orderId)
+          console.log('This order has been fulfilled orderId:', orderId)
           updated.push({ orderId, DocID })
 
           await db.collection("orders").doc(DocID).set({ fulfilled: true, }, { merge: true })
 
-          console.log("Order ID : ", orderId, " updated successfully")
+          console.log("Order ID : ", orderId, " updated as fulfilled")
 
+          //SEND EMAIL UPON ORDER FULFILLMENT
+          let account = await db.collection("accounts").where("address", "==", ownerAddress).get()
+          if (!account.empty) {
+            account = account.docs.map((doc) => ({
+              ...doc.data(),
+            }))[0]
+            if (
+              account.email === "pongzthor@gmail.com" // TODO: Important! this needs to be changed!
+            ) {
+              msg.to = account.email
+              msg.subject = `Order ID:${orderId} was fulfilled`
+              let nickname
+              if (account.nickname === "Unknown" || !account.nickname) {
+                nickname = account.email.split('@')[0]
+              } else {
+                nickname = account.nickname
+              }
+              let nft = await db.collection("nfts").where("address", "==", baseAssetAddress).where("chain", "==", convertDecimalToHexadecimal(chainId)).where("id", "==", baseAssetTokenId).get()
+              if (!nft.empty) {
+                nft = nft.docs.map((doc) => ({ ...doc.data() }))[0]
+                console.log(nft)
+              }
+              msg.html = await composeOrderFulfill(nickname || account.email, orderId, nft?.metadata?.image || "", `${CLIENT_BASE}/order/${orderId}`)
+              await sgMail.send(msg)
+            }
+          }
+
+        } else if (payload["ended"] === true && payload["canceled"] === true) {
+          //update order status - cancelled
+          console.log('This order has been canceled orderId:', orderId)
+          updated.push({ orderId, DocID })
+
+          await db.collection("orders").doc(DocID).set({ canceled: true, visible: false }, { merge: true })
+          console.log("Order ID : ", orderId, " updated as canceled")
+          // SEND EMAIL UPON ORDER CANCELLATION
+          let account = await db.collection("accounts").where("address", "==", ownerAddress).get()
+          if (!account.empty) {
+            account = account.docs.map((doc) => ({
+              ...doc.data(),
+            }))[0]
+            if (
+              account.email === "pongzthor@gmail.com" // TODO: Important! this needs to be changed!
+            ) {
+              msg.to = account.email
+              msg.subject = `Order ID:${orderId} was cancelled`
+              let nickname
+              if (account.nickname === "Unknown" || !account.nickname) {
+                nickname = account.email.split('@')[0]
+              } else {
+                nickname = account.nickname
+              }
+              let nft = await db.collection("nfts").where("address", "==", baseAssetAddress).where("chain", "==", convertDecimalToHexadecimal(chainId)).where("id", "==", baseAssetTokenId).get()
+              if (!nft.empty) {
+                nft = nft.docs.map((doc) => ({ ...doc.data() }))[0]
+                console.log(nft)
+              }
+              msg.html = await composeOrderCancel(nickname || account.email, orderId, nft?.metadata?.image || "", `${CLIENT_BASE}/order/${orderId}`)
+              // console.log(msg)
+              await sgMail.send(msg)
+            }
+          }
         }
 
       }
