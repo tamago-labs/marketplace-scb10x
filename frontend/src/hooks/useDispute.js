@@ -68,10 +68,36 @@ const useDispute = () => {
     return data.disputes
   }, [])
 
+  const updateDispute = useCallback(
+    async ({
+      disputeId,
+      resolved,
+      adminComment,
+      message,
+      signature,
+    }) => {
+      if (!account) {
+        throw new Error("Wallet not connected")
+      }
+
+      const { data } = await axios.post(`http://localhost:3000/disputes/update/${disputeId}`, {
+        resolved: resolved || false,
+        adminComment: adminComment || "",
+        message,
+        signature,
+      })
+
+      return { status: data.status, updated: data.updated }
+    },
+    [account, chainId, library]
+  )
+
+
   return {
     signMessage,
     createDispute,
     getDisputesByOwner,
+    updateDispute,
   }
 }
 

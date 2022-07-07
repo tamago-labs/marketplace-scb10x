@@ -5,6 +5,9 @@ export const API_BASE =
 export const ACCOUNT_API_BASE =
   "https://asia-east2-sbc10x-hackatron-may2022.cloudfunctions.net/api";
 
+export const CLIENT_BASE =
+  "https://marketplace-10x.tamago.finance"
+
 export const SUPPORT_CHAINS = [42, 97, 80001, 43113, 137, 56, 43114, 1];
 
 export const MAINNET_CHAINS = [137, 56, 43114, 1];
