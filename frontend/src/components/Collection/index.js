@@ -127,7 +127,7 @@ const Collection = () => {
   const [max, setMax] = useState(MAX_ITEMS);
   const [orders, setOrders] = useState([]);
   const [data, setData] = useState();
-  const { getOrdersByCollection, resolveMetadata, getCollectionByAddress } = useOrder();
+  const { getOrdersByCollection, resolveMetadata, getCollectionByAddress, isAdmin } = useOrder();
   const { address } = useParams();
   const { account, library, chainId } = useWeb3React()
   const [isNew, setIsNew] = useState(false);
@@ -137,10 +137,7 @@ const Collection = () => {
   const [allOrders, setAllOrders] = useState([]);
   const [collectionDetail, setCollectionDetail] = useState()
   const [editCollectionVisible, setEditCollectionVisible] = useState(false)
-  const isOwner = useMemo(() => {
-    if(!collectionDetail || !account) return false;
-    return collectionDetail.ownerAddress === account
-  }, [collectionDetail])
+  const [isOwner, setIsOwner] = useState(false)
 
   const toggleEditCollectionModal = () => setEditCollectionVisible(!editCollectionVisible)
 
@@ -154,6 +151,20 @@ const Collection = () => {
       getCollectionByAddress(address, data.chainId).then(setCollectionDetail);
     }
   }, [data])
+
+  useEffect(() => {
+    (async () => {
+      const isCorrectAdmin = await isAdmin(address)
+      if(!collectionDetail || !account) {
+        return
+      }
+      console.log(collectionDetail.ownerAddress === account)
+      if(collectionDetail.ownerAddress === account || isCorrectAdmin) {
+        setIsOwner(true);
+        return
+      }
+    })()
+  }, [collectionDetail, account])
 
   useEffect(() => {
     if (orders.length !== 0) {

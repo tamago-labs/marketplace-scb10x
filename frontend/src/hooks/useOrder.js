@@ -848,6 +848,17 @@ const useOrder = () => {
       return [];
     }
   }, []);
+  
+  const isAdmin = useCallback(async (address) => {
+    try {
+      const { data } = await axios.get(
+        `${API_BASE}/admin/is-admin/${address}`
+      );
+      return data.isAdmin;
+    } catch (error) {
+      return false;
+    }
+  }, []);
 
   return {
     getAllOrders,
@@ -877,6 +888,7 @@ const useOrder = () => {
     getCollectionsTotal,
     getCollectionByAddress,
     getCollectionsSearch,
+    isAdmin
   };
 };
 

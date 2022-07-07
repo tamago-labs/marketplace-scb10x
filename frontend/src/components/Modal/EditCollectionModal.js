@@ -67,14 +67,29 @@ function EditCollectionModal({ toggleModal, modalVisible, data }) {
   )
   const [loading, setLoading] = useState(false)
 
+  const signMessage = useCallback(
+    async (message) => {
+      return {
+        message,
+        signature: await library.getSigner().signMessage(message),
+      }
+    },
+    [account, library, chainId, name, description, data]
+  )
+
   const onSubmit = useCallback(async () => {
     try {
       setLoading(true)
+      const message = "Please sign this message to confirm your form."
+
+      const { signature } = await signMessage(message)
       await axios.post(`${API_BASE}/collections/update`, {
         address,
         chainId: data.chainId,
         collectionName: name,
         description,
+        message,
+        signature,
       })
     } catch (err) {
       console.log(err)
@@ -113,7 +128,10 @@ function EditCollectionModal({ toggleModal, modalVisible, data }) {
         <Button color="secondary" onClick={toggleModal}>
           Close
         </Button>
-        <Button style={{ background: "#fa58b6", width: 120 }} onClick={onSubmit}>
+        <Button
+          style={{ background: "#fa58b6", width: 120 }}
+          onClick={onSubmit}
+        >
           {loading && (
             <span style={{ marginRight: "10px" }}>
               <TailSpin color="#fff" height={24} width={24} />
