@@ -108,6 +108,7 @@ background: linear-gradient(to bottom right, #262626, #9B9B9B);
 
   @media only screen and (max-width: 1000px) {
     padding: 1rem 2rem;
+    overflow: scroll;
   }
 `;
 
