@@ -274,7 +274,7 @@ const Collection = () => {
           >
             <BoardDetail>
               <h6>Floor Price</h6>
-              <p>$ {lowestPrice}</p>
+              <p>$ {Number(lowestPrice).toLocaleString()}</p>
             </BoardDetail>
             <BoardDetail>
               <h6>Chain</h6>
