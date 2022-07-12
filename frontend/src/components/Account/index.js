@@ -12,6 +12,8 @@ import ConnectPanel from "./connect";
 import useOrder from "../../hooks/useOrder";
 import useActivities from "../../hooks/useActivities";
 import History from "./history";
+import useAdmin from "../../hooks/useAdmin";
+import AdminDispute from "./adminDispute";
 
 const Wrapper = styled.div.attrs(() => ({ className: "container" }))`
   padding-top: 1rem;
@@ -66,9 +68,11 @@ const AccountDetails = () => {
   const { account, chainId, deactivate } = useWeb3React();
   const { getAccountOrders } = useOrder();
   const { getActivitiesByAccount } = useActivities(chainId);
+  const { getIsAdmin } = useAdmin()
 
   const [orders, setOrders] = useState([]);
   const [history, setHistory] = useState([]);
+  const [isAdmin, setIsAdmin] = useState(false)
 
   useEffect(() => {
     getAccountOrders().then((orders) => {
@@ -79,6 +83,13 @@ const AccountDetails = () => {
   useEffect(() => {
     account && getActivitiesByAccount(account).then(setHistory);
   }, [account]);
+
+  useEffect(() => {
+    getIsAdmin().then((admin) => {
+      console.log({ admin })
+      setIsAdmin(admin)
+    })
+  }, [getIsAdmin])
 
   const settings = {
     particle: {
@@ -166,13 +177,20 @@ const AccountDetails = () => {
                   <Tab eventKey="disputeForm" title="Dispute Form">
                     <DisputeForm />
                   </Tab>
+                  {isAdmin && (
+                    <Tab eventKey="adminDispute" title="Admin Disputes">
+                      <AdminDispute />
+                    </Tab>
+                  )}
+
+
                 </AccountTab>
               </div>
             </>
           )}
         </div>
       </div>
-    </Wrapper>
+    </Wrapper >
   );
 };
 
