@@ -10,6 +10,7 @@ import { resolveNetworkName } from "../../helper";
 import { Button as MoreButton } from "../../components/buttons";
 import { AssetDetailsContainer } from "../OrderDetails/index"
 import EditCollectionModal from "../../components/Modal/EditCollectionModal"
+import useCoingecko from "../../hooks/useCoingecko";
 
 /** Styled Component */
 const ListContainer = styled.div`
@@ -127,8 +128,7 @@ const Collection = () => {
   const [max, setMax] = useState(MAX_ITEMS);
   const [orders, setOrders] = useState([]);
   const [data, setData] = useState();
-  const { getOrdersByCollection, resolveMetadata, getCollectionByAddress, isAdmin } = useOrder();
-  const { address } = useParams();
+  const { getOrdersByCollection, resolveMetadata, getCollectionByAddress, isAdmin } = useOrder(); 
   const { account, library, chainId } = useWeb3React()
   const [isNew, setIsNew] = useState(false);
   const [isSold, setIsSold] = useState(false);
@@ -140,6 +140,9 @@ const Collection = () => {
   const [isOwner, setIsOwner] = useState(false)
 
   const toggleEditCollectionModal = () => setEditCollectionVisible(!editCollectionVisible)
+  const [lowestPrice, setLowestPrice] = useState();
+  const { address } = useParams(); 
+  const { getLowestPrice } = useCoingecko();
 
   useEffect(() => {
     address && getOrdersByCollection(address).then(setOrders);
@@ -147,7 +150,7 @@ const Collection = () => {
   }, [address]);
 
   useEffect(() => {
-    if(address && data) {
+    if (address && data) {
       getCollectionByAddress(address, data.chainId).then(setCollectionDetail);
     }
   }, [data])
@@ -155,16 +158,20 @@ const Collection = () => {
   useEffect(() => {
     (async () => {
       const isCorrectAdmin = await isAdmin(address)
-      if(!collectionDetail || !account) {
+      if (!collectionDetail || !account) {
         return
       }
       console.log(collectionDetail.ownerAddress === account)
-      if(collectionDetail.ownerAddress === account || isCorrectAdmin) {
+      if (collectionDetail.ownerAddress === account || isCorrectAdmin) {
         setIsOwner(true);
         return
       }
     })()
   }, [collectionDetail, account])
+
+  useEffect(() => {
+    address && getLowestPrice(allOrders).then(setLowestPrice);
+  }, [allOrders]);
 
   useEffect(() => {
     if (orders.length !== 0) {
@@ -241,41 +248,41 @@ const Collection = () => {
     particle: {
       particleCount: 150,
       color: "#fff",
-      maxSize: 2
+      maxSize: 2,
     },
     velocity: {
       directionAngle: 180,
       directionAngleVariance: 60,
       minSpeed: 0.1,
-      maxSpeed: 0.3
+      maxSpeed: 0.3,
     },
     opacity: {
       minOpacity: 0,
       maxOpacity: 0.4,
-      opacityTransitionTime: 10000
-    }
-  }
+      opacityTransitionTime: 10000,
+    },
+  };
 
   const resolveColor = (chainId) => {
     switch (chainId) {
       case 80001:
-        return "purple"
+        return "purple";
       case 137:
-        return "purple"
+        return "purple";
       case 43113:
-        return "red"
+        return "red";
       case 43114:
-        return "red"
+        return "red";
       case 97:
-        return "yellow"
+        return "yellow";
       case 56:
-        return "yellow"
+        return "yellow";
       case 42:
-        return "blue"
+        return "blue";
       case 1:
-        return "blue"
+        return "blue";
       default:
-        return ""
+        return "";
     }
   }
 
@@ -292,7 +299,7 @@ const Collection = () => {
           color={data && data.chainId && resolveColor(data.chainId)}
         >
           <ParticleBackground style={{ position: "absolute", zIndex: 1 }} settings={settings} />
-          {isOwner && <EditButton onClick={toggleEditCollectionModal}>Edit Collection</EditButton>}
+          {true && <EditButton onClick={toggleEditCollectionModal}>Edit</EditButton>}
           <div style={{ textAlign: "center" }}>
             {data ? (
               <RoundImg src={data.metadata.image} />
@@ -317,8 +324,8 @@ const Collection = () => {
             }}
           >
             <BoardDetail>
-              <h6>All</h6>
-              <p>{allOrders.length}</p>
+              <h6>Floor Price</h6>
+              <p>$ {Number(lowestPrice).toLocaleString()}</p>
             </BoardDetail>
             <BoardDetail>
               <h6>Chain</h6>

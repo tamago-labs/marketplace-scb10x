@@ -36,7 +36,7 @@
 | GET         | /disputes/address/{address} | none                                                            | { "status": "ok", disputes: [{...},{...},{...}] } |               |
 | GET         | /disputes/{id}              | none                                                            | { "status": "ok", dispute }                       |               |
 | POST        | /disputes/                  | {email, address, orderLink, type, comments, message, signature} | { "status": "ok", body: req.body, disputeId }     | See Notes \*5 |
-| POST        | /disputes/update/{id}       | {resolved, adminComment, message, signature}                    | { "status": "ok", body: req.body, disputeId }     | See Notes \*5 |
+| POST        | /disputes/update/{id}       | {resolved, adminComment, message, signature}                    | { "status": "ok", updated }                       | See Notes \*5 |
 
 ---
 
