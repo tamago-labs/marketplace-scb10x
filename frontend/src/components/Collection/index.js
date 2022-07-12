@@ -299,7 +299,7 @@ const Collection = () => {
           color={data && data.chainId && resolveColor(data.chainId)}
         >
           <ParticleBackground style={{ position: "absolute", zIndex: 1 }} settings={settings} />
-          {true && <EditButton onClick={toggleEditCollectionModal}>Edit</EditButton>}
+          {isOwner && <EditButton onClick={toggleEditCollectionModal}>Edit</EditButton>}
           <div style={{ textAlign: "center" }}>
             {data ? (
               <RoundImg src={data.metadata.image} />
