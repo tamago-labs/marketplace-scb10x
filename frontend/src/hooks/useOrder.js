@@ -804,6 +804,12 @@ const useOrder = () => {
     return totalCount;
   }, []);
 
+  const getCollectionByAddress = useCallback(async (address, chainId) => {
+    const { data } = await axios.get(`${API_BASE}/collections/${address}/${chainId}`);
+    const { collection } = data;
+    return collection;
+  }, []);
+
   const getTopSellersByIndex = useCallback(async (startIndex, limitNum) => {
     const { data } = await axios.get(
       `${API_BASE}/users?chain=42,97,80001,43113,137,56,43114,1&offset=${startIndex}&limit=${limitNum}`
@@ -842,6 +848,17 @@ const useOrder = () => {
       return [];
     }
   }, []);
+  
+  const isAdmin = useCallback(async (address) => {
+    try {
+      const { data } = await axios.get(
+        `${API_BASE}/admin/is-admin/${address}`
+      );
+      return data.isAdmin;
+    } catch (error) {
+      return false;
+    }
+  }, []);
 
   return {
     getAllOrders,
@@ -869,7 +886,9 @@ const useOrder = () => {
     getTopSellersByIndex,
     getSellersTotal,
     getCollectionsTotal,
+    getCollectionByAddress,
     getCollectionsSearch,
+    isAdmin
   };
 };
 
