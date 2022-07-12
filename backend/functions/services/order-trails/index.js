@@ -60,7 +60,7 @@ const orderTrails = async () => {
               ...doc.data(),
             }))[0]
             if (
-              account.email === "pongzthor@gmail.com" // TODO: Important! this needs to be changed!
+              account.email
             ) {
               msg.to = account.email
               msg.subject = `Order ID:${orderId} was fulfilled`
@@ -94,7 +94,7 @@ const orderTrails = async () => {
               ...doc.data(),
             }))[0]
             if (
-              account.email === "pongzthor@gmail.com" // TODO: Important! this needs to be changed!
+              account.email
             ) {
               msg.to = account.email
               msg.subject = `Order ID:${orderId} was cancelled`

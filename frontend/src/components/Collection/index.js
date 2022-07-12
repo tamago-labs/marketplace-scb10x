@@ -2,12 +2,13 @@ import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import styled from "styled-components";
 import Skeleton from "react-loading-skeleton";
-import ParticleBackground from 'react-particle-backgrounds'
+import ParticleBackground from "react-particle-backgrounds";
 import NFTCard from "../nftCard";
 import useOrder from "../../hooks/useOrder";
 import { resolveNetworkName } from "../../helper";
 import { Button as MoreButton } from "../../components/buttons";
-import { AssetDetailsContainer } from "../OrderDetails/index"
+import { AssetDetailsContainer } from "../OrderDetails/index";
+import useCoingecko from "../../hooks/useCoingecko";
 
 /** Styled Component */
 const ListContainer = styled.div`
@@ -98,7 +99,7 @@ const Button = styled.button`
   `}
 `;
 
-const Jumbotron = styled(AssetDetailsContainer)``
+const Jumbotron = styled(AssetDetailsContainer)``;
 
 /** CONSTANT */
 const MAX_ITEMS = 4;
@@ -108,18 +109,24 @@ const Collection = () => {
   const [max, setMax] = useState(MAX_ITEMS);
   const [orders, setOrders] = useState([]);
   const [data, setData] = useState();
-  const { getOrdersByCollection, resolveMetadata } = useOrder();
-  const { address } = useParams();
   const [isNew, setIsNew] = useState(false);
   const [isSold, setIsSold] = useState(false);
   const [isCanceled, setIsCanceled] = useState(false);
   const [isAll, setIsAll] = useState(true);
   const [allOrders, setAllOrders] = useState([]);
+  const [lowestPrice, setLowestPrice] = useState();
+  const { address } = useParams();
+  const { getOrdersByCollection, resolveMetadata } = useOrder();
+  const { getLowestPrice } = useCoingecko();
 
   useEffect(() => {
     address && getOrdersByCollection(address).then(setOrders);
     address && getOrdersByCollection(address).then(setAllOrders);
   }, [address]);
+
+  useEffect(() => {
+    address && getLowestPrice(allOrders).then(setLowestPrice);
+  }, [allOrders]);
 
   useEffect(() => {
     if (orders.length !== 0) {
@@ -196,53 +203,52 @@ const Collection = () => {
     particle: {
       particleCount: 150,
       color: "#fff",
-      maxSize: 2
+      maxSize: 2,
     },
     velocity: {
       directionAngle: 180,
       directionAngleVariance: 60,
       minSpeed: 0.1,
-      maxSpeed: 0.3
+      maxSpeed: 0.3,
     },
     opacity: {
       minOpacity: 0,
       maxOpacity: 0.4,
-      opacityTransitionTime: 10000
-    }
-  }
+      opacityTransitionTime: 10000,
+    },
+  };
 
   const resolveColor = (chainId) => {
     switch (chainId) {
       case 80001:
-        return "purple"
+        return "purple";
       case 137:
-        return "purple"
+        return "purple";
       case 43113:
-        return "red"
+        return "red";
       case 43114:
-        return "red"
+        return "red";
       case 97:
-        return "yellow"
+        return "yellow";
       case 56:
-        return "yellow"
+        return "yellow";
       case 42:
-        return "blue"
+        return "blue";
       case 1:
-        return "blue"
+        return "blue";
       default:
-        return ""
+        return "";
     }
-  }
-
+  };
 
   return (
     <Container>
-      <div> 
-
-        <Jumbotron
-          color={data && data.chainId && resolveColor(data.chainId)}
-        >
-          <ParticleBackground style={{ position: "absolute", zIndex: 1 }} settings={settings} />
+      <div>
+        <Jumbotron color={data && data.chainId && resolveColor(data.chainId)}>
+          <ParticleBackground
+            style={{ position: "absolute", zIndex: 1 }}
+            settings={settings}
+          />
           <div style={{ textAlign: "center" }}>
             {data ? (
               <RoundImg src={data.metadata.image} />
@@ -267,8 +273,8 @@ const Collection = () => {
             }}
           >
             <BoardDetail>
-              <h6>All</h6>
-              <p>{allOrders.length}</p>
+              <h6>Floor Price</h6>
+              <p>$ {Number(lowestPrice).toLocaleString()}</p>
             </BoardDetail>
             <BoardDetail>
               <h6>Chain</h6>
