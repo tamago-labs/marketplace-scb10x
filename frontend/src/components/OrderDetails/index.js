@@ -18,6 +18,7 @@ import Pending from "./pending";
 import { Link } from "react-router-dom";
 import { ChevronsLeft } from "react-feather";
 import { Modal } from "reactstrap";
+import CarouselCard from "./carouselCollection";
 
 const AVALABLE_TESTNET_OPENSEA = ["Ropsten", "Rinksby", "Goerli", "Mumbai"];
 const AVALABLE_MAINNET_OPENSEA = ["Polygon", "Ethereum"];
@@ -564,6 +565,12 @@ const OrderDetails = () => {
             <Metadata data={data} />
           </Tab>
         </StyledTabs>
+      </div>
+
+      <div style={{ marginTop: "100px" }}>
+        <hr />
+        <h4>Relevant Orders</h4>
+        <CarouselCard address={order.baseAssetAddress} />
       </div>
     </Container>
   );
