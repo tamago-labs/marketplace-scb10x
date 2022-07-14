@@ -7,7 +7,7 @@ router.get("/report/", reportController.getAllReports)
 router.get("/report/reporter-address/:address", reportController.getReportByReporterAddress)
 router.get("/report/report-id/:reportId", reportController.getReportByReportId)
 router.post("/report/create", reportController.createReport)
-router.post("/report/update", reportController.updateReport)
+router.post("/report/update/:reportId", reportController.updateReport)
 
 
 module.exports = router;

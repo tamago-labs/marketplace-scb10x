@@ -65,11 +65,13 @@ exports.createReport = async (req, res, next) => {
     if (email && !validator.isEmail(email)) {
       return res.status(400).json({ message: "Invalid email address." })
     }
-
+    if (typeof comment !== "string" || comment.length < 20) {
+      return res.status(400).json({ message: "The comment should be descriptive and has at least 20 characters." })
+    }
 
     //getting all reports
     const allReports = await db.collection("reports").get();
-    const result = allDisputes.docs.map((doc) => ({
+    const result = allReports.docs.map((doc) => ({
       id: doc.id,
     }));
 
@@ -101,19 +103,38 @@ exports.createReport = async (req, res, next) => {
 }
 exports.updateReport = async (req, res, next) => {
   try {
-    const { message, signature, address } = req.body
+    const { reportId } = req.params
+    const { message, signature, resolved, rejected, adminComment } = req.body
     if (!message || !signature) {
       res.status(400).json({ message: "Some inputs are missing." })
     }
-    //TODO recover address from message and signature
+
     const recoveredAddress = recoverAddressFromMessageAndSignature(message, signature)
     if (recoveredAddress.toLowerCase() !== address.toLowerCase()) {
       res.status(403).json({ message: "Access Denied" })
     }
-    //TODO validate if is admin
+    if (WHITELISTED_ADDRESSES.findIndex(item => item.toLowerCase() === recoveredAddress.toLowerCase()) === -1) {
+      return res.status(403).json({ message: "Access Denied." })
+    }
+    let report = await db.collection("reports").where("reportId", "==", reportId).get()
+    if (report.empty) {
+      res.status(404).json({ message: "Report with this ID does not exist." })
+    } else {
 
-    //TODO 
+      const newData = {}
+      if (resolved !== undefined) {
+        newData.resolved = resolved
+      }
+      if (rejected !== undefined) {
+        newData.rejected = rejected
+      }
+      if (adminComment !== undefined) {
+        newData.adminComment = adminComment
+      }
+      await db.collection("reports").doc(report.docs[0].id).set(newData, { merge: true })
 
+      res.status(200).json({ status: "ok", updated: newData })
+    }
   } catch (error) {
     next(error)
   }
