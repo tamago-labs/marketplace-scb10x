@@ -2,12 +2,14 @@ import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import styled from "styled-components";
 import Skeleton from "react-loading-skeleton";
-import ParticleBackground from "react-particle-backgrounds";
+import ParticleBackground from 'react-particle-backgrounds'
+import { useWeb3React } from "@web3-react/core"
 import NFTCard from "../nftCard";
 import useOrder from "../../hooks/useOrder";
 import { resolveNetworkName } from "../../helper";
 import { Button as MoreButton } from "../../components/buttons";
-import { AssetDetailsContainer } from "../OrderDetails/index";
+import { AssetDetailsContainer } from "../OrderDetails/index"
+import EditCollectionModal from "../../components/Modal/EditCollectionModal"
 import useCoingecko from "../../hooks/useCoingecko";
 
 /** Styled Component */
@@ -99,7 +101,24 @@ const Button = styled.button`
   `}
 `;
 
-const Jumbotron = styled(AssetDetailsContainer)``;
+const Jumbotron = styled(AssetDetailsContainer)`
+    position: relative;
+`
+
+const EditButton = styled.div`
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: #fa58b6;
+    border-radius: 12px;
+    padding: 8px;
+    cursor: pointer;
+    z-index: 10;
+
+    &:hover {
+      opacity: 0.83;
+    }
+`
 
 /** CONSTANT */
 const MAX_ITEMS = 4;
@@ -109,20 +128,46 @@ const Collection = () => {
   const [max, setMax] = useState(MAX_ITEMS);
   const [orders, setOrders] = useState([]);
   const [data, setData] = useState();
+  const { getOrdersByCollection, resolveMetadata, getCollectionByAddress, isAdmin } = useOrder(); 
+  const { account, library, chainId } = useWeb3React()
   const [isNew, setIsNew] = useState(false);
   const [isSold, setIsSold] = useState(false);
   const [isCanceled, setIsCanceled] = useState(false);
   const [isAll, setIsAll] = useState(true);
   const [allOrders, setAllOrders] = useState([]);
+  const [collectionDetail, setCollectionDetail] = useState()
+  const [editCollectionVisible, setEditCollectionVisible] = useState(false)
+  const [isOwner, setIsOwner] = useState(false)
+
+  const toggleEditCollectionModal = () => setEditCollectionVisible(!editCollectionVisible)
   const [lowestPrice, setLowestPrice] = useState();
-  const { address } = useParams();
-  const { getOrdersByCollection, resolveMetadata } = useOrder();
+  const { address } = useParams(); 
   const { getLowestPrice } = useCoingecko();
 
   useEffect(() => {
     address && getOrdersByCollection(address).then(setOrders);
     address && getOrdersByCollection(address).then(setAllOrders);
   }, [address]);
+
+  useEffect(() => {
+    if (address && data) {
+      getCollectionByAddress(address, data.chainId).then(setCollectionDetail);
+    }
+  }, [data])
+
+  useEffect(() => {
+    (async () => {
+      const isCorrectAdmin = await isAdmin(address)
+      if (!collectionDetail || !account) {
+        return
+      }
+      console.log(collectionDetail.ownerAddress === account)
+      if (collectionDetail.ownerAddress === account || isCorrectAdmin) {
+        setIsOwner(true);
+        return
+      }
+    })()
+  }, [collectionDetail, account])
 
   useEffect(() => {
     address && getLowestPrice(allOrders).then(setLowestPrice);
@@ -239,16 +284,22 @@ const Collection = () => {
       default:
         return "";
     }
-  };
+  }
 
   return (
     <Container>
+      <EditCollectionModal
+        toggleModal={toggleEditCollectionModal}
+        modalVisible={editCollectionVisible}
+        data={data}
+      />
       <div>
-        <Jumbotron color={data && data.chainId && resolveColor(data.chainId)}>
-          <ParticleBackground
-            style={{ position: "absolute", zIndex: 1 }}
-            settings={settings}
-          />
+
+        <Jumbotron
+          color={data && data.chainId && resolveColor(data.chainId)}
+        >
+          <ParticleBackground style={{ position: "absolute", zIndex: 1 }} settings={settings} />
+          {isOwner && <EditButton onClick={toggleEditCollectionModal}>Edit</EditButton>}
           <div style={{ textAlign: "center" }}>
             {data ? (
               <RoundImg src={data.metadata.image} />
@@ -274,7 +325,7 @@ const Collection = () => {
           >
             <BoardDetail>
               <h6>Floor Price</h6>
-              <p>$ {lowestPrice}</p>
+              <p>$ {Number(lowestPrice).toLocaleString()}</p>
             </BoardDetail>
             <BoardDetail>
               <h6>Chain</h6>

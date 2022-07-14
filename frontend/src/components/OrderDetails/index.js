@@ -1,12 +1,24 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import styled from "styled-components";
-import { FileText } from "react-feather";
-import { Tabs, Tab, Table } from "react-bootstrap";
+import { FileText, Share2 } from "react-feather";
+import { Tabs, Tab, Dropdown, ButtonGroup } from "react-bootstrap";
 import ParticleBackground from "react-particle-backgrounds";
+import MetaTags from "react-meta-tags";
+import {
+  FacebookShareButton,
+  TwitterShareButton,
+  TwitterIcon,
+  FacebookIcon,
+} from "react-share";
 import useOrder from "../../hooks/useOrder";
 import useOpenSea from "../../hooks/useOpenSea";
-import { resolveNetworkName, resolveBlockexplorerLink } from "../../helper";
+import {
+  resolveNetworkName,
+  shortAddress,
+  resolveBlockexplorerLink,
+  copyTextToClipboard,
+} from "../../helper";
 import AssetCard from "./assetCard";
 import { AlertWarning, AlertError } from "../alert";
 import Skeleton from "react-loading-skeleton";
@@ -16,8 +28,8 @@ import Metadata from "./metadata";
 import Activities from "./activities";
 import Pending from "./pending";
 import { Link } from "react-router-dom";
-import { ChevronsLeft } from "react-feather";
 import { Modal } from "reactstrap";
+import { ChevronsLeft } from "react-feather";
 import CarouselCard from "./carouselCollection";
 
 const AVALABLE_TESTNET_OPENSEA = ["Ropsten", "Rinksby", "Goerli", "Mumbai"];
@@ -236,8 +248,11 @@ const OrderDetails = () => {
   const [status, setStatus] = useState(ORDER_STATUS.UNKNOWN);
   const [tick, setTick] = useState(0);
   const [sellerName, setSellerName] = useState();
-
   const [activities, setActivities] = useState();
+  const [pageURL, setPageURL] = useState("");
+  useEffect(() => {
+    setPageURL(window.location.href);
+  });
   const [fullImageVisible, setFullImageVisible] = useState(false);
 
   const { getActivitiesFromOrder } = useActivities();
@@ -250,7 +265,6 @@ const OrderDetails = () => {
 
   useEffect(() => {
     id && getOrder(id).then(setOrder);
-    // console.log(data.metadata.image);
   }, [id, getOrder]);
 
   useEffect(() => {
@@ -384,6 +398,13 @@ const OrderDetails = () => {
           <Skeleton width="200px" height="200px" />
         )}
       </Modal>
+      <MetaTags>
+        <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+        <meta property="og:title" content={data && data.metadata.name} />
+        <meta property="og:image" content={data && data.metadata.image} />
+        <meta property="og:type" content="article" />
+        <meta property="og:description" content={data && data.metadata.name} />
+      </MetaTags>
       <AssetDetailsContainer color={resolveColor(order.chainId)}>
         <ParticleBackground
           style={{ position: "absolute", zIndex: 1 }}
@@ -427,6 +448,29 @@ const OrderDetails = () => {
                   tokenId={order && order.baseAssetTokenId}
                 />
               )}
+              <Dropdown className="mx-2" size="sm" as={ButtonGroup}>
+                <Dropdown.Toggle id="dropdown-custom-1">
+                  <Share2 />
+                </Dropdown.Toggle>
+                <Dropdown.Menu className="super-colors">
+                  <Dropdown.Item
+                    onClick={() => copyTextToClipboard(window.location.href)}
+                    eventKey="1"
+                  >
+                    Copy Link
+                  </Dropdown.Item>
+                  <Dropdown.Item eventKey="2">
+                    <FacebookShareButton url={pageURL}>
+                      <FacebookIcon size={32} round={true} /> Shares On Facebook
+                    </FacebookShareButton>
+                  </Dropdown.Item>
+                  <Dropdown.Item eventKey="3">
+                    <TwitterShareButton url={pageURL}>
+                      <TwitterIcon size={32} round={true} /> Shares On Twitter
+                    </TwitterShareButton>
+                  </Dropdown.Item>
+                </Dropdown.Menu>
+              </Dropdown>
             </h4>
             <p style={{ fontSize: "14px", lineHeight: "18px" }}>
               {data ? `${data.metadata.description} ` : <Skeleton />}

@@ -608,17 +608,26 @@ const useOrder = () => {
     async (order, isOriginChain = true, pairChainId) => {
       const messages = await generateValidatorMessages();
 
-      console.log("validator messages length : ", messages.length, messages);
+      console.log("validator messages length : ", messages.length );
 
       const leaves = messages.map(
         ({ orderId, chainId, claimerAddress, isOrigin }) =>
-          ethers.utils.keccak256(
-            ethers.utils.solidityPack(
-              ["uint256", "uint256", "address", "bool"],
-              [orderId, chainId, claimerAddress, isOrigin]
+          {
+            const hash = ethers.utils.keccak256(
+              ethers.utils.solidityPack(
+                ["uint256", "uint256", "address", "bool"],
+                [
+                  (orderId),
+                  (chainId),
+                  claimerAddress,
+                  (isOrigin),
+                ]
+              )
             )
-          )
+            return hash
+          }
       ); // Order ID, Chain ID, Claimer Address, Is Origin Chain
+
 
       const tree = new MerkleTree(leaves, keccak256, { sortPairs: true });
 
@@ -628,9 +637,9 @@ const useOrder = () => {
             ["uint256", "uint256", "address", "bool"],
             [
               order.orderId,
-              pairChainId ? pairChainId : order.chainId,
-              account,
-              isOriginChain,
+              pairChainId ? Number(pairChainId) : Number(order.chainId),
+              account.toLowerCase(),
+              isOriginChain
             ]
           )
         )
@@ -683,6 +692,7 @@ const useOrder = () => {
         true,
         proof
       );
+
       return output;
     },
     [account, chainId]
@@ -804,6 +814,12 @@ const useOrder = () => {
     return totalCount;
   }, []);
 
+  const getCollectionByAddress = useCallback(async (address, chainId) => {
+    const { data } = await axios.get(`${API_BASE}/collections/${address}/${chainId}`);
+    const { collection } = data;
+    return collection;
+  }, []);
+
   const getTopSellersByIndex = useCallback(async (startIndex, limitNum) => {
     const { data } = await axios.get(
       `${API_BASE}/users?chain=42,97,80001,43113,137,56,43114,1&offset=${startIndex}&limit=${limitNum}`
@@ -842,6 +858,17 @@ const useOrder = () => {
       return [];
     }
   }, []);
+  
+  const isAdmin = useCallback(async (address) => {
+    try {
+      const { data } = await axios.get(
+        `${API_BASE}/admin/is-admin/${address}`
+      );
+      return data.isAdmin;
+    } catch (error) {
+      return false;
+    }
+  }, []);
 
   return {
     getAllOrders,
@@ -869,7 +896,9 @@ const useOrder = () => {
     getTopSellersByIndex,
     getSellersTotal,
     getCollectionsTotal,
+    getCollectionByAddress,
     getCollectionsSearch,
+    isAdmin
   };
 };
 

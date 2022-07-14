@@ -19,6 +19,7 @@ export const useERC721 = (address, account, library) => {
   const [balance, setBalance] = useState(0);
   const [name, setName] = useState("--");
   const [symbol, setSymbol] = useState("--");
+  const [owner, setOwner] = useState("--")
 
   const getIsApprovedForAll = useCallback(
     async (address) => {
@@ -65,6 +66,16 @@ export const useERC721 = (address, account, library) => {
     }
   }, [erc721Contract, account]);
 
+  const getOwner = useCallback(async () => {
+    try {
+      const result = await erc721Contract.owner();
+      return result;
+    } catch (e) {
+      // console.log(e);
+      return "";
+    }
+  }, [erc721Contract, account]);
+
   const getSymbol = useCallback(async () => {
     try {
       const result = await erc721Contract.symbol();
@@ -103,6 +114,7 @@ export const useERC721 = (address, account, library) => {
     erc721Contract && getBalance().then(setBalance);
     erc721Contract && getName().then(setName);
     erc721Contract && getSymbol().then(setSymbol);
+    erc721Contract && getOwner().then(setOwner);
   }, [account, erc721Contract]);
 
   return {
@@ -113,6 +125,7 @@ export const useERC721 = (address, account, library) => {
     setApproveForAll,
     getBalance,
     isApproved,
-    approve
+    approve,
+    owner,
   };
 };

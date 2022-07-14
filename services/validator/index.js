@@ -82,36 +82,40 @@ async function run({
 
                         const { provider, chainId } = obj
 
-                        const currentBlock = await provider.getBlockNumber()
+                        try {
 
-                        logger.debug(`chain id : ${chainId} stamped at block : ${Number(currentBlock)}`)
+                            const currentBlock = await provider.getBlockNumber()
 
-                        const wallet = new ethers.Wallet(getValidatorKey(), provider)
-                        const walletAddress = wallet.address
+                            logger.debug(`chain id : ${chainId} stamped at block : ${Number(currentBlock)}`)
 
-                        const row = NFT_MARKETPLACE.find(item => item.chainId === chainId)
-                        const { gatewayAddress } = row
-                        const gatewayContract = new ethers.Contract(gatewayAddress, GATEWAY_ABI, wallet)
+                            const wallet = new ethers.Wallet(getValidatorKey(), provider)
+                            const walletAddress = wallet.address
 
-                        const currentRoot = await gatewayContract.claimRoot()
+                            const row = NFT_MARKETPLACE.find(item => item.chainId === chainId)
+                            const { gatewayAddress } = row
+                            const gatewayContract = new ethers.Contract(gatewayAddress, GATEWAY_ABI, wallet)
 
-                        logger.debug("Current root on chain id :", chainId ," is : ", currentRoot)
+                            const currentRoot = await gatewayContract.claimRoot()
 
-                        let { BASE_GAS, gasLimit } = await getGasPrices(chainId)
+                            logger.debug("Current root on chain id :", chainId, " is : ", currentRoot)
 
-                        if (currentRoot !== hexRoot) {
-                            const tx = await gatewayContract.updateClaimMessage(hexRoot, {
-                                from: walletAddress,
-                                gasPrice: ethers.utils.parseUnits(`${BASE_GAS * (retries + 1)}`, 'gwei'),
-                                gasLimit: 100000 * (retries + 1)
-                            })
-                            logger.debug("tx on chain id : ", chainId ," is being processed...")
-                            await tx.wait()
+                            let { BASE_GAS, gasLimit } = await getGasPrices(chainId)
+
+                            if (currentRoot !== hexRoot) {
+                                const tx = await gatewayContract.updateClaimMessage(hexRoot, {
+                                    from: walletAddress,
+                                    gasPrice: ethers.utils.parseUnits(`${BASE_GAS * (retries + 1)}`, 'gwei'),
+                                    gasLimit: 100000 * (retries + 1)
+                                })
+                                logger.debug("tx on chain id : ", chainId, " is being processed...")
+                                await tx.wait()
+                            }
+                        } catch (e) {
+
                         }
-
                     }
 
-                   await Promise.all(providers.map(item => push(item)))
+                    await Promise.all(providers.map(item => push(item)))
                 },
                 {
                     retries: errorRetries,
