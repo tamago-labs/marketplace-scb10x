@@ -19,6 +19,9 @@ exports.getAllReports = async (req, res, next) => {
 exports.getReportByReporterAddress = async (req, res, next) => {
   try {
     const { address } = req.params
+    if (!validator.isEthereumAddress(address)) {
+      return res.status(400).json({ message: "Invalid address format." })
+    }
     let reports = await db.collection("reports").where("reporterAddress", "==", String(address)).get()
     let result = []
     reports.forEach(doc => {
@@ -33,13 +36,15 @@ exports.getReportByReporterAddress = async (req, res, next) => {
 exports.getReportByReportId = async (req, res, next) => {
   try {
     const { reportId } = req.params
-    let reports = await db.collection("reports").where("reportId", "==", String(reportId)).get()
+    let reports = await db.collection("reports").where("reportId", "==", Number(reportId)).get()
+    if (reports.empty) {
+      return res.status(404).json({ message: "Report with this ID not found." })
+    }
     let result = []
     reports.forEach(doc => {
       result.push(doc.data())
     });
-    return res.status(200).json({ status: "ok", reports: result })
-
+    return res.status(200).json({ status: "ok", report: result[0] })
 
   } catch (error) {
     next(error)
@@ -50,14 +55,14 @@ exports.createReport = async (req, res, next) => {
   try {
     const { message, signature, address, collectionAddress, comment, email } = req.body
     if (!message || !signature) {
-      res.status(400).json({ message: "Some inputs are missing." })
+      return res.status(400).json({ message: "Some inputs are missing." })
     }
     const recoveredAddress = recoverAddressFromMessageAndSignature(message, signature)
     if (recoveredAddress.toLowerCase() !== address.toLowerCase()) {
-      res.status(403).json({ message: "Access Denied" })
+      return res.status(403).json({ message: "Access Denied" })
     }
     if (!collectionAddress || !comment || !email) {
-      res.status(400).json({ message: "Some required inputs missing." })
+      return res.status(400).json({ message: "Some required inputs missing." })
     }
     if (!validator.isEthereumAddress(collectionAddress)) {
       return res.status(400).json({ message: "Invalid contract address." })
@@ -68,13 +73,15 @@ exports.createReport = async (req, res, next) => {
     if (typeof comment !== "string" || comment.length < 20) {
       return res.status(400).json({ message: "The comment should be descriptive and has at least 20 characters." })
     }
-
+    const collection = await db.collection("collections").where("address", "==", collectionAddress).get()
+    if (collection.empty) {
+      return res.status(404).json({ message: "This collection does not exist in our database." })
+    }
     //getting all reports
     const allReports = await db.collection("reports").get();
     const result = allReports.docs.map((doc) => ({
       id: doc.id,
     }));
-
 
     //assigning reportId
     const reportId = result.reduce((result, item) => {
@@ -106,35 +113,37 @@ exports.updateReport = async (req, res, next) => {
     const { reportId } = req.params
     const { message, signature, resolved, rejected, adminComment } = req.body
     if (!message || !signature) {
-      res.status(400).json({ message: "Some inputs are missing." })
+      return res.status(400).json({ message: "Some inputs are missing." })
     }
-
     const recoveredAddress = recoverAddressFromMessageAndSignature(message, signature)
     if (recoveredAddress.toLowerCase() !== address.toLowerCase()) {
-      res.status(403).json({ message: "Access Denied" })
+      return res.status(403).json({ message: "Access Denied" })
     }
     if (WHITELISTED_ADDRESSES.findIndex(item => item.toLowerCase() === recoveredAddress.toLowerCase()) === -1) {
       return res.status(403).json({ message: "Access Denied." })
     }
     let report = await db.collection("reports").where("reportId", "==", reportId).get()
     if (report.empty) {
-      res.status(404).json({ message: "Report with this ID does not exist." })
-    } else {
-
-      const newData = {}
-      if (resolved !== undefined) {
-        newData.resolved = resolved
-      }
-      if (rejected !== undefined) {
-        newData.rejected = rejected
-      }
-      if (adminComment !== undefined) {
-        newData.adminComment = adminComment
-      }
-      await db.collection("reports").doc(report.docs[0].id).set(newData, { merge: true })
-
-      res.status(200).json({ status: "ok", updated: newData })
+      return res.status(404).json({ message: "Report with this ID does not exist." })
     }
+    let newData = {
+      resolved: false,
+      rejected: false,
+      adminComment: "",
+    }
+    if (resolved !== undefined) {
+      newData.resolved = resolved
+    }
+    if (rejected !== undefined) {
+      newData.rejected = rejected
+    }
+    if (adminComment !== undefined) {
+      newData.adminComment = adminComment
+    }
+    await db.collection("reports").doc(report.docs[0].id).set(newData, { merge: true })
+
+    return res.status(200).json({ status: "ok", updated: newData })
+
   } catch (error) {
     next(error)
   }
