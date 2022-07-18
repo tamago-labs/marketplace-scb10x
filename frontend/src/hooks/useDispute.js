@@ -80,7 +80,7 @@ const useDispute = () => {
         throw new Error("Wallet not connected")
       }
 
-      const { data } = await axios.post(`http://localhost:3000/disputes/update/${disputeId}`, {
+      const { data } = await axios.post(`${API_BASE}/disputes/update/${disputeId}`, {
         resolved: resolved || false,
         adminComment: adminComment || "",
         message,
