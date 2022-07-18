@@ -1,57 +1,60 @@
-import { useCallback, useEffect, useMemo, useState } from "react"
-import { useParams } from "react-router-dom"
-import styled from "styled-components"
-import { FileText, Share2 } from "react-feather"
-import { Tabs, Tab, Dropdown, ButtonGroup } from "react-bootstrap"
-import ParticleBackground from "react-particle-backgrounds"
-import MetaTags from "react-meta-tags"
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useParams } from "react-router-dom";
+import styled from "styled-components";
+import { FileText, Share2 } from "react-feather";
+import { Tabs, Tab, Dropdown, ButtonGroup } from "react-bootstrap";
+import ParticleBackground from "react-particle-backgrounds";
+import MetaTags from "react-meta-tags";
 import {
   FacebookShareButton,
   TwitterShareButton,
   TwitterIcon,
   FacebookIcon,
-} from "react-share"
-import useOrder from "../../hooks/useOrder"
-import useOpenSea from "../../hooks/useOpenSea"
+} from "react-share";
+import useOrder from "../../hooks/useOrder";
+import useOpenSea from "../../hooks/useOpenSea";
 import {
   resolveNetworkName,
   shortAddress,
   resolveBlockexplorerLink,
   copyTextToClipboard,
-} from "../../helper"
-import AssetCard from "./assetCard"
-import { AlertWarning, AlertError } from "../alert"
-import Skeleton from "react-loading-skeleton"
-import { useWeb3React } from "@web3-react/core"
-import useActivities from "../../hooks/useActivities"
-import Metadata from "./metadata"
-import Activities from "./activities"
-import Pending from "./pending"
-import { Link } from "react-router-dom"
+} from "../../helper";
+import AssetCard from "./assetCard";
+import { AlertWarning, AlertError } from "../alert";
+import Skeleton from "react-loading-skeleton";
+import { useWeb3React } from "@web3-react/core";
+import useActivities from "../../hooks/useActivities";
+import Metadata from "./metadata";
+import Activities from "./activities";
+import Pending from "./pending";
+import { Link } from "react-router-dom";
+import { Modal } from "reactstrap";
+import { ChevronsLeft } from "react-feather";
+import CarouselCard from "./carouselCollection";
 
-const AVALABLE_TESTNET_OPENSEA = ["Ropsten", "Rinksby", "Goerli", "Mumbai"]
-const AVALABLE_MAINNET_OPENSEA = ["Polygon", "Ethereum"]
+const AVALABLE_TESTNET_OPENSEA = ["Ropsten", "Rinksby", "Goerli", "Mumbai"];
+const AVALABLE_MAINNET_OPENSEA = ["Polygon", "Ethereum"];
 
 const Container = styled.div.attrs(() => ({ className: "container" }))`
   margin-top: 2rem;
-`
+`;
 
 const StyledTabs = styled(Tabs)`
   .nav-link {
     color: #fff;
   }
-`
+`;
 
 export const ORDER_STATUS = {
   UNKNOWN: 0,
   NEW: 1,
   SOLD: 2,
   CANCELED: 3,
-}
+};
 
 const shorterName = (name) => {
-  return name.length > 28 ? `${name.slice(0, 15)}...${name.slice(-4)}` : name
-}
+  return name.length > 28 ? `${name.slice(0, 15)}...${name.slice(-4)}` : name;
+};
 
 export const AssetDetailsContainer = styled.div.attrs(() => ({}))`
   ${(props) =>
@@ -118,20 +121,26 @@ background: linear-gradient(to bottom right, #262626, #9B9B9B);
 
   @media only screen and (max-width: 1000px) {
     padding: 1rem 2rem;
+    overflow: scroll;
   }
-`
+`;
 
 const AssetDetails = styled.div`
   display: flex;
   flex-direction: row;
   position: absolute;
   z-index: 10;
-`
+`;
 
 const Image = styled.img`
   width: 200px;
   height: 200px;
-`
+
+  @media only screen and (max-width: 1000px) {
+    width: 80px;
+    height: 80px;
+  }
+`;
 
 export const Info = styled(({ className, name, value, link }) => {
   return (
@@ -145,7 +154,7 @@ export const Info = styled(({ className, name, value, link }) => {
         </Link>
       )}
     </div>
-  )
+  );
 })`
   display: inline-block;
   min-width: 100px;
@@ -162,10 +171,10 @@ export const Info = styled(({ className, name, value, link }) => {
     text-decoration: none;
   }
   margin-right: 10px;
-`
+`;
 
 const SmartContractLink = styled(({ className, chainId, assetAddress }) => {
-  const contractLink = resolveBlockexplorerLink(chainId, assetAddress)
+  const contractLink = resolveBlockexplorerLink(chainId, assetAddress);
 
   return (
     <div className={className}>
@@ -173,7 +182,7 @@ const SmartContractLink = styled(({ className, chainId, assetAddress }) => {
         <FileText width={24} height={18} color="#fff" />
       </a>
     </div>
-  )
+  );
 })`
   display: inline;
   > a {
@@ -184,28 +193,28 @@ const SmartContractLink = styled(({ className, chainId, assetAddress }) => {
     padding-bottom: 2px;
     border: 0px;
   }
-`
+`;
 
 const OpenSeaLink = styled(({ className, chainId, assetAddress, tokenId }) => {
-  const { getOpenSeaTestnetLink, getOpenSeaLink } = useOpenSea()
+  const { getOpenSeaTestnetLink, getOpenSeaLink } = useOpenSea();
 
   const seaLink = useMemo(() => {
-    const networkName = resolveNetworkName(chainId)
+    const networkName = resolveNetworkName(chainId);
 
     if (!networkName) {
-      return
+      return;
     }
 
     if (networkName && assetAddress && tokenId) {
       if (AVALABLE_TESTNET_OPENSEA.includes(networkName)) {
-        return getOpenSeaTestnetLink(networkName, assetAddress, tokenId)
+        return getOpenSeaTestnetLink(networkName, assetAddress, tokenId);
       } else if (AVALABLE_MAINNET_OPENSEA.includes(networkName)) {
-        return getOpenSeaLink(networkName, assetAddress, tokenId)
+        return getOpenSeaLink(networkName, assetAddress, tokenId);
       }
     }
 
-    return
-  }, [chainId, assetAddress, tokenId])
+    return;
+  }, [chainId, assetAddress, tokenId]);
 
   return (
     <div className={className}>
@@ -216,7 +225,7 @@ const OpenSeaLink = styled(({ className, chainId, assetAddress, tokenId }) => {
         />
       </a>
     </div>
-  )
+  );
 })`
   display: inline;
   > a {
@@ -226,32 +235,37 @@ const OpenSeaLink = styled(({ className, chainId, assetAddress, tokenId }) => {
     padding-bottom: 2px;
     border: 0px;
   }
-`
+`;
 
 const OrderDetails = () => {
-  const { account, library } = useWeb3React()
+  const { account, library } = useWeb3React();
 
-  const { getOrder, resolveMetadata, resolveStatus, getOwnerName } = useOrder()
+  const { getOrder, resolveMetadata, resolveStatus, getOwnerName } = useOrder();
 
-  const [order, setOrder] = useState()
-  const [crossChain, setCrosschain] = useState(false)
-  const [data, setData] = useState()
-  const [status, setStatus] = useState(ORDER_STATUS.UNKNOWN)
-  const [tick, setTick] = useState(0)
-  const [sellerName, setSellerName] = useState()
-  const [activities, setActivities] = useState()
-  const [pageURL, setPageURL] = useState("")
+  const [order, setOrder] = useState();
+  const [crossChain, setCrosschain] = useState(false);
+  const [data, setData] = useState();
+  const [status, setStatus] = useState(ORDER_STATUS.UNKNOWN);
+  const [tick, setTick] = useState(0);
+  const [sellerName, setSellerName] = useState();
+  const [activities, setActivities] = useState();
+  const [pageURL, setPageURL] = useState("");
   useEffect(() => {
-    setPageURL(window.location.href)
-  })
+    setPageURL(window.location.href);
+  });
+  const [fullImageVisible, setFullImageVisible] = useState(false);
 
-  const { getActivitiesFromOrder } = useActivities()
+  const { getActivitiesFromOrder } = useActivities();
 
-  const { id } = useParams()
+  const { id } = useParams();
+
+  const toggleFullImage = () => {
+    setFullImageVisible(!fullImageVisible);
+  };
 
   useEffect(() => {
-    id && getOrder(id).then(setOrder)
-  }, [id, getOrder])
+    id && getOrder(id).then(setOrder);
+  }, [id, getOrder]);
 
   useEffect(() => {
     if (order) {
@@ -259,34 +273,34 @@ const OrderDetails = () => {
         assetAddress: order.baseAssetAddress,
         tokenId: order.baseAssetTokenId,
         chainId: order.chainId,
-      }).then(setData)
+      }).then(setData);
 
       resolveStatus({
         chainId: order.chainId,
         orderId: order.orderId,
-      }).then(setStatus)
+      }).then(setStatus);
     }
-  }, [order, tick])
+  }, [order, tick]);
 
   useEffect(() => {
     if (order) {
-      getActivitiesFromOrder(order.chainId, order.orderId).then(setActivities)
+      getActivitiesFromOrder(order.chainId, order.orderId).then(setActivities);
     }
-  }, [order])
+  }, [order]);
 
   useEffect(() => {
     if (order) {
       const fetchOwnerName = async () => {
-        const name = await getOwnerName(order.ownerAddress)
-        setSellerName(`@${name}`)
-      }
-      fetchOwnerName()
+        const name = await getOwnerName(order.ownerAddress);
+        setSellerName(`@${name}`);
+      };
+      fetchOwnerName();
     }
-  }, [order])
+  }, [order]);
 
   const increaseTick = useCallback(() => {
-    setTick(tick + 1)
-  }, [tick])
+    setTick(tick + 1);
+  }, [tick]);
 
   const items = useMemo(() => {
     if (order && order.barterList.length > 0) {
@@ -294,41 +308,41 @@ const OrderDetails = () => {
         return {
           ...item,
           index,
-        }
-      })
+        };
+      });
 
       return list.filter((item) =>
         crossChain
           ? item.chainId !== order.chainId
           : item.chainId === order.chainId
-      )
+      );
     }
 
-    return []
-  }, [order, crossChain])
+    return [];
+  }, [order, crossChain]);
 
   const resolveColor = (chainId) => {
     switch (chainId) {
       case 80001:
-        return "purple"
+        return "purple";
       case 137:
-        return "purple"
+        return "purple";
       case 43113:
-        return "red"
+        return "red";
       case 43114:
-        return "red"
+        return "red";
       case 97:
-        return "yellow"
+        return "yellow";
       case 56:
-        return "yellow"
+        return "yellow";
       case 42:
-        return "blue"
+        return "blue";
       case 1:
-        return "blue"
+        return "blue";
       default:
-        return ""
+        return "";
     }
-  }
+  };
 
   const settings = {
     particle: {
@@ -346,7 +360,7 @@ const OrderDetails = () => {
       maxOpacity: 0.6,
       opacityTransitionTime: 10000,
     },
-  }
+  };
 
   const isPendingClaim = useMemo(() => {
     if (order && activities && activities.length > 0) {
@@ -354,20 +368,36 @@ const OrderDetails = () => {
         order.ownerAddress.toLowerCase() === account.toLowerCase() &&
         activities.find((item) => item.type === "claim")
       ) {
-        return true
+        return true;
       }
     }
-    return false
-  }, [activities, account, order])
+    return false;
+  }, [activities, account, order]);
 
   if (!order) {
-    return <Container>Loading...</Container>
+    return <Container>Loading...</Container>;
   }
 
-  const sellerLink = resolveBlockexplorerLink(order.chainId, order.ownerAddress)
+  const sellerLink = resolveBlockexplorerLink(
+    order.chainId,
+    order.ownerAddress
+  );
 
   return (
     <Container>
+      <Modal isOpen={fullImageVisible} toggle={toggleFullImage}>
+        {data ? (
+          <img
+            src={
+              data.metadata && data.metadata.image
+                ? data.metadata.image
+                : "https://via.placeholder.com/200x200"
+            }
+          />
+        ) : (
+          <Skeleton width="200px" height="200px" />
+        )}
+      </Modal>
       <MetaTags>
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
         <meta property="og:title" content={data && data.metadata.name} />
@@ -383,17 +413,16 @@ const OrderDetails = () => {
         <AssetDetails>
           <div>
             {data ? (
-              <Link to={`/orders/collection/${order.baseAssetAddress}`}>
-                <Image
-                  src={
-                    data.metadata && data.metadata.image
-                      ? data.metadata.image
-                      : "https://via.placeholder.com/200x200"
-                  }
-                  width="100%"
-                  height="220"
-                />
-              </Link>
+              <Image
+                src={
+                  data.metadata && data.metadata.image
+                    ? data.metadata.image
+                    : "https://via.placeholder.com/200x200"
+                }
+                width="100%"
+                height="220"
+                onClick={toggleFullImage}
+              />
             ) : (
               <Skeleton width="200px" height="200px" />
             )}
@@ -473,6 +502,12 @@ const OrderDetails = () => {
                 ).toLocaleString()}
               />
             </div>
+            <Link
+              to={`/orders/collection/${order.baseAssetAddress}`}
+              style={{ textDecoration: "none", color: "#ffff" }}
+            >
+              <ChevronsLeft /> go to collection
+            </Link>
           </div>
         </AssetDetails>
       </AssetDetailsContainer>
@@ -559,7 +594,7 @@ const OrderDetails = () => {
                     baseMetadata={data}
                     increaseTick={increaseTick}
                   />
-                )
+                );
               })}
             </div>
           </Tab>
@@ -575,8 +610,14 @@ const OrderDetails = () => {
           </Tab>
         </StyledTabs>
       </div>
-    </Container>
-  )
-}
 
-export default OrderDetails
+      <div style={{ marginTop: "100px" }}>
+        <hr />
+        <h4>Relevant Orders</h4>
+        <CarouselCard address={order.baseAssetAddress} />
+      </div>
+    </Container>
+  );
+};
+
+export default OrderDetails;
