@@ -175,9 +175,9 @@ const Jumbotron = () => {
             <Link to="/createOrder">
               Sell
             </Link>
-            <Link to="/createCollection">
+            {/* <Link to="/createCollection">
               Create Collection
-            </Link>
+            </Link> */}
             {` `}|{` `}
             <a target="_blank" href="https://docs.tamago.finance/tamago-finance/multi-chain-marketplace">
               Docs

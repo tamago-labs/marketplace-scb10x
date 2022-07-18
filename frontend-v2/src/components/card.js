@@ -147,6 +147,39 @@ export const AssetCard = ({
   </BaseAssetCardContainer>
 );
 
+const CollectionCardContainer = styled.div`
+  
+
+  width: 100%;
+  padding: 10px;
+  padding-left: 0px;
+  padding-top: 5px;
+
+  >.--card {
+    display: flex;
+    color: black;
+    background-color: white;
+    border-radius: 6px;
+    min-height: 60px;
+    border: 1px solid transparent;
+    padding: 12px;
+    box-shadow: 5px 7px black;
+    
+  }
+
+`
+
+export const CollectionCard = ({
+  children,
+  image,
+}) => (
+  <CollectionCardContainer>
+    <div className="--card">
+      {children}
+    </div>
+  </CollectionCardContainer>
+)
+
 const PairAssetCardContainer = styled(BaseAssetCardContainer)`
   width: 170px;
   min-height: 275px;

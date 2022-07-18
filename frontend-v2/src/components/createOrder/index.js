@@ -11,78 +11,78 @@ import useOrder from "../../hooks/useOrder"
 
 
 export const MOCKS = [
-    {
-        chainId: 42,
-        contractAddress: "0x8F6e0835CCA21892d5296D58EB0C8206B623BF2B",
-        tokenType: 0,
-        symbol: "USDC",
-        decimals: 6,
-        tokens: []
-    },
-    {
-        chainId: 42,
-        contractAddress: "0x8afc69A0C245f4d84Ba160F19df1F76a44991d65",
-        tokenType: 0,
-        symbol: "USDT",
-        decimals: 6,
-        tokens: []
-    },
-    {
-        chainId: 42,
-        contractAddress: "0xC926A3F31Ad3db8f27Bbfe4aD42a19A0BCaD8059",
-        tokenType: 0,
-        symbol: "DAI",
-        decimals: 18,
-        tokens: []
-    },
-    {
-        chainId: 80001,
-        contractAddress: "0x553588e084604a2677e10E46ea0a8A8e9D859146",
-        tokenType: 0,
-        symbol: "USDC",
-        decimals: 6,
-        tokens: []
-    },
-    {
-        chainId: 80001,
-        contractAddress: "0x42209A0A2a3D80Ad48B7D25fC6a61ad355901484",
-        tokenType: 0,
-        symbol: "DAI",
-        decimals: 18,
-        tokens: []
-    },
-    {
-        chainId: 97,
-        contractAddress: "0x65e38111d8e2561aDC0E2EA1eeA856E6a43dC892",
-        tokenType: 0,
-        symbol: "USDC",
-        decimals: 6,
-        tokens: []
-    },
-    {
-        chainId: 97,
-        contractAddress: "0x553588e084604a2677e10E46ea0a8A8e9D859146",
-        tokenType: 0,
-        symbol: "DAI",
-        decimals: 18,
-        tokens: []
-    },
-    {
-        chainId: 43113,
-        contractAddress: "0x65e38111d8e2561aDC0E2EA1eeA856E6a43dC892",
-        tokenType: 0,
-        symbol: "USDC",
-        decimals: 6,
-        tokens: []
-    },
-    {
-        chainId: 43113,
-        contractAddress: "0x553588e084604a2677e10E46ea0a8A8e9D859146",
-        tokenType: 0,
-        symbol: "DAI",
-        decimals: 18,
-        tokens: []
-    }
+    // {
+    //     chainId: 42,
+    //     contractAddress: "0x8F6e0835CCA21892d5296D58EB0C8206B623BF2B",
+    //     tokenType: 0,
+    //     symbol: "USDC",
+    //     decimals: 6,
+    //     tokens: []
+    // },
+    // {
+    //     chainId: 42,
+    //     contractAddress: "0x8afc69A0C245f4d84Ba160F19df1F76a44991d65",
+    //     tokenType: 0,
+    //     symbol: "USDT",
+    //     decimals: 6,
+    //     tokens: []
+    // },
+    // {
+    //     chainId: 42,
+    //     contractAddress: "0xC926A3F31Ad3db8f27Bbfe4aD42a19A0BCaD8059",
+    //     tokenType: 0,
+    //     symbol: "DAI",
+    //     decimals: 18,
+    //     tokens: []
+    // },
+    // {
+    //     chainId: 80001,
+    //     contractAddress: "0x553588e084604a2677e10E46ea0a8A8e9D859146",
+    //     tokenType: 0,
+    //     symbol: "USDC",
+    //     decimals: 6,
+    //     tokens: []
+    // },
+    // {
+    //     chainId: 80001,
+    //     contractAddress: "0x42209A0A2a3D80Ad48B7D25fC6a61ad355901484",
+    //     tokenType: 0,
+    //     symbol: "DAI",
+    //     decimals: 18,
+    //     tokens: []
+    // },
+    // {
+    //     chainId: 97,
+    //     contractAddress: "0x65e38111d8e2561aDC0E2EA1eeA856E6a43dC892",
+    //     tokenType: 0,
+    //     symbol: "USDC",
+    //     decimals: 6,
+    //     tokens: []
+    // },
+    // {
+    //     chainId: 97,
+    //     contractAddress: "0x553588e084604a2677e10E46ea0a8A8e9D859146",
+    //     tokenType: 0,
+    //     symbol: "DAI",
+    //     decimals: 18,
+    //     tokens: []
+    // },
+    // {
+    //     chainId: 43113,
+    //     contractAddress: "0x65e38111d8e2561aDC0E2EA1eeA856E6a43dC892",
+    //     tokenType: 0,
+    //     symbol: "USDC",
+    //     decimals: 6,
+    //     tokens: []
+    // },
+    // {
+    //     chainId: 43113,
+    //     contractAddress: "0x553588e084604a2677e10E46ea0a8A8e9D859146",
+    //     tokenType: 0,
+    //     symbol: "DAI",
+    //     decimals: 18,
+    //     tokens: []
+    // }
 ]
 
 const Description = styled.p`

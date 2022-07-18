@@ -12,7 +12,7 @@ import {
 } from "../helper";
 import WalletsModal from "./modals/wallets"
 
-const Container = styled.div.attrs(() => ({ className: "container" }))`
+const Container = styled.div.attrs(() => ({ }))`
     width: 100%;
     display: flex;
     align-items: center;
@@ -29,8 +29,7 @@ const Container = styled.div.attrs(() => ({ className: "container" }))`
 
 const Brand = styled.div` 
     
-    padding: 10px 0px;
-    
+    padding: 10px;
     width: 125px;
     a {
         font-weight: 700;
@@ -83,13 +82,11 @@ const Header = () => {
                         20x
                     </Link>
                 </Brand>
-
-                <div style={{ marginTop: "auto", paddingBottom: "10px" }}>
+                <div style={{ margin: "auto" }}>
                     <Link to="/faucet">
                         {` `}Faucet
                     </Link>
                 </div>
-
                 <Buttons>
                     {!account &&
                         (
