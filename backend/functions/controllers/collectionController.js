@@ -8,6 +8,7 @@ const { supportedChains } = require("../constants")
 const { OWNER_ABI } = require("../abi")
 const { WHITELISTED_ADDRESSES } = require("../constants")
 const { dbIsBanned } = require("../models/collections")
+const { dbGetBannedOrderIds } = require("../models/orders")
 
 
 
@@ -118,10 +119,14 @@ exports.searchByCollections = async (req, res, next) => {
       return res.status(404).json({ message: "Sorry, we could not find items matching your search." })
     } else {
       //reducing orderIds to an array
-      const orderIds = searchResults.hits.reduce((acc, result) => {
+      let orderIds = searchResults.hits.reduce((acc, result) => {
         console.log({ acc })
         return [...acc, ...result.activeOrders]
       }, [])
+
+      //filtering out orders from banned collections
+      const bannedOrders = await dbGetBannedOrderIds()
+      orderIds = orderIds.filter(order => !(bannedOrders.includes(order)))
 
       orderIds.sort((a, b) => b - a)
       const results = []
