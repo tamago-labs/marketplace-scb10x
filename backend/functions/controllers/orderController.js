@@ -6,6 +6,7 @@ const { db } = require("../firebase")
 const { sgMail, msg } = require("../sendgrid")
 const { composeOrderConfirm } = require("../utils/emailComposer")
 const { CLIENT_BASE } = require("../constants")
+const { dbGetBannedOrderIds } = require("../models/orders")
 
 exports.getOrders = async (req, res, next) => {
   console.log("get all orders...")
@@ -16,31 +17,51 @@ exports.getOrders = async (req, res, next) => {
 
     let allOrders
     let totalCount
+    let totalOrders
+    let result
     // console.log(queries)
+
     if (chainQuery) {
       // console.log(chainQuery)
       const chains = chainQuery.split(',')
       // console.log(chains)
-      // converting strings to number
       chains.map((chain, index) => {
         chains[index] = +chain
       })
       // console.log(chains)
       allOrders = await db.collection("orders").where("chainId", "in", chains).where('version', '==', 1).where('visible', '==', true).orderBy('timestamp', 'desc').limit(+limit || 500).offset(+offset || 0).get();
 
-      const totalOrders = await db.collection("orders").where("chainId", "in", chains).where('version', '==', 1).where('visible', '==', true).get()
-      totalCount = totalOrders.size
-      // console.log(totalCollections.size)
+      totalOrders = await db.collection("orders").where("chainId", "in", chains).where('version', '==', 1).where('visible', '==', true).get()
+
 
     } else {
       allOrders = await db.collection("orders").where('version', '==', 1).where('visible', '==', true).orderBy('timestamp', 'desc').limit(+limit || 500).offset(+offset || 0).get();
-      const totalOrders = await db.collection("orders").where('version', '==', 1).where('visible', '==', true).get()
-      totalCount = totalOrders.size
+      totalOrders = await db.collection("orders").where('version', '==', 1).where('visible', '==', true).get()
     }
-    const result = allOrders.docs.map((doc, index) => ({
-      ...doc.data(),
-      queryIndex: (+offset || 0) + index + 1
-    }))
+
+    // let result = allOrders.docs.map((doc, index) => ({
+    //   ...doc.data(),
+    //   queryIndex: (+offset || 0) + index + 1
+    // }))
+
+    result = allOrders.docs.map(doc => ({ ...doc.data() }))
+    totalOrders = totalOrders.docs.map(doc => ({ ...doc.data() }))
+
+
+
+    //filtering out banned order ids
+    const bannedOrders = await dbGetBannedOrderIds()
+
+    totalOrders = totalOrders.filter(doc =>
+      !(bannedOrders.includes(doc.orderId)
+      ))
+
+    result = result.filter(doc =>
+      !(bannedOrders.includes(doc.orderId))
+    )
+
+    totalCount = totalOrders.length
+    result = result.map((doc, index) => ({ ...doc, queryIndex: (+offset || 0) + index + 1 }))
     // console.log(result)
     res.status(200).json({ status: "ok", orders: result, totalCount })
   } catch (error) {
