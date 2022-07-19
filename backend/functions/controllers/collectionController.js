@@ -279,3 +279,93 @@ exports.updateCollection = async (req, res, next) => {
     next(error)
   }
 }
+
+exports.banCollection = async (req, res, next) => {
+  try {
+    const { chainId, address, message, signature } = req.body
+
+    //message and signature for authentication
+    if (!message || !signature) {
+      return res.status(400).json({ message: "Message and signature are required for authentication." })
+    }
+    const recoveredAddress = recoverAddressFromMessageAndSignature(message, signature).toLowerCase()
+
+    if (WHITELISTED_ADDRESSES.findIndex((item) => item.toLowerCase() === recoveredAddress) === -1) {
+      return res.status(403).json({ message: "Access denied." })
+    }
+
+    if (!chainId || !address) {
+      return res.status(400).json({ message: "Some required inputs missing." })
+    }
+
+    //validate valid wallet address
+    if (!validator.isEthereumAddress(address)) {
+      return res.status(400).json({ message: "Invalid wallet address." })
+    }
+    //validate that chain is supported
+    if (!supportedChains.includes(Number(chainId))) {
+      return res.status(400).json({ message: "Invalid chain or chain not supported." })
+    }
+
+    let collection = await db.collection("collections").where("address", "==", address).where("chainId", "==", chainId).get()
+
+    if (collection.empty) {
+      return res.status(404).json({ message: "Target collection does not exist." })
+    }
+    let DocID = ""
+    collection.forEach(doc => {
+      DocID = doc.id
+    });
+    collection = collection.docs.map(doc => ({ ...doc.data() }))
+    if (collection.isBanned) {
+      return res.status(400).json({ message: "Error. The collection is already banned." })
+    }
+    await db.collection("collections").doc(DocID).set({ isBanned: true }, { merge: true })
+    return res.status(200).json({ message: "collection banned" })
+  } catch (error) {
+    next(error)
+  }
+}
+
+exports.unBanCollection = async (req, res, next) => {
+  try {
+    const { chainId, address, message, signature } = req.body
+
+    //message and signature for authentication
+    if (!message || !signature) {
+      return res.status(400).json({ message: "Message and signature are required for authentication." })
+    }
+    const recoveredAddress = recoverAddressFromMessageAndSignature(message, signature).toLowerCase()
+
+    if (WHITELISTED_ADDRESSES.findIndex((item) => item.toLowerCase() === recoveredAddress) === -1) {
+      return res.status(403).json({ message: "Access denied." })
+    }
+
+    //validate valid wallet address
+    if (!validator.isEthereumAddress(address)) {
+      return res.status(400).json({ message: "Invalid wallet address." })
+    }
+    //validate that chain is supported
+    if (!supportedChains.includes(Number(chainId))) {
+      return res.status(400).json({ message: "Invalid chain or chain not supported." })
+    }
+
+    const collection = await db.collection("collections").where("address", "==", address).where("chainId", "==", chainId).get()
+
+    if (collection.empty) {
+      return res.status(404).json({ message: "Target collection does not exist." })
+    }
+    let DocID = ""
+    collection.forEach(doc => {
+      DocID = doc.id
+    });
+    collection = collection.docs.map(doc => ({ ...doc.data() }))
+    if (!collection.isBanned) {
+      return res.status(400).json({ message: "Error. The collection is already not banned." })
+    }
+    await db.collection("collections").doc(DocID).set({ isBanned: false }, { merge: true })
+    return res.status(200).json({ message: "collection unbanned" })
+  } catch (error) {
+    next(error)
+  }
+}
