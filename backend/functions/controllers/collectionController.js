@@ -7,6 +7,7 @@ const { algoliaClient } = require("../services/algolia")
 const { supportedChains } = require("../constants")
 const { OWNER_ABI } = require("../abi")
 const { WHITELISTED_ADDRESSES } = require("../constants")
+const { dbIsBanned } = require("../models/collections")
 
 
 
@@ -24,16 +25,15 @@ exports.getCollections = async (req, res, next) => {
       chains[index] = +chain
     })
 
-    const totalCollections = await db.collection("collections").where("chainId", "in", chains).get()
+    const totalCollections = await db.collection("collections").where("chainId", "in", chains).where("isBanned", "==", false).get()
     const totalCount = totalCollections.size
     // console.log(totalCollections.size)
 
-    let collections = await db.collection("collections").where("chainId", "in", chains).orderBy("activeCount", "desc").limit(+limit || 10).offset(+offset || 0).get()
+    let collections = await db.collection("collections").where("chainId", "in", chains).where("isBanned", "==", false).orderBy("activeCount", "desc").limit(+limit || 10).offset(+offset || 0).get()
 
     if (collections.empty) {
       return res.status(204).json({ message: "empty query return" })
     }
-
     collections = collections.docs.map((doc, index) => ({
       ...doc.data(),
       queryIndex: (+offset || 0) + index + 1
@@ -157,6 +157,12 @@ exports.updateCollection = async (req, res, next) => {
     if (!address || !chainId) {
       return res.status(400).json({ message: "One or more required inputs are missing." })
     }
+
+    //preventing banned collection to be updated
+    if (await dbIsBanned(address, chainId)) {
+      return res.status(400).json({ message: "Hold on, the collection is currently banned and can't be edited" })
+    }
+
     //validate valid wallet address
     if (!validator.isEthereumAddress(address)) {
       return res.status(400).json({ message: "Invalid wallet address." })

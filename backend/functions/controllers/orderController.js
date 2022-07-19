@@ -6,7 +6,8 @@ const { db } = require("../firebase")
 const { sgMail, msg } = require("../sendgrid")
 const { composeOrderConfirm } = require("../utils/emailComposer")
 const { CLIENT_BASE } = require("../constants")
-const { dbGetBannedOrderIds } = require("../models/orders")
+const { dbGetBannedOrderIds } = require("../models/orders");
+const { dbIsBanned } = require("../models/collections");
 
 exports.getOrders = async (req, res, next) => {
   console.log("get all orders...")
@@ -98,6 +99,12 @@ exports.createOrder = async (req, res, next) => {
       return res.status(400).json({ message: " req.body missing " })
     }
     console.log(req.body)
+
+    //prevent users from creating orders using tokens from banned collections
+    const { chainId, baseAssetAddress } = req.body
+    if (await dbIsBanned(baseAssetAddress, chainId)) {
+      return res.status(400).json({ message: "Hold on! The base token belongs to a collection that is currently banned. " })
+    }
 
     //getting all orders
     const allOrders = await db.collection("orders").get();
@@ -311,7 +318,7 @@ exports.getOrdersByOwner = async (req, res, next) => {
     }
     // console.log(req.params)
     const { owner } = req.params
-    const orders = await db.collection("orders")
+    let orders = await db.collection("orders")
       .where('version', '==', 1)
       .where('visible', '==', true)
       .where("ownerAddress", "==", owner)
@@ -321,11 +328,16 @@ exports.getOrdersByOwner = async (req, res, next) => {
     if (orders.empty) {
       return res.status(400).json({ message: "orders with this creator address does not exist" })
     }
-    const result = orders.docs.map((doc) => ({
+    orders = orders.docs.map((doc) => ({
       ...doc.data(),
     }))
-    console.log(result)
-    res.status(200).json({ status: "ok", orders: result })
+
+    // filtering orders from banned collections
+    const bannedOrders = await dbGetBannedOrderIds
+    orders = orders.filter(doc => !(bannedOrders.includes(doc.orderId)))
+
+    // console.log(result)
+    res.status(200).json({ status: "ok", orders })
 
   } catch (error) {
     next(error)

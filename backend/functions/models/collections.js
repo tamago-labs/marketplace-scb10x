@@ -14,3 +14,12 @@ exports.dbGetBannedCollections = async () => {
     console.log(error)
   }
 }
+
+exports.dbIsBanned = async (address, chainId) => {
+  try {
+    let collection = await db.collection("collections").where("chainId", "==", chainId).where("address", "==", address).where("isBanned", "==", true).get()
+    return !collection.empty
+  } catch (error) {
+    console.log(error)
+  }
+}
