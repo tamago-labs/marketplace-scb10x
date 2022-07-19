@@ -310,7 +310,7 @@ exports.banCollection = async (req, res, next) => {
     let collection = await db.collection("collections").where("address", "==", address).where("chainId", "==", chainId).get()
 
     if (collection.empty) {
-      return res.status(404).json({ message: "Target collection does not exist." })
+      return res.status(404).json({ status: "ok", message: "Target collection does not exist." })
     }
     let DocID = ""
     collection.forEach(doc => {
@@ -364,7 +364,7 @@ exports.unBanCollection = async (req, res, next) => {
       return res.status(400).json({ message: "Error. The collection is already not banned." })
     }
     await db.collection("collections").doc(DocID).set({ isBanned: false }, { merge: true })
-    return res.status(200).json({ message: "collection unbanned" })
+    return res.status(200).json({ status: "ok", message: "collection unbanned" })
   } catch (error) {
     next(error)
   }
