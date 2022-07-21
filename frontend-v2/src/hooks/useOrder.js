@@ -307,6 +307,9 @@ const useOrder = () => {
 
     output = output.filter(item => swapCompleted.indexOf(item.cid) === -1)
 
+    // TODO: check cancel events
+    
+
     return output.sort(function (a, b) {
       return b.timestamp - a.timestamp;
     });

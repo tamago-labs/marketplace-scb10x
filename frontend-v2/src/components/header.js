@@ -6,13 +6,17 @@ import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom"
 import { Button } from "./button"
 import useEagerConnect from "../hooks/useEagerConnect"
+import SwitchChainModal from "../components/modals/switchChain"
 import useInactiveListener from "../hooks/useInactiveListener"
 import {
-    shortAddress
+    shortAddress,
+    resolveNetworkName,
+    resolveNetworkIconUrl
 } from "../helper";
+import { supportedChainIds } from "../config/connectors"
 import WalletsModal from "./modals/wallets"
 
-const Container = styled.div.attrs(() => ({ }))`
+const Container = styled.div.attrs(() => ({}))`
     width: 100%;
     display: flex;
     align-items: center;
@@ -30,14 +34,26 @@ const Container = styled.div.attrs(() => ({ }))`
 const Brand = styled.div` 
     
     padding: 10px;
-    width: 125px;
+    width: 300px;
     a {
         font-weight: 700;
         text-shadow: 3px 3px black;
-        font-size: 24px;
+        font-size: 20px;
         color: inherit;
         text-decoration: none;
     }
+
+
+`
+
+const Menu = styled.div`
+    margin: auto;
+
+
+@media only screen and (max-width: 600px) {
+    text-align: center;
+}
+
 `
 
 const Address = styled.div` 
@@ -47,16 +63,68 @@ const Address = styled.div`
     text-shadow: 3px 3px black;
 `
 
-const Buttons = styled.div`
-    width: 125px;
+const Buttons = styled.div` 
     text-align: right;
+    width: 300px;
+    
 `
+
+const NetworkBadge = styled(({ className, toggleSwitchChain, chainId }) => {
+    return (
+        <div className={className}>
+            <Button
+                onClick={toggleSwitchChain}
+            >
+                <div className="image-container">
+                    <img
+                        style={{ height: "100%" }}
+                        src={resolveNetworkIconUrl(chainId)}
+                    />
+                </div>
+                <div>
+                    {resolveNetworkName(chainId)}
+                </div>
+            </Button>
+        </div>
+    );
+})`
+    
+
+    >button {
+        display: flex;
+        flex-direction: row;
+        >div {
+            margin: auto;
+        }
+        margin-right: 10px;
+    }
+
+    .image-container {
+      height: 30px;
+      width: 30px;
+      margin: auto;
+      border-radius: 50%;
+      overflow: hidden;
+      transform: translateX(-20%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    @media only screen and (max-width: 600px) {
+        display: none;
+    }
+ 
+  `;
 
 const Header = () => {
 
     const navigate = useNavigate();
 
+    const [switchChainVisible, setSwitchChainVisible] = useState(false);
     const { account, chainId, library } = useWeb3React()
+
+    const toggleSwitchChain = () => setSwitchChainVisible(!switchChainVisible);
 
     const [walletLoginVisible, setWalletLoginVisible] = useState(false)
     const [open, setOpen] = useState()
@@ -69,24 +137,33 @@ const Header = () => {
     // handle logic to connect in reaction to certain events on the injected ethereum provider, if it exists
     useInactiveListener(!triedEager)
 
+    const isSupported = chainId && supportedChainIds.indexOf(chainId) !== -1
+
     return (
         <>
             <WalletsModal
                 toggleWalletConnect={toggleWalletConnect}
                 walletLoginVisible={walletLoginVisible}
             />
+            <SwitchChainModal
+                toggleModal={toggleSwitchChain}
+                modalVisible={switchChainVisible}
+            />
             <Container>
-
                 <Brand>
                     <Link to="/">
-                        20x
+                        Tamago NFT Marketplace
                     </Link>
                 </Brand>
-                <div style={{ margin: "auto" }}>
+                <Menu>
+                    <Link to="/launchpad">
+                        {` `}Launchpad
+                    </Link>
+                    {` `}
                     <Link to="/faucet">
                         {` `}Faucet
                     </Link>
-                </div>
+                </Menu>
                 <Buttons>
                     {!account &&
                         (
@@ -97,10 +174,17 @@ const Header = () => {
                     }
                     {account &&
                         (
-
-                            <Button onClick={() => navigate("/create")}>
-                                Sell
-                            </Button>
+                            <div style={{ display: "flex", flexDirection: "row" }}>
+                                <NetworkBadge
+                                    chainId={chainId}
+                                    toggleSwitchChain={toggleSwitchChain}
+                                />
+                                {isSupported && (
+                                    <Button onClick={() => navigate("/create")}>
+                                        Sell
+                                    </Button>
+                                )}
+                            </div>
                         )
                     }
                 </Buttons>

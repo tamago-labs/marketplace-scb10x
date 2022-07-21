@@ -153,7 +153,7 @@ const To = ({
 
     }, [chainId])
 
-    const [activeTab, setActiveTab] = useState("1")
+    const [activeTab, setActiveTab] = useState("2")
 
     const toggle = (tab) => {
         setActiveTab(tab)
@@ -164,18 +164,18 @@ const To = ({
             <Nav tabs>
                 <NavItem>
                     <NavLink
-                        active={activeTab === "1"}
-                        onClick={() => { toggle('1'); }}
-                    >
-                        NFT
-                    </NavLink>
-                </NavItem>
-                <NavItem>
-                    <NavLink
                         active={activeTab === "2"}
                         onClick={() => { toggle('2'); }}
                     >
                         ERC-20
+                    </NavLink>
+                </NavItem>
+                <NavItem>
+                    <NavLink
+                        active={activeTab === "1"}
+                        onClick={() => { toggle('1'); }}
+                    >
+                        NFT
                     </NavLink>
                 </NavItem>
             </Nav>
@@ -251,7 +251,7 @@ const To = ({
                 </TabPane>
                 <TabPane tabId="2">
                     <div>
-                        
+
 
                         {tokens.map((token, index) => {
                             const token_hash = `${token.chainId}${token.contractAddress}`
