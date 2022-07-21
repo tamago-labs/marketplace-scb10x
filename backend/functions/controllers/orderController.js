@@ -102,6 +102,7 @@ exports.createOrder = async (req, res, next) => {
       "visible": false,
       "canceled": false,
       "locked": false,
+      "isMigrated": false,
       "timestamp": Math.floor(new Date().valueOf() / 1000)
     }
 
