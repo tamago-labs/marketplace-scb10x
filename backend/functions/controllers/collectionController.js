@@ -33,7 +33,7 @@ exports.getCollections = async (req, res, next) => {
     let collections = await db.collection("collections").where("chainId", "in", chains).where("isBanned", "==", false).orderBy("activeCount", "desc").limit(+limit || 10).offset(+offset || 0).get()
 
     if (collections.empty) {
-      return res.status(204).json({ message: "empty query return" })
+      return res.status(200).json({ status: "ok", collections: [], totalCount })
     }
     collections = collections.docs.map((doc, index) => ({
       ...doc.data(),

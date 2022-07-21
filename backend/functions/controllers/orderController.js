@@ -333,7 +333,7 @@ exports.getOrdersByOwner = async (req, res, next) => {
     }))
 
     // filtering orders from banned collections
-    const bannedOrders = await dbGetBannedOrderIds
+    const bannedOrders = await dbGetBannedOrderIds()
     orders = orders.filter(doc => !(bannedOrders.includes(doc.orderId)))
 
     // console.log(result)
