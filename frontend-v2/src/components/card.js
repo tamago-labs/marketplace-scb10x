@@ -148,14 +148,18 @@ export const AssetCard = ({
 );
 
 const CollectionCardContainer = styled.div`
-  
+        
+  a {
+    color: inherit;
+  }
 
   width: 100%;
   padding: 10px;
   padding-left: 0px;
   padding-top: 5px;
+  cursor: pointer;
 
-  >.--card {
+  .--card {
     display: flex;
     color: black;
     background-color: white;
@@ -172,11 +176,15 @@ const CollectionCardContainer = styled.div`
 export const CollectionCard = ({
   children,
   image,
+  chain,
+  address
 }) => (
   <CollectionCardContainer>
-    <div className="--card">
-      {children}
-    </div>
+    <Link to={`/collection/${chain}/${address}`}>
+      <div className="--card">
+        {children}
+      </div>
+    </Link>
   </CollectionCardContainer>
 )
 

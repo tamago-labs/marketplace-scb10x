@@ -2,9 +2,9 @@
 import styled from "styled-components";
 
 export const Options = styled(
-    ({ className, options, setter, getter }) => {
+    ({ className, options, setter, getter, disabled }) => {
         return (
-            <select className={className} value={getter} onChange={(e) => setter(Number(e.target.value))} id="cars" name="cars">
+            <select className={className} disabled={disabled} value={getter} onChange={(e) => setter(Number(e.target.value))} id="cars" name="cars">
                 
                 {options.map((v, i) => {
                     return (

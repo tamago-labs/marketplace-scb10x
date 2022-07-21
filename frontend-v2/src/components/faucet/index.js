@@ -225,15 +225,12 @@ const Faucet = () => {
                                 </div>
                             </NFTCard>
                         )
-                    })
-
-                    }
+                    })}
                 </ListContainer>
 
                 {disabled && <div style={{ textAlign: "center", fontWeight: "600", height: "40px" }}>
                     {disabled && "Invalid network!"}
                 </div>}
-
 
             </MainPanel>
         </Container>

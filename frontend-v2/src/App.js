@@ -8,6 +8,8 @@ import Header from "./components/header"
 import Home from "./components/home"
 import Footer from "./components/footer"
 import OrderDetails from "./components/orderDetails"
+import Launchpad from "./components/launchpad";
+import Collection from "./components/collection"
 
 import "react-toastify/dist/ReactToastify.css";
 
@@ -41,9 +43,10 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/faucet" element={<Faucet />} />
         <Route path="/create" element={<CreateOrder />} />
-        <Route path="/order/:id" element={<OrderDetails />} />
+        <Route path="/order/:id" element={<OrderDetails />}/>
+        <Route path="/launchpad" element={<Launchpad />} />
+        <Route path="/collection/:chain/:address" element={<Collection />} />
       </Routes>
-
       <Footer/>
     </div>
   );

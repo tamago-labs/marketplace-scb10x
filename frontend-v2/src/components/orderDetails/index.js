@@ -9,7 +9,7 @@ import useOrder from "../../hooks/useOrder"
 import { Row, Col } from "reactstrap"
 import { resolveNetworkName, shortAddress, shorterName } from "../../helper"
 import { PairAssetCard } from "../card"
-import SwapModal from "../modal/swapModal"
+import SwapModal from "../modals/swapModal"
 import { useERC1155 } from "../../hooks/useERC1155"
 import { useERC20 } from "../../hooks/useERC20"
 import { useERC721 } from "../../hooks/useERC721"
@@ -27,6 +27,7 @@ const Image = styled.img`
 const ImageContainer = styled.div`
     overflow: hidden;
     border-radius: 12px;
+    background: #CBC3E3;
     
 `
 
