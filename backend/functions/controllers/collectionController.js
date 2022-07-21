@@ -271,6 +271,7 @@ exports.updateCollection = async (req, res, next) => {
         activeCount: 0,
         fulfilledOrders: [],
         fulfilledCount: 0,
+        isBanned: false,
         lastEditedBy: recoveredAddress
       }
       console.log({ ...collectionDoc, ...newData })
