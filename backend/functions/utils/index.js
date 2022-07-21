@@ -349,6 +349,10 @@ const convertDecimalToHexadecimal = (number) => {
   return "0x" + number.toString(16)
 }
 
+const btoa = (string) => {
+  return Buffer.from(string, 'binary').toString('base64');
+};
+
 module.exports = {
   getMetadata,
   generateRelayMessages,
@@ -356,5 +360,6 @@ module.exports = {
   getOwnerName,
   getRpcUrl,
   recoverAddressFromMessageAndSignature,
-  convertDecimalToHexadecimal
+  convertDecimalToHexadecimal,
+  btoa
 }
