@@ -7,6 +7,8 @@ const { algoliaClient } = require("../services/algolia")
 const { supportedChains } = require("../constants")
 const { OWNER_ABI } = require("../abi")
 const { WHITELISTED_ADDRESSES } = require("../constants")
+const { dbIsBanned } = require("../models/collections")
+const { dbGetBannedOrderIds } = require("../models/orders")
 
 
 
@@ -24,16 +26,15 @@ exports.getCollections = async (req, res, next) => {
       chains[index] = +chain
     })
 
-    const totalCollections = await db.collection("collections").where("chainId", "in", chains).get()
+    const totalCollections = await db.collection("collections").where("chainId", "in", chains).where("isBanned", "==", false).get()
     const totalCount = totalCollections.size
     // console.log(totalCollections.size)
 
-    let collections = await db.collection("collections").where("chainId", "in", chains).orderBy("activeCount", "desc").limit(+limit || 10).offset(+offset || 0).get()
+    let collections = await db.collection("collections").where("chainId", "in", chains).where("isBanned", "==", false).orderBy("activeCount", "desc").limit(+limit || 10).offset(+offset || 0).get()
 
     if (collections.empty) {
-      return res.status(204).json({ message: "empty query return" })
+      return res.status(200).json({ status: "ok", collections: [], totalCount })
     }
-
     collections = collections.docs.map((doc, index) => ({
       ...doc.data(),
       queryIndex: (+offset || 0) + index + 1
@@ -118,10 +119,14 @@ exports.searchByCollections = async (req, res, next) => {
       return res.status(404).json({ message: "Sorry, we could not find items matching your search." })
     } else {
       //reducing orderIds to an array
-      const orderIds = searchResults.hits.reduce((acc, result) => {
+      let orderIds = searchResults.hits.reduce((acc, result) => {
         console.log({ acc })
         return [...acc, ...result.activeOrders]
       }, [])
+
+      //filtering out orders from banned collections
+      const bannedOrders = await dbGetBannedOrderIds()
+      orderIds = orderIds.filter(order => !(bannedOrders.includes(order)))
 
       orderIds.sort((a, b) => b - a)
       const results = []
@@ -157,6 +162,12 @@ exports.updateCollection = async (req, res, next) => {
     if (!address || !chainId) {
       return res.status(400).json({ message: "One or more required inputs are missing." })
     }
+
+    //preventing banned collection to be updated
+    if (await dbIsBanned(address, chainId)) {
+      return res.status(400).json({ message: "Hold on, the collection is currently banned and can't be edited" })
+    }
+
     //validate valid wallet address
     if (!validator.isEthereumAddress(address)) {
       return res.status(400).json({ message: "Invalid wallet address." })
@@ -260,6 +271,7 @@ exports.updateCollection = async (req, res, next) => {
         activeCount: 0,
         fulfilledOrders: [],
         fulfilledCount: 0,
+        isBanned: false,
         lastEditedBy: recoveredAddress
       }
       console.log({ ...collectionDoc, ...newData })
@@ -275,6 +287,96 @@ exports.updateCollection = async (req, res, next) => {
       await db.collection("collections").doc(DocID).set({ ...newData }, { merge: true })
       return res.status(200).json({ status: "ok", updated: newData })
     }
+  } catch (error) {
+    next(error)
+  }
+}
+
+exports.banCollection = async (req, res, next) => {
+  try {
+    const { chainId, address, message, signature } = req.body
+
+    //message and signature for authentication
+    if (!message || !signature) {
+      return res.status(400).json({ message: "Message and signature are required for authentication." })
+    }
+    const recoveredAddress = recoverAddressFromMessageAndSignature(message, signature).toLowerCase()
+
+    if (WHITELISTED_ADDRESSES.findIndex((item) => item.toLowerCase() === recoveredAddress) === -1) {
+      return res.status(403).json({ message: "Access denied." })
+    }
+
+    if (!chainId || !address) {
+      return res.status(400).json({ message: "Some required inputs missing." })
+    }
+
+    //validate valid wallet address
+    if (!validator.isEthereumAddress(address)) {
+      return res.status(400).json({ message: "Invalid wallet address." })
+    }
+    //validate that chain is supported
+    if (!supportedChains.includes(Number(chainId))) {
+      return res.status(400).json({ message: "Invalid chain or chain not supported." })
+    }
+
+    let collection = await db.collection("collections").where("address", "==", address).where("chainId", "==", chainId).get()
+
+    if (collection.empty) {
+      return res.status(404).json({ status: "ok", message: "Target collection does not exist." })
+    }
+    let DocID = ""
+    collection.forEach(doc => {
+      DocID = doc.id
+    });
+    collection = collection.docs.map(doc => ({ ...doc.data() }))
+    if (collection.isBanned) {
+      return res.status(400).json({ message: "Error. The collection is already banned." })
+    }
+    await db.collection("collections").doc(DocID).set({ isBanned: true }, { merge: true })
+    return res.status(200).json({ message: "collection banned" })
+  } catch (error) {
+    next(error)
+  }
+}
+
+exports.unBanCollection = async (req, res, next) => {
+  try {
+    const { chainId, address, message, signature } = req.body
+
+    //message and signature for authentication
+    if (!message || !signature) {
+      return res.status(400).json({ message: "Message and signature are required for authentication." })
+    }
+    const recoveredAddress = recoverAddressFromMessageAndSignature(message, signature).toLowerCase()
+
+    if (WHITELISTED_ADDRESSES.findIndex((item) => item.toLowerCase() === recoveredAddress) === -1) {
+      return res.status(403).json({ message: "Access denied." })
+    }
+
+    //validate valid wallet address
+    if (!validator.isEthereumAddress(address)) {
+      return res.status(400).json({ message: "Invalid wallet address." })
+    }
+    //validate that chain is supported
+    if (!supportedChains.includes(Number(chainId))) {
+      return res.status(400).json({ message: "Invalid chain or chain not supported." })
+    }
+
+    const collection = await db.collection("collections").where("address", "==", address).where("chainId", "==", chainId).get()
+
+    if (collection.empty) {
+      return res.status(404).json({ message: "Target collection does not exist." })
+    }
+    let DocID = ""
+    collection.forEach(doc => {
+      DocID = doc.id
+    });
+    collection = collection.docs.map(doc => ({ ...doc.data() }))
+    if (!collection.isBanned) {
+      return res.status(400).json({ message: "Error. The collection is already not banned." })
+    }
+    await db.collection("collections").doc(DocID).set({ isBanned: false }, { merge: true })
+    return res.status(200).json({ status: "ok", message: "collection unbanned" })
   } catch (error) {
     next(error)
   }

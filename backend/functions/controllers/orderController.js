@@ -6,6 +6,8 @@ const { db } = require("../firebase")
 const { sgMail, msg } = require("../sendgrid")
 const { composeOrderConfirm } = require("../utils/emailComposer")
 const { CLIENT_BASE } = require("../constants")
+const { dbGetBannedOrderIds } = require("../models/orders");
+const { dbIsBanned } = require("../models/collections");
 
 exports.getOrders = async (req, res, next) => {
   console.log("get all orders...")
@@ -16,31 +18,51 @@ exports.getOrders = async (req, res, next) => {
 
     let allOrders
     let totalCount
+    let totalOrders
+    let result
     // console.log(queries)
+
     if (chainQuery) {
       // console.log(chainQuery)
       const chains = chainQuery.split(',')
       // console.log(chains)
-      // converting strings to number
       chains.map((chain, index) => {
         chains[index] = +chain
       })
       // console.log(chains)
       allOrders = await db.collection("orders").where("chainId", "in", chains).where('version', '==', 1).where('visible', '==', true).orderBy('timestamp', 'desc').limit(+limit || 500).offset(+offset || 0).get();
 
-      const totalOrders = await db.collection("orders").where("chainId", "in", chains).where('version', '==', 1).where('visible', '==', true).get()
-      totalCount = totalOrders.size
-      // console.log(totalCollections.size)
+      totalOrders = await db.collection("orders").where("chainId", "in", chains).where('version', '==', 1).where('visible', '==', true).get()
+
 
     } else {
       allOrders = await db.collection("orders").where('version', '==', 1).where('visible', '==', true).orderBy('timestamp', 'desc').limit(+limit || 500).offset(+offset || 0).get();
-      const totalOrders = await db.collection("orders").where('version', '==', 1).where('visible', '==', true).get()
-      totalCount = totalOrders.size
+      totalOrders = await db.collection("orders").where('version', '==', 1).where('visible', '==', true).get()
     }
-    const result = allOrders.docs.map((doc, index) => ({
-      ...doc.data(),
-      queryIndex: (+offset || 0) + index + 1
-    }))
+
+    // let result = allOrders.docs.map((doc, index) => ({
+    //   ...doc.data(),
+    //   queryIndex: (+offset || 0) + index + 1
+    // }))
+
+    result = allOrders.docs.map(doc => ({ ...doc.data() }))
+    totalOrders = totalOrders.docs.map(doc => ({ ...doc.data() }))
+
+
+
+    //filtering out banned order ids
+    const bannedOrders = await dbGetBannedOrderIds()
+
+    totalOrders = totalOrders.filter(doc =>
+      !(bannedOrders.includes(doc.orderId)
+      ))
+
+    result = result.filter(doc =>
+      !(bannedOrders.includes(doc.orderId))
+    )
+
+    totalCount = totalOrders.length
+    result = result.map((doc, index) => ({ ...doc, queryIndex: (+offset || 0) + index + 1 }))
     // console.log(result)
     res.status(200).json({ status: "ok", orders: result, totalCount })
   } catch (error) {
@@ -77,6 +99,12 @@ exports.createOrder = async (req, res, next) => {
       return res.status(400).json({ message: " req.body missing " })
     }
     console.log(req.body)
+
+    //prevent users from creating orders using tokens from banned collections
+    const { chainId, baseAssetAddress } = req.body
+    if (await dbIsBanned(baseAssetAddress, chainId)) {
+      return res.status(400).json({ message: "Hold on! The base token belongs to a collection that is currently banned. " })
+    }
 
     //getting all orders
     const allOrders = await db.collection("orders").get();
@@ -291,7 +319,7 @@ exports.getOrdersByOwner = async (req, res, next) => {
     }
     // console.log(req.params)
     const { owner } = req.params
-    const orders = await db.collection("orders")
+    let orders = await db.collection("orders")
       .where('version', '==', 1)
       .where('visible', '==', true)
       .where("ownerAddress", "==", owner)
@@ -301,11 +329,16 @@ exports.getOrdersByOwner = async (req, res, next) => {
     if (orders.empty) {
       return res.status(400).json({ message: "orders with this creator address does not exist" })
     }
-    const result = orders.docs.map((doc) => ({
+    orders = orders.docs.map((doc) => ({
       ...doc.data(),
     }))
-    console.log(result)
-    res.status(200).json({ status: "ok", orders: result })
+
+    // filtering orders from banned collections
+    const bannedOrders = await dbGetBannedOrderIds()
+    orders = orders.filter(doc => !(bannedOrders.includes(doc.orderId)))
+
+    // console.log(result)
+    res.status(200).json({ status: "ok", orders })
 
   } catch (error) {
     next(error)

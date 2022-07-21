@@ -34,6 +34,7 @@ const updateHistory = async () => {
           address: order.baseAssetAddress,
           chainId: order.chainId,
           name: 'Unknown',
+          isBanned: false,
           activeOrders: [],
           activeCount: 0,
           fulfilledOrders: [],
