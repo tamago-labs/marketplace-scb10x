@@ -152,10 +152,14 @@ const Header = () => {
             <Container>
                 <Brand>
                     <Link to="/">
-                        Tamago NFT Marketplace
+                        Tamago NFT
                     </Link>
                 </Brand>
                 <Menu>
+                    <Link to="/">
+                        {` `}Marketplace
+                    </Link>
+                    {` `}
                     <Link to="/launchpad">
                         {` `}Launchpad
                     </Link>

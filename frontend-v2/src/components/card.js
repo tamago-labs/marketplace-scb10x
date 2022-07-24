@@ -142,7 +142,6 @@ export const AssetCard = ({
       )}
 
     </PreviewContainer>
-
     {children}
   </BaseAssetCardContainer>
 );

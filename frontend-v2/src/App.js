@@ -10,6 +10,7 @@ import Footer from "./components/footer"
 import OrderDetails from "./components/orderDetails"
 import Launchpad from "./components/launchpad";
 import Collection from "./components/collection"
+import LaunchpadDetails from "./components/launchpad/details";
 
 import "react-toastify/dist/ReactToastify.css";
 
@@ -22,14 +23,11 @@ const GlobalStyle = createGlobalStyle`
   body {
     font-family: monospace;
     color: white;
-    /* Full height */
-    min-height: 100vh; 
-
-    /* Created with https://www.css-gradient.com */
-    background: #2F1F26;
-    background: -webkit-linear-gradient(top left, #2F1F26, #6E2A87);
-    background: -moz-linear-gradient(top left, #2F1F26, #6E2A87);
-    background: linear-gradient(to bottom right, #2F1F26, #6E2A87);
+    /* Full height */ 
+    background-image:  url('https://img.tamago.finance/bg-2.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    min-height: 100vh;
   }
 `;
 
@@ -45,6 +43,7 @@ function App() {
         <Route path="/create" element={<CreateOrder />} />
         <Route path="/order/:id" element={<OrderDetails />}/>
         <Route path="/launchpad" element={<Launchpad />} />
+        <Route path="/launchpad/:slug" element={<LaunchpadDetails />} />
         <Route path="/collection/:chain/:address" element={<Collection />} />
       </Routes>
       <Footer/>
