@@ -96,3 +96,8 @@ export const getProviders = () => {
 export const shorterName = (name) => {
   return name.length > 28 ? `${name.slice(0, 15)}...${name.slice(-4)}` : name
 }
+
+export const shorterText = (name) => {
+  return name.length > 150 ? `${name.slice(0, 150)}...` : name
+}
+

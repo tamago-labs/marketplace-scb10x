@@ -14,7 +14,7 @@ import { NFTStorage } from 'nft.storage'
 import useMoralisAPI from "./useMoralisAPI"
 import { getProviders } from "../helper";
 // import useProof from "./useProof"; 
-
+import COLLECTIONS from "../data/collections"
 
 window.Buffer = window.Buffer || require("buffer").Buffer;
 
@@ -308,13 +308,106 @@ const useOrder = () => {
     output = output.filter(item => swapCompleted.indexOf(item.cid) === -1)
 
     // TODO: check cancel events
-    
+
 
     return output.sort(function (a, b) {
       return b.timestamp - a.timestamp;
     });
 
   }, [])
+
+  const getOrdersFromCollection = useCallback(async (chainId, assetAddress) => {
+
+    await Moralis.start(generateMoralisParams(chainId));
+
+    const OrderCreated = Moralis.Object.extend(`${resolveOrderCreatedTable(chainId)}`);
+    const query = new Moralis.Query(OrderCreated);
+
+    query.equalTo("assetAddress", assetAddress.toLowerCase());
+    query.limit(1000)
+
+    const results = await query.find();
+
+    let output = []
+
+    for (let object of results) {
+      const cid = object.get("cid")
+      const timestamp = object.get("block_timestamp")
+      const assetAddress = object.get("assetAddress")
+      const owner = object.get("owner")
+      const tokenId = object.get("tokenId")
+      const tokenType = object.get("tokenType")
+
+      output.push({
+        cid,
+        timestamp,
+        assetAddress,
+        owner,
+        tokenId,
+        tokenType: Number(tokenType),
+        chainId
+      })
+
+    }
+
+    // check swap events
+    const Swapped = Moralis.Object.extend(`${resolveSwappedTable(chainId)}`);
+    const querySwap = new Moralis.Query(Swapped);
+
+    query.equalTo("assetAddress", assetAddress.toLowerCase());
+    querySwap.limit(1000)
+
+    const swapItems = await querySwap.find();
+
+    let swapCompleted = []
+
+    for (let object of swapItems) {
+      const cid = object.get("cid")
+      swapCompleted.push(cid)
+    }
+
+    output = output.filter(item => swapCompleted.indexOf(item.cid) === -1)
+
+    // TODO: check cancel events
+
+
+    return output.sort(function (a, b) {
+      return b.timestamp - a.timestamp;
+    });
+
+  }, [])
+
+  const getCollectionInfo = async (
+    assetAddress,
+    chainId
+  ) => {
+    const data = COLLECTIONS.find(item => item.assetAddress.toLowerCase() === assetAddress && chainId === item.chainId)
+
+    let totalSupply = 0
+    let totalOwners = 0
+
+    try {
+
+      const options = {
+        address: `${assetAddress}`,
+        chain: `0x${chainId.toString(16)}`,
+      };
+
+      // const owners = await Web3Api.token.getNFTOwners(options);
+      // totalOwners = owners.total
+      const NFTs = await Web3Api.token.getAllTokenIds(options);
+      totalSupply = NFTs.total
+
+    } catch (e) {
+
+    }
+
+    return {
+      ...data,
+      totalOwners,
+      totalSupply
+    }
+  }
 
   const resolveMetadataFromCacheServer = ({
     assetAddress,
@@ -534,11 +627,13 @@ const useOrder = () => {
     register,
     approveToken,
     getAllOrders,
+    getOrdersFromCollection,
     getOrder,
     resolveMetadata,
     resolveTokenValue,
     swap,
-    resolveStatus
+    resolveStatus,
+    getCollectionInfo
   };
 };
 

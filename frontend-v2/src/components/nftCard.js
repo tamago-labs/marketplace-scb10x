@@ -1,9 +1,9 @@
 
 import { useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
-import { AssetCard } from "../card";
-import useOrder from "../../hooks/useOrder";
-import { shorterName } from "../../helper"
+import { AssetCard } from "./card";
+import useOrder from "../hooks/useOrder";
+import { shorterName } from "../helper" 
 
 const NFTCard = ({
     delay,
@@ -29,7 +29,7 @@ const NFTCard = ({
     return (
         <AssetCard
             orderId={order.cid}
-            image={order.tokenType === 0 ? "../images/coin.png" : data && data.metadata && data.metadata.image}
+            image={order.tokenType === 0 ? "../../images/coin.png" : data && data.metadata && data.metadata.image}
             chainId={order.chainId}
         >
             <div className="name">

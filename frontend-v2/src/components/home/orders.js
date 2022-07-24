@@ -8,13 +8,14 @@ import { AssetCard } from "../card";
 import useOrder from "../../hooks/useOrder";
 import { useEffect, useMemo, useState } from "react";
 import { Button, Button2, ToggleButton } from "../../components/button"
-// import { Button as Button2 } from "reactstrap"
+import { Col } from "reactstrap"
 import { shorterName } from "../../helper"
 import { ERC20_TOKENS } from "../../constants";
 import Skeleton from "react-loading-skeleton";
 import { Options } from "../input"
-import NFTCard from "./nftCard"
+import NFTCard from "../nftCard"
 import Collection from "./collectionCard"
+import { NETWORK } from "../../config/network"
 
 const ButtonGroup = styled.div`
   display: flex;   
@@ -22,7 +23,7 @@ const ButtonGroup = styled.div`
   justify-content: center;
 
   button {
-      font-size: 10px;
+      
       margin-top: 10px;
       :not(:first-child) {
           margin-left: 10px;
@@ -34,6 +35,7 @@ const TypeGroup = styled(ButtonGroup)`
     justify-content: flex-start;
     flex: 1;
     height: 20px;
+    font-size: 12px;
 
 `
 
@@ -67,9 +69,7 @@ const AllOrdersPanel = styled.div`
     padding-top: 20px;
 `
 
-const CollectionsPanel = styled.div`
-display: flex;
-flex-direction: column;
+const CollectionsPanel = styled.div.attrs(() => ({ className: "row" }))`
 padding-top: 20px;
 `
 
@@ -127,7 +127,7 @@ const Orders = () => {
 
     const [max, setMax] = useState(MAX_ITEMS);
 
-    const { getAllOrders } = useOrder()
+    const { getAllOrders, getCollectionInfo } = useOrder()
 
     useEffect(() => {
         setTimeout(() => {
@@ -150,6 +150,17 @@ const Orders = () => {
 
     }, [chain])
 
+    const getCollection = async (address, chainId) => {
+
+        const data = await getCollectionInfo(address, chainId)
+
+        return {
+            ...data,
+            assetAddress: address,
+            chainId
+        }
+    }
+
     useEffect(() => {
         const collections = orders.reduce((array, item) => {
             if (array.indexOf(item.assetAddress) === -1) {
@@ -157,7 +168,11 @@ const Orders = () => {
             }
             return array
         }, [])
-        setCollections(collections)
+
+        const chainId = orders && orders.length > 0 ? orders[0].chainId : 1
+
+        Promise.all(collections.map(item => getCollection(item, chainId))).then(setCollections)
+
     }, [orders])
 
     const updateChain = (chainId) => {
@@ -167,6 +182,11 @@ const Orders = () => {
 
     const updateShowCollection = (showing) => {
         setShowCollection(showing)
+    }
+
+    const getIcon = (chainId) => {
+        const network = NETWORK.find(item => parseInt(chainId) === parseInt(item.chainId, 16))
+        return network && network.icon
     }
 
     const filtered = useMemo(() => {
@@ -179,7 +199,7 @@ const Orders = () => {
 
         if (filter['collection']) {
             const c = collections.find((item, index) => (index + 1) === filter['collection'])
-            output = output.filter(item => item.assetAddress.toLowerCase() === c.toLowerCase())
+            output = output.filter(item => item.assetAddress.toLowerCase() === c.assetAddress.toLowerCase())
         }
 
         if (filter['type']) {
@@ -191,8 +211,6 @@ const Orders = () => {
 
     }, [orders, collections, filter])
 
-    console.log("c -->", collections)
-
     return (
         <StyledContainer>
 
@@ -200,16 +218,16 @@ const Orders = () => {
                 <NetworkPanel>
                     <ButtonGroup>
                         <ToggleButton onClick={() => updateChain(1)} active={chain === 1}>
-                            Ethereum
+                            <img style={{ borderRadius: "50%" }} width={32} src={getIcon(1)} />{` `}Ethereum
                         </ToggleButton>
                         <ToggleButton onClick={() => updateChain(137)} active={chain === 137}>
-                            Polygon
+                            <img style={{ borderRadius: "50%" }} width={32} src={getIcon(137)} />{` `}Polygon
                         </ToggleButton>
                         <ToggleButton onClick={() => updateChain(56)} active={chain === 56}>
-                            BNB
+                            <img style={{ borderRadius: "50%" }} width={32} src={getIcon(56)} />{` `}BNB
                         </ToggleButton>
                         <ToggleButton onClick={() => updateChain(43114)} active={chain === 43114}>
-                            Avalanche
+                            <img style={{ borderRadius: "50%" }} width={32} src={getIcon(43114)} />{` `}Avalanche
                         </ToggleButton>
                     </ButtonGroup>
                     <ButtonGroup>
@@ -261,7 +279,8 @@ const Orders = () => {
                                         getter={filter['collection']}
                                         setter={(value) => setFilter({ ...filter, collection: value })}
                                         options={[[0, ""]].concat(collections.map((value, index) => {
-                                            return [index + 1, shortAddress(value)]
+
+                                            return [index + 1, value.title || shortAddress(value.assetAddress)]
                                         }))}
                                     />
                                 </div>
@@ -284,7 +303,6 @@ const Orders = () => {
                             </OptionsRow>
                         </OptionsPanel>
                     </div>
-
                 </div>
 
                 {/* SHOW ORDERS */}
@@ -308,7 +326,7 @@ const Orders = () => {
                             </AllOrdersPanel>
                             <div style={{ padding: "20px", marginTop: "1rem", textAlign: "center" }}>
                                 {orders.length > max && (
-                                    <Button onClick={() => setMax(max + 8)}>More...</Button>
+                                    <Button onClick={() => setMax(max + 8)}>View More Items...</Button>
                                 )}
                             </div>
                         </>
@@ -318,24 +336,27 @@ const Orders = () => {
                 {showCollection && (
                     <>
                         <CollectionsPanel>
-                            {(!collections || collections.length === 0) && <Collection orders={[]} />}
+                            {(!collections || collections.length === 0) && <Col className="col-4"><Collection orders={[]} /></Col>}
 
-                            {collections.map((collectionAddress, index) => {
-                                const collectionOrders = orders.filter(item => item.assetAddress === collectionAddress)
+                            {collections.map((collection, index) => {
+                                const { assetAddress } = collection
+                                const collectionOrders = orders.filter(item => item.assetAddress === assetAddress)
                                 return (
-                                    <Collection
-                                        delay={index}
-                                        orders={collectionOrders}
-                                    >
-                                        {collectionAddress}
-                                    </Collection>
+                                    <Col className="col-4">
+                                        <Collection
+                                            delay={index}
+                                            orders={collectionOrders}
+                                            collection={collection}
+                                        >
+
+                                        </Collection>
+                                    </Col>
                                 )
                             })
                             }
                         </CollectionsPanel>
                     </>
                 )
-
                 }
             </MainSection>
         </StyledContainer>

@@ -28,7 +28,6 @@ const ImageContainer = styled.div`
     overflow: hidden;
     border-radius: 12px;
     background: #CBC3E3;
-    
 `
 
 const Title = styled.div`
@@ -42,6 +41,16 @@ const Description = styled.div`
 const StatusBar = styled.div`
     display: flex;
 
+`
+
+const InfoPanel = styled.div`
+    background: white;  
+    border-radius: 6px;
+    color: black;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 5px 7px black;
+    padding: 20px;
 `
 
 const L1Text = styled.div.attrs(() => ({ className: "name" }))` 
@@ -59,8 +68,8 @@ export const Info = styled(({ className, name, value, link }) => {
             {!link ? (
                 <p>{value || <Skeleton width="80px" />}</p>
             ) : (
-                <Link to={`/orders/owner/${link}`}>
-                    <p>{value}</p>
+                <Link to={`/collection/${link}`}>
+                    <p style={{textDecoration : "underline"}}>{value}</p>
                 </Link>
             )}
         </div>
@@ -98,6 +107,7 @@ const NFTCard = ({
     const [data, setData] = useState();
     const [loading, setLoading] = useState()
 
+
     const [swapModalVisible, setSwapModalVisible] = useState(false)
     const { chainId } = useWeb3React();
     const [approved, setApproval] = useState(false)
@@ -113,6 +123,7 @@ const NFTCard = ({
                     chainId: item.chainId,
                 }).then(setData);
             }, index * 1000);
+
         }
 
     }, [item, index]);
@@ -297,12 +308,13 @@ const NFTCard = ({
 const OrderDetails = () => {
     const { account, library, chainId } = useWeb3React()
 
-    const { getOrder, resolveMetadata, resolveTokenValue, resolveStatus } = useOrder()
+    const { getOrder, resolveMetadata, resolveTokenValue, resolveStatus, getCollectionInfo } = useOrder()
 
     const [order, setOrder] = useState()
     const [data, setData] = useState()
     const [status, setStatus] = useState()
     const [tick, setTick] = useState(0)
+    const [collectionInfo, setCollectionInfo] = useState()
 
     const { id } = useParams()
 
@@ -321,6 +333,7 @@ const OrderDetails = () => {
                 tokenId: order.baseAssetTokenIdOrAmount,
                 chainId: order.chainId,
             }).then(setData);
+            getCollectionInfo(order.baseAssetAddress, order.chainId).then(setCollectionInfo)
         }
 
     }, [order]);
@@ -387,42 +400,44 @@ const OrderDetails = () => {
                 </Col>
                 <Col sm="7">
 
-                    {order.baseAssetTokenType !== 0 && (
-                        <>
-                            <Title>
-                                {data && data.metadata && data.metadata.name ? data.metadata.name : order.title}
-                            </Title>
-                            <Description>
-                                {data && data.metadata && data.metadata.description}
-                            </Description>
-                        </>
-                    )}
+                    <InfoPanel>
+                        {order.baseAssetTokenType !== 0 && (
+                            <>
+                                <Title>
+                                    {data && data.metadata && data.metadata.name ? data.metadata.name : order.title}
+                                </Title>
+                                <Description>
+                                    {data && data.metadata && data.metadata.description}
+                                </Description>
+                            </>
+                        )}
 
-                    {order.baseAssetTokenType === 0 && (
-                        <>
-                            <Title>
-                                {resolveTokenValue({
-                                    assetAddress: order.baseAssetAddress,
-                                    tokenId: order.baseAssetTokenIdOrAmount,
-                                    chainId: order.chainId
-                                })}{` `}For Sell
-                            </Title>
-                            <Description>
-                                {/* {data && data.metadata && data.metadata.description} */}
-                            </Description>
-                        </>
-                    )}
-
-                    <div style={{ display: "flex", flexDirection: "row", marginTop: "1rem" }}>
-                        <Info name={"Status"} value={status ? "Sold" : "New" } />
-                        <Info name={"Chain"} value={resolveNetworkName(order.chainId)} />
-                        <Info
-                            name={"Added"}
-                            value={new Date(
-                                Number(order.timestamp) * 1000
-                            ).toLocaleString()}
-                        />
-                    </div>
+                        {order.baseAssetTokenType === 0 && (
+                            <>
+                                <Title>
+                                    {resolveTokenValue({
+                                        assetAddress: order.baseAssetAddress,
+                                        tokenId: order.baseAssetTokenIdOrAmount,
+                                        chainId: order.chainId
+                                    })}{` `}For Sell
+                                </Title>
+                                <Description>
+                                    {/* {data && data.metadata && data.metadata.description} */}
+                                </Description>
+                            </>
+                        )}
+                        <div style={{ display: "flex", flexDirection: "row", marginTop: "1rem" }}>
+                            <Info link={`${order.chainId}/${order.baseAssetAddress}`} name={"Collection"} value={collectionInfo && collectionInfo.title ? collectionInfo.title : shortAddress(order.baseAssetAddress)} />
+                            <Info name={"Status"} value={status ? "Sold" : "New"} />
+                            <Info name={"Chain"} value={resolveNetworkName(order.chainId)} />
+                            <Info
+                                name={"Added"}
+                                value={new Date(
+                                    Number(order.timestamp) * 1000
+                                ).toLocaleString()}
+                            />
+                        </div>
+                    </InfoPanel>
 
                     <hr />
 
@@ -437,6 +452,7 @@ const OrderDetails = () => {
                             display: "flex",
                             flexWrap: "wrap",
                             marginTop: "1rem",
+                            marginBottom: "3rem"
                         }}
                     >
                         {items.map((item, index) => {
