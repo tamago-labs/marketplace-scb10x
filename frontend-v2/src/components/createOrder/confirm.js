@@ -51,14 +51,14 @@ const orderTemplateToken = {
 };
 
 const getOrderTemplate = () => {
-  let order = orderTemplate;
+  let order = new Object();
   const randomNumber = Math.floor(Math.random() * (9999 - 1000 + 1)) + 1000;
   order["title"] = `Order #${randomNumber}`;
   return order;
 };
 
 const getOrderTemplateToken = () => {
-  let order = orderTemplateToken;
+  let order = new Object();
   const randomNumber = Math.floor(Math.random() * (9999 - 1000 + 1)) + 1000;
   order["title"] = `Order #${randomNumber}`;
   return order;
@@ -152,8 +152,6 @@ const Confirm = ({
 
   //values return as List[]
   const values = useMemo(() => {
-    let orderData = getOrderTemplate();
-    let orderToken = getOrderTemplateToken();
     let orderList = [];
 
     console.log(
@@ -166,6 +164,7 @@ const Confirm = ({
     );
     if (fromData) {
       fromData.map((item) => {
+        let orderData = getOrderTemplate();
         orderData.chainId = item.chainId;
         orderData.baseAssetAddress = item.token_address;
         orderData.baseAssetTokenIdOrAmount = item.token_id;
@@ -189,6 +188,7 @@ const Confirm = ({
 
     if (fromTokens) {
       fromTokens.map((item) => {
+        let orderToken = getOrderTemplateToken();
         orderToken.chainId = item.chainId;
         orderToken.baseAssetAddress = item.baseAssetAddress;
         orderToken.baseAssetTokenIdOrAmount = item.baseAssetTokenIdOrAmount;
