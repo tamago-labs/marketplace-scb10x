@@ -4,6 +4,7 @@ import Skeleton from "react-loading-skeleton";
 import { Badge } from "reactstrap";
 import { Link } from "react-router-dom";
 import { resolveNetworkName } from "../helper";
+import { Check } from "react-feather";
 
 const AssetCardContainer = styled.div`
   background-color: white;
@@ -117,14 +118,8 @@ const SoldBanner = styled.div`
 const AVALABLE_TESTNET_OPENSEA = ["Ropsten", "Rinksby", "Goerli", "Mumbai"];
 const AVALABLE_MAINNET_OPENSEA = ["Polygon", "Ethereum"];
 
-export const AssetCard = ({
-  children,
-  image,
-  chainId,
-  orderId
-}) => (
+export const AssetCard = ({ children, image, chainId, orderId }) => (
   <BaseAssetCardContainer>
-
     <PreviewContainer>
       {image ? (
         <Link to={`/order/${orderId}`}>
@@ -140,7 +135,6 @@ export const AssetCard = ({
           <div>{resolveNetworkName(chainId)}</div>
         </ChainInfo>
       )}
-
     </PreviewContainer>
 
     {children}
@@ -148,14 +142,12 @@ export const AssetCard = ({
 );
 
 const CollectionCardContainer = styled.div`
-  
-
   width: 100%;
   padding: 10px;
   padding-left: 0px;
   padding-top: 5px;
 
-  >.--card {
+  > .--card {
     display: flex;
     color: black;
     background-color: white;
@@ -164,47 +156,28 @@ const CollectionCardContainer = styled.div`
     border: 1px solid transparent;
     padding: 12px;
     box-shadow: 5px 7px black;
-    
   }
+`;
 
-`
-
-export const CollectionCard = ({
-  children,
-  image,
-}) => (
+export const CollectionCard = ({ children, image }) => (
   <CollectionCardContainer>
-    <div className="--card">
-      {children}
-    </div>
+    <div className="--card">{children}</div>
   </CollectionCardContainer>
-)
+);
 
 const PairAssetCardContainer = styled(BaseAssetCardContainer)`
   width: 170px;
   min-height: 275px;
-  
-`
+`;
 
 const PairImage = styled(Image)`
   height: 160px;
-`
+`;
 
-
-export const PairAssetCard = ({
-  children,
-  image,
-  chainId,
-  balance
-}) => (
+export const PairAssetCard = ({ children, image, chainId, balance }) => (
   <PairAssetCardContainer>
-
     <PreviewContainer style={{ height: "160px" }}>
-      {image ? (
-        <PairImage src={image} />
-      ) : (
-        <Skeleton height="160px" />
-      )}
+      {image ? <PairImage src={image} /> : <Skeleton height="160px" />}
       {chainId && (
         <ChainInfo>
           <div>{resolveNetworkName(chainId)}</div>
@@ -215,78 +188,53 @@ export const PairAssetCard = ({
           <div>{balance}</div>
         </ChainInfo>
       )}
-
     </PreviewContainer>
 
     {children}
   </PairAssetCardContainer>
 );
 
-
-
 const SelectableCardContainer = styled(BaseAssetCardContainer)`
-     min-height: 225px;
-       opacity: ${(props) => (props.selected ? "0.64" : "100")};
-   border: ${(props) =>
+  min-height: 225px;
+  opacity: ${(props) => (props.selected ? "0.64" : "100")};
+  border: ${(props) =>
     props.selected ? "1px solid pink" : "1px solid transparent"};
-
-`
+`;
 
 export const SelectableCard = ({
   children,
   selected,
   image,
   chainId,
-  onClick
+  onClick,
 }) => (
   <SelectableCardContainer selected={selected}>
-
-    <PreviewContainer style={{ cursor: "pointer" }} onClick={onClick} >
-      {image ? (
-        <Image src={image} />
-      ) : (
-        <Skeleton height="220px" />
-      )}
+    <PreviewContainer style={{ cursor: "pointer" }} onClick={onClick}>
+      {image ? <Image src={image} /> : <Skeleton height="220px" />}
       {chainId && (
         <ChainInfo>
           <div>{resolveNetworkName(chainId)}</div>
         </ChainInfo>
       )}
-
     </PreviewContainer>
-
     {children}
   </SelectableCardContainer>
 );
 
-
 const CommonCardContainer = styled(BaseAssetCardContainer)`
   min-height: 225px;
+`;
 
-`
-
-export const CommonCard = ({
-  children,
-  image,
-  chainId
-}) => (
+export const CommonCard = ({ children, image, chainId }) => (
   <CommonCardContainer>
-
     <PreviewContainer>
-      {image ? (
-        <Image src={image} />
-      ) : (
-        <Skeleton height="220px" />
-      )}
+      {image ? <Image src={image} /> : <Skeleton height="220px" />}
       {chainId && (
         <ChainInfo>
           <div>{resolveNetworkName(chainId)}</div>
         </ChainInfo>
       )}
-
     </PreviewContainer>
     {children}
   </CommonCardContainer>
-)
-
-
+);
