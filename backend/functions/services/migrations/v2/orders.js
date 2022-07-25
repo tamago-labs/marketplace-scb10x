@@ -1,25 +1,30 @@
 const { db } = require("../../../firebase")
 const { Moralis, MoralisOptions } = require("../../../moralis")
 const { btoa } = require("../../../utils")
+const { NFTStorage } = require('nft.storage')
+//Blob is included in node version 15 or higher (Node version 16 recommended)
+const { Blob } = require("buffer");
 
-//The function below resets DB migration to IPFS, Do not Invoke 
-const resetMigration = async () => {
+//The function below resets DB migration to IPFS, it deletes all data from "orders-v2" collection, Do not Invoke 
+exports.resetMigration = async () => {
 
   try {
-    console.log("resetting migration status and clearing CID for new migration")
-      //resetting migration status and clearing CID for new migration
-      (await db.collection("orders").get()).docs.map(doc => { doc.ref.update({ isMigrated: false, "CID-v2": "" }) })
 
-      //quell orders V2  
-      (await db.collection("orders-V2").get())
-      .docs.map(doc => { doc.ref.delete() })
+    console.log("resetting migration status and clearing CID for new migration")
+
+    //resetting migration status and clearing CID for new migration
+
+    const a = (await db.collection("orders").get()).docs.map(doc => { doc.ref.update({ isMigrated: false, "CID-v2": "" }) })
+
+    //quell orders V2  
+    const b = (await db.collection("orders-v2").get()).docs.map(doc => { doc.ref.delete() })
 
   } catch (error) {
     console.log(error)
   }
 
 }
-// resetMigration()
+
 
 //The Migration Program starts here
 
@@ -28,41 +33,34 @@ exports.migrateOrdersToIPFS = async () => {
 
     const orders = (await db.collection("orders").where("isMigrated", "==", false).get()).docs.map(doc => ({ ...doc.data(), docId: doc.id }))
 
-    console.log(orders[orders.length - 1])
-
-    await Moralis.start({ ...MoralisOptions })
+    //TODO switch to NFT.storage
+    const nftStorage = new NFTStorage({ token: process.env.NFT_STORAGE_API_KEY })
 
     for (let order of orders) {
       const newData = {
-        baseAssetTokenId: order.baseAssetTokenId,
-        chainId: order.chainId,
-        baseAssetAddress: order.baseAssetAddress,
-        title: order.title,
         category: order.category,
         timestamp: order.timestamp,
-        baseAssetIs1155: order.baseAssetIs1155,
-        slug: order.slug,
-        barterList: order.barterList,
+        chainId: order.chainId,
         ownerAddress: order.ownerAddress,
-        crosschain: order.crosschain,
-        version: 2
+        baseAssetAddress: order.baseAssetAddress,
+        baseAssetTokenIdOrAmount: order.baseAssetTokenId,
+        baseAssetTokenType: order.baseAssetIs1155 ? 2 : 1,
+        barterList: order.barterList,
+        title: order.title,
       }
-      // console.log(order)
-      // console.log(newData)
 
       //In case of IPFS, file name has no effect
-      const file = new Moralis.File("order.json", {
-        base64: btoa(JSON.stringify(newData))
-      })
-      const res = await file.saveIPFS({ useMasterKey: true })
+      const blob = new Blob([JSON.stringify(newData)])
+      const CID = await nftStorage.storeBlob(blob)
 
-      //saving CID to v2 database
-      const CID = res.hash()
+
       await db.collection("orders-v2").doc(CID).set({
         visible: order.visible,
         locked: order.locked,
+        slug: order.slug,
         canceled: order.canceled,
         confirmed: order.confirmed,
+        crosschain: order.crosschain,
       })
 
       await db.collection("orders").doc(order.docId).update({ "isMigrated": true, "CID-v2": CID })
