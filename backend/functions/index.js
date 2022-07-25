@@ -7,7 +7,7 @@ const fs = require("fs")
 const { addFirestoreDataToAlgolia } = require("./services/algolia")
 const { orderTrails } = require("./services/order-trails")
 const { updateHistory } = require("./services/history-update");
-const { migrateOrdersToIPFS } = require("./services/migrations/v2/orders");
+
 // const { testSendingMail } = require("./sendgrid")
 
 // initialize app
@@ -64,7 +64,3 @@ exports.pubsub = functions.region('asia-east2').pubsub.schedule('every 10 minute
 //Since Algolia search was configured to sync with firestore via console. uncommenting the code below is not necessary in most cases,
 // exports.addFirestoreDataToAlgolia = functions.region('asia-east2').https.onRequest(
 // )
-
-// Database Migrations
-// orders
-// migrateOrdersToIPFS()
