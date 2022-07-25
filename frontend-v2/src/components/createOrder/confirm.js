@@ -153,15 +153,6 @@ const Confirm = ({
   //values return as List[]
   const values = useMemo(() => {
     let orderList = [];
-
-    console.log(
-      "🚀 ~ file: confirm.js ~ line 142 ~ values ~ fromData",
-      fromData
-    );
-    console.log(
-      "🚀 ~ file: confirm.js ~ line 142 ~ values ~ fromTokens",
-      fromTokens
-    );
     if (fromData) {
       fromData.map((item) => {
         let orderData = getOrderTemplate();
@@ -209,11 +200,6 @@ const Confirm = ({
         orderList.push(orderToken);
       });
     }
-
-    console.log(
-      "🚀 ~ file: confirm.js ~ line 185 ~ values ~ orderList",
-      orderList
-    );
     return orderList;
   }, [fromData, toData, chainId, toTokens, fromTokens]);
 
@@ -229,7 +215,6 @@ const Confirm = ({
       for (let i = 0; i < values.length; i++) {
         const { orderId } = await createOrder(values[i]);
         orderIdList.push(orderId);
-        console.log("order Id : ", orderId);
       }
       setOrderId(orderIdList);
       setProcess(PROCESS.GENERATE_ID);
@@ -253,13 +238,6 @@ const Confirm = ({
           }
         })
       );
-      // for (let i = 0; i < values.length; i++) {
-      //   if (values[i].baseAssetTokenType === 0) {
-      //     await approveToken(values[i]);
-      //   } else {
-      //     await approveNft(values[i]);
-      //   }
-      // }
       setProcess(PROCESS.DEPOSIT);
     } catch (e) {
       console.log(e);
@@ -270,11 +248,6 @@ const Confirm = ({
 
   const onRegister = useCallback(async () => {
     setLoading(true);
-
-    console.log(
-      "🚀 ~ file: confirm.js ~ line 250 ~ onRegister ~ orderId",
-      orderId
-    );
     try {
       await register(orderId, values);
 

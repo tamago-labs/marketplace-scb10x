@@ -146,10 +146,6 @@ const useOrder = () => {
       );
 
       //create leaves and hexroot on 1 order and create an order
-      console.log(
-        "🚀 ~ file: useOrder.js ~ line 150 ~ values.length",
-        values.length
-      );
       if (values.length === 1) {
         const leaves = values[0].barterList
           .filter((item) => item.chainId === values[0].chainId)
@@ -166,7 +162,6 @@ const useOrder = () => {
               )
             )
           );
-        console.log("🚀 ~ file: useOrder.js ~ line 169 ~ leaves", leaves);
 
         if (leaves.length > 0) {
           tree = new MerkleTree(leaves, keccak256, { sortPairs: true });
@@ -175,7 +170,6 @@ const useOrder = () => {
         } else {
           hexRoot = ethers.utils.formatBytes32String("");
         }
-        console.log("🚀 ~ file: useOrder.js ~ line 177 ~ hexRoot", hexRoot);
 
         const tx = await contract.create(
           orderId[0],
@@ -207,10 +201,6 @@ const useOrder = () => {
             );
           leavesList.push(leaves);
         }
-        console.log(
-          "🚀 ~ file: useOrder.js ~ line 208 ~ leavesList",
-          leavesList
-        );
 
         leavesList.map((leaves) => {
           if (leaves.length > 0) {
@@ -222,10 +212,6 @@ const useOrder = () => {
           }
           hexRootList.push(hexRoot);
         });
-        console.log(
-          "🚀 ~ file: useOrder.js ~ line 243 ~ leavesList.map ~ hexRootList",
-          hexRootList
-        );
 
         const tx = await contract.createBatch(
           orderId,
