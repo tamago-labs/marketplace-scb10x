@@ -120,7 +120,7 @@ const OptionsRow = styled.div`
 
 const Orders = () => {
   const [chain, setChain] = useState();
-  const [showCollection, setShowCollection] = useState(false);
+  const [showCollection, setShowCollection] = useState(true);
   const [orders, setOrders] = useState([]);
   const [collections, setCollections] = useState([]);
 
@@ -181,12 +181,14 @@ const Orders = () => {
     localStorage.setItem("chainId", `${chainId}`)
   }
 
-  const { getAllOrders } = useOrder();
-
   const getIcon = (chainId) => {
     const network = NETWORK.find(item => parseInt(chainId) === parseInt(item.chainId, 16))
     return network && network.icon
   }
+
+  const updateShowCollection = (showing) => {
+    setShowCollection(showing);
+  };
 
   const filtered = useMemo(() => {
 
