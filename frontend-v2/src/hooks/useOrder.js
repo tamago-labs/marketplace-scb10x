@@ -3,23 +3,28 @@ import { useMoralisWeb3Api } from "react-moralis";
 import { useWeb3React } from "@web3-react/core";
 import axios from "axios";
 import { ethers } from "ethers";
-import Moralis from "moralis"
+import Moralis from "moralis";
 import { MerkleTree } from "merkletreejs";
 import keccak256 from "keccak256";
-import { NFT_MARKETPLACE, MOCK_NFT, NFT_STORAGE_TOKEN, ERC20_TOKENS } from "../constants";
+import {
+  NFT_MARKETPLACE,
+  MOCK_NFT,
+  NFT_STORAGE_TOKEN,
+  ERC20_TOKENS,
+} from "../constants";
 import MarketplaceABI from "../abi/marketplace.json";
 import NFTABI from "../abi/nft.json";
 import ERC20ABI from "../abi/erc20.json";
-import { NFTStorage } from 'nft.storage'
-import useMoralisAPI from "./useMoralisAPI"
+import { NFTStorage } from "nft.storage";
+import useMoralisAPI from "./useMoralisAPI";
 import { getProviders } from "../helper";
 // import useProof from "./useProof"; 
 import COLLECTIONS from "../data/collections"
 
 window.Buffer = window.Buffer || require("buffer").Buffer;
 
-const API_BASE = "https://asia-east2-sbc10x-hackatron-may2022.cloudfunctions.net/api"
-
+const API_BASE =
+  "https://asia-east2-sbc10x-hackatron-may2022.cloudfunctions.net/api";
 
 const useOrder = () => {
   const Web3Api = useMoralisWeb3Api();
@@ -69,7 +74,7 @@ const useOrder = () => {
             metadata["image"] = data.data["image_url"];
           }
         }
-      } catch (e) { }
+      } catch (e) {}
     }
 
     if (
@@ -95,23 +100,40 @@ const useOrder = () => {
 
   const register = useCallback(
     async (orderId, values) => {
+      //initial fot createBatch
+      let assetAddress = [];
+      let tokenId = [];
+      let tokenType = [];
+      let hexRootList = [];
+      let leavesList = [];
+      let tree;
+      let hexRoot;
+
+      if (values.length > 1) {
+        values.map((item) => {
+          assetAddress.push(item.baseAssetAddress);
+          tokenId.push(item.baseAssetTokenIdOrAmount);
+          tokenType.push(item.baseAssetTokenType);
+        });
+      }
+
       if (!account) {
         throw new Error("Wallet not connected");
       }
 
       if (
-        NFT_MARKETPLACE.filter((item) => item.chainId === values.chainId)
+        NFT_MARKETPLACE.filter((item) => item.chainId === values[0].chainId)
           .length === 0
       ) {
         throw new Error("Marketplace contract is not available on given chain");
       }
 
-      if (chainId !== values.chainId) {
+      if (chainId !== values[0].chainId) {
         throw new Error("Invalid chain");
       }
 
       const { contractAddress } = NFT_MARKETPLACE.find(
-        (item) => item.chainId === values.chainId
+        (item) => item.chainId === values[0].chainId
       );
 
       const contract = new ethers.Contract(
@@ -120,37 +142,83 @@ const useOrder = () => {
         library.getSigner()
       );
 
-      const leaves = values.barterList
-        .filter((item) => item.chainId === values.chainId)
-        .map((item) =>
-          ethers.utils.keccak256(
-            ethers.utils.solidityPack(
-              ["string", "uint256", "address", "uint256"],
-              [`${orderId}`, Number(item.chainId), item.assetAddress, item.assetTokenIdOrAmount]
+      //create leaves and hexroot on 1 order and create an order
+      if (values.length === 1) {
+        const leaves = values[0].barterList
+          .filter((item) => item.chainId === values[0].chainId)
+          .map((item) =>
+            ethers.utils.keccak256(
+              ethers.utils.solidityPack(
+                ["string", "uint256", "address", "uint256"],
+                [
+                  `${orderId[0]}`,
+                  Number(item.chainId),
+                  item.assetAddress,
+                  item.assetTokenIdOrAmount,
+                ]
+              )
             )
-          )
+          );
+
+        if (leaves.length > 0) {
+          tree = new MerkleTree(leaves, keccak256, { sortPairs: true });
+
+          hexRoot = tree.getHexRoot();
+        } else {
+          hexRoot = ethers.utils.formatBytes32String("");
+        }
+
+        const tx = await contract.create(
+          orderId[0],
+          values[0].baseAssetAddress,
+          values[0].baseAssetTokenIdOrAmount,
+          values[0].baseAssetTokenType,
+          hexRoot
         );
-
-      let tree;
-      let hexRoot;
-
-      if (leaves.length > 0) {
-        tree = new MerkleTree(leaves, keccak256, { sortPairs: true });
-
-        hexRoot = tree.getHexRoot();
-      } else {
-        hexRoot = ethers.utils.formatBytes32String("");
+        await tx.wait();
       }
 
-      const tx = await contract.create(
-        orderId,
-        values.baseAssetAddress,
-        values.baseAssetTokenIdOrAmount,
-        values.baseAssetTokenType,
-        hexRoot
-      );
-      await tx.wait()
+      //create list of hexroot and createBatch
+      if (values.length > 1) {
+        for (let i = 0; i < values.length; i++) {
+          const leaves = values[i].barterList
+            .filter((item) => item.chainId === values[i].chainId)
+            .map((item) =>
+              ethers.utils.keccak256(
+                ethers.utils.solidityPack(
+                  ["string", "uint256", "address", "uint256"],
+                  [
+                    `${orderId[i]}`,
+                    Number(item.chainId),
+                    item.assetAddress,
+                    item.assetTokenIdOrAmount,
+                  ]
+                )
+              )
+            );
+          leavesList.push(leaves);
+        }
 
+        leavesList.map((leaves) => {
+          if (leaves.length > 0) {
+            tree = new MerkleTree(leaves, keccak256, { sortPairs: true });
+
+            hexRoot = tree.getHexRoot();
+          } else {
+            hexRoot = ethers.utils.formatBytes32String("");
+          }
+          hexRootList.push(hexRoot);
+        });
+
+        const tx = await contract.createBatch(
+          orderId,
+          assetAddress,
+          tokenId,
+          tokenType,
+          hexRootList
+        );
+        await tx.wait();
+      }
     },
     [account, chainId, library]
   );
@@ -183,12 +251,14 @@ const useOrder = () => {
       );
 
       if (
-        (Number(await tokenContract.allowance(account, contractAddress)) === 0)
+        Number(await tokenContract.allowance(account, contractAddress)) === 0
       ) {
-        const tx = await tokenContract.approve(contractAddress, ethers.constants.MaxUint256);
+        const tx = await tokenContract.approve(
+          contractAddress,
+          ethers.constants.MaxUint256
+        );
         await tx.wait();
       }
-
     },
     [account, chainId, library]
   );
@@ -226,8 +296,6 @@ const useOrder = () => {
         const tx = await nftContract.setApprovalForAll(contractAddress, true);
         await tx.wait();
       }
-
-
     },
     [account, chainId, library]
   );
@@ -238,45 +306,46 @@ const useOrder = () => {
         throw new Error("Wallet not connected");
       }
 
-      values.ownerAddress = account
-      values.timestamp = Math.floor(new Date().valueOf() / 1000)
+      values.ownerAddress = account;
+      values.timestamp = Math.floor(new Date().valueOf() / 1000);
 
-      const client = new NFTStorage({ token: NFT_STORAGE_TOKEN })
+      const client = new NFTStorage({ token: NFT_STORAGE_TOKEN });
 
       const str = JSON.stringify(values);
       // text/plain;UTF-8
       const blob = new Blob([str]);
-      const cid = await client.storeBlob(blob)
+      const cid = await client.storeBlob(blob);
 
-      console.log("cid : ", cid)
+      console.log("cid : ", cid);
 
       return {
-        orderId: cid
+        orderId: cid,
       };
     },
     [account]
   );
 
   const getAllOrders = useCallback(async (chainId) => {
-
     await Moralis.start(generateMoralisParams(chainId));
 
-    const OrderCreated = Moralis.Object.extend(`${resolveOrderCreatedTable(chainId)}`);
+    const OrderCreated = Moralis.Object.extend(
+      `${resolveOrderCreatedTable(chainId)}`
+    );
     const query = new Moralis.Query(OrderCreated);
 
-    query.limit(1000)
+    query.limit(1000);
 
     const results = await query.find();
 
-    let output = []
+    let output = [];
 
     for (let object of results) {
-      const cid = object.get("cid")
-      const timestamp = object.get("block_timestamp")
-      const assetAddress = object.get("assetAddress")
-      const owner = object.get("owner")
-      const tokenId = object.get("tokenId")
-      const tokenType = object.get("tokenType")
+      const cid = object.get("cid");
+      const timestamp = object.get("block_timestamp");
+      const assetAddress = object.get("assetAddress");
+      const owner = object.get("owner");
+      const tokenId = object.get("tokenId");
+      const tokenType = object.get("tokenType");
 
       output.push({
         cid,
@@ -285,27 +354,26 @@ const useOrder = () => {
         owner,
         tokenId,
         tokenType: Number(tokenType),
-        chainId
-      })
-
+        chainId,
+      });
     }
 
     // check swap events
     const Swapped = Moralis.Object.extend(`${resolveSwappedTable(chainId)}`);
     const querySwap = new Moralis.Query(Swapped);
 
-    querySwap.limit(1000)
+    querySwap.limit(1000);
 
     const swapItems = await querySwap.find();
 
-    let swapCompleted = []
+    let swapCompleted = [];
 
     for (let object of swapItems) {
-      const cid = object.get("cid")
-      swapCompleted.push(cid)
+      const cid = object.get("cid");
+      swapCompleted.push(cid);
     }
 
-    output = output.filter(item => swapCompleted.indexOf(item.cid) === -1)
+    output = output.filter((item) => swapCompleted.indexOf(item.cid) === -1);
 
     // check cancel events
     const Canceled = Moralis.Object.extend(`${resolveCanceledTable(chainId)}`);
@@ -401,8 +469,7 @@ const useOrder = () => {
     return output.sort(function (a, b) {
       return b.timestamp - a.timestamp;
     });
-
-  }, [])
+  }, []);
 
   const getOrdersFromAccount = useCallback(async (chainId, account) => {
 
@@ -530,7 +597,7 @@ const useOrder = () => {
           },
         };
       }
-    } catch (e) { }
+    } catch (e) {}
 
     return new Promise((resolve) => {
       axios
@@ -564,7 +631,6 @@ const useOrder = () => {
       });
 
       if (data && data.metadata) {
-
         if (
           data.metadata &&
           data.metadata.image &&
@@ -576,29 +642,33 @@ const useOrder = () => {
           );
         }
 
-        if (data.metadata && !data.metadata.image && data.metadata["image_url"]) {
+        if (
+          data.metadata &&
+          !data.metadata.image &&
+          data.metadata["image_url"]
+        ) {
           data.metadata.image = data.metadata["image_url"];
         }
 
         return data;
       }
-    } catch (e) { }
+    } catch (e) {}
     const tokenIdMetadata = await Web3Api.token.getTokenIdMetadata(options);
     return await getMetadata(tokenIdMetadata);
   };
 
-  const resolveTokenValue = ({
-    assetAddress,
-    tokenId,
-    chainId
-  }) => {
+  const resolveTokenValue = ({ assetAddress, tokenId, chainId }) => {
+    const token = ERC20_TOKENS.find(
+      (item) =>
+        item.chainId === chainId &&
+        item.contractAddress.toLowerCase() === assetAddress.toLowerCase() &&
+        item.tokenType === 0
+    );
 
-    const token = (ERC20_TOKENS.find(
-      (item) => item.chainId === chainId && item.contractAddress.toLowerCase() === assetAddress.toLowerCase() && item.tokenType === 0
-    ))
-
-    return `${ethers.utils.formatUnits(tokenId, token.decimals)} ${token.symbol} `
-  }
+    return `${ethers.utils.formatUnits(tokenId, token.decimals)} ${
+      token.symbol
+    } `;
+  };
 
   const swap = useCallback(
     async (orderId, order, tokenIndex) => {
@@ -671,7 +741,12 @@ const useOrder = () => {
           ethers.utils.keccak256(
             ethers.utils.solidityPack(
               ["string", "uint256", "address", "uint256"],
-              [orderId, item.chainId, item.assetAddress, item.assetTokenIdOrAmount]
+              [
+                orderId,
+                item.chainId,
+                item.assetAddress,
+                item.assetTokenIdOrAmount,
+              ]
             )
           )
         );
@@ -681,7 +756,12 @@ const useOrder = () => {
         ethers.utils.keccak256(
           ethers.utils.solidityPack(
             ["string", "uint256", "address", "uint256"],
-            [orderId, token.chainId, token.assetAddress, token.assetTokenIdOrAmount]
+            [
+              orderId,
+              token.chainId,
+              token.assetAddress,
+              token.assetTokenIdOrAmount,
+            ]
           )
         )
       );
@@ -717,9 +797,11 @@ const useOrder = () => {
   };
 
   const getOrder = useCallback(async (orderId) => {
-    const { data } = await axios.get(`https://${orderId}.ipfs.nftstorage.link/`)
-    return data
-  }, [])
+    const { data } = await axios.get(
+      `https://${orderId}.ipfs.nftstorage.link/`
+    );
+    return data;
+  }, []);
 
   return {
     getMetadata,
