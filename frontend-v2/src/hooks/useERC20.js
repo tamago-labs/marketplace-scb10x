@@ -45,6 +45,14 @@ export const useERC20 = (address, account, library) => {
         }
     }, [contract, account, chainId]);
 
+    const isApproved2 = useCallback(async (contractAddress) => {
+        try {
+            return ((await contract.allowance(account, contractAddress)).toString() !== "0")
+        } catch (e) {
+            return false;
+        }
+    }, [contract, account, chainId]);
+
     const approve = useCallback(async () => {
         try {
             if (await isApproved()) {
@@ -58,9 +66,23 @@ export const useERC20 = (address, account, library) => {
         }
     }, [contract, account, chainId]);
 
+    const approve2 = useCallback(async (contractAddress) => {
+        try {
+            if (await isApproved2(contractAddress)) {
+                return
+            }
+            const tx = await contract.approve(contractAddress, ethers.constants.MaxUint256)
+            await tx.wait()
+        } catch (e) {
+            return false;
+        }
+    }, [contract, account, chainId]);
+
     return {
         getBalance,
         isApproved,
+        isApproved2,
+        approve2,
         approve
     }
 }

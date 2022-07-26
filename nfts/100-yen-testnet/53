@@ -1,0 +1,18 @@
+{
+    "image": "ipfs://bafybeigc6x6bey2qzyuwb6juq6aeja5h5xq2zgdwuflgx6uau4wptlmnfm/53.png",
+    "name": "Rain Protector #53",
+    "attributes": [
+        {
+            "trait_type": "body",
+            "value": "umbrella"
+        },
+        {
+            "trait_type": "color",
+            "value": "blue"
+        },
+        {
+            "trait_type": "condition",
+            "value": "new"
+        }
+    ]
+}

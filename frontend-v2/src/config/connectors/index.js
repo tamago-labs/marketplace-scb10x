@@ -12,7 +12,7 @@ const RPC = {
 
 export const supportedChainIds = [97, 43113, 42, 80001, 137, 56, 43114, 1]
 
-export const injected = new InjectedConnector({ supportedChainIds })
+export const injected = new InjectedConnector()
 
 export const walletconnect = new WalletConnectConnector({
   rpc: RPC,

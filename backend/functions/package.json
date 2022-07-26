@@ -21,13 +21,14 @@
     "ethers": "^5.6.1",
     "express": "^4.18.1",
     "firebase-admin": "^10.0.2",
-    "firebase-functions": "^3.18.0",
+    "firebase-functions": "^3.22.0",
     "fs": "0.0.1-security",
     "handlebars": "^4.7.7",
     "keccak256": "^1.0.6",
     "merkletreejs": "^0.2.31",
     "moralis": "^1.7.0",
     "morgan": "^1.10.0",
+    "nft.storage": "^6.4.1",
     "validator": "^13.7.0"
   },
   "devDependencies": {

@@ -151,68 +151,44 @@ const To = ({
     return mocks;
   }, [chainId]);
 
-  const [activeTab, setActiveTab] = useState("1");
+  const [activeTab, setActiveTab] = useState("2")
 
   const toggle = (tab) => {
-    setActiveTab(tab);
-  };
+    setActiveTab(tab)
+  }
 
   return (
     <Wrapper>
       <Nav tabs>
         <NavItem>
           <NavLink
-            active={activeTab === "1"}
-            onClick={() => {
-              toggle("1");
-            }}
+            active={activeTab === "2"}
+            onClick={() => { toggle('2'); }}
           >
-            NFT
+            ERC-20
           </NavLink>
         </NavItem>
         <NavItem>
           <NavLink
-            active={activeTab === "2"}
-            onClick={() => {
-              toggle("2");
-            }}
+            active={activeTab === "1"}
+            onClick={() => { toggle('1'); }}
           >
-            ERC-20
+            NFT
           </NavLink>
         </NavItem>
       </Nav>
       <TabContent activeTab={activeTab}>
         <TabPane tabId="1">
           <div>
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                width: "100%",
-              }}
-            >
+            <div style={{ display: "flex", flexDirection: "column", width: "100%" }}>
               {/* <ChainSelector
                                 setter={setSearchChain}
                                 getter={searchChain}
                             /> */}
-              <div
-                style={{
-                  marginLeft: "auto",
-                  marginRight: "auto",
-                  marginBottom: "1rem",
-                }}
-              >
+              <div style={{ marginLeft: "auto", marginRight: "auto", marginBottom: "1rem" }}>
                 <SearchInput
                   value={searchText}
                   onChange={onSearchTextChange}
-                  onKeyDown={(e) => {
-                    if (e.key == "Enter") {
-                      fetchSearchNFTs({
-                        searchText,
-                        chainId,
-                      });
-                    }
-                  }}
                 />
                 <Button
                   onClick={() =>
@@ -225,51 +201,99 @@ const To = ({
                   Search
                 </Button>
               </div>
+
             </div>
 
             {searchNFT && !searchLoading
               ? searchNFT.map((nft, index) => (
-                  <>
-                    <SelectableCard
-                      key={index}
-                      image={nft.metadata.image}
-                      chainId={chainId}
-                      selected={toData.find(
-                        (data) => data.token_hash === nft.token_hash
-                      )}
-                      onClick={() => onClickCard({ ...nft, chainId })}
-                    >
-                      <div className="name">
-                        {shorterName(nft.metadata.name)}
-                        {` `}#{shorterName(nft.token_id)}
-                      </div>
-                    </SelectableCard>
-                  </>
-                ))
+                <>
+                  <SelectableCard
+                    image={nft.metadata.image}
+                    chainId={chainId}
+                    selected={toData.find(
+                      (data) => data.token_hash === nft.token_hash
+                    )}
+                    onClick={() => onClickCard({ ...nft, chainId })}
+                  >
+                    <div className="name">{shorterName(nft.metadata.name)}
+                      {` `}#{shorterName(nft.token_id)}</div>
+                  </SelectableCard>
+                </>
+
+              ))
               : searchLoading && (
-                  <>
-                    <Skeleton
-                      height="275px"
-                      width="260px"
-                      style={{ borderRadius: "6px", margin: "6px" }}
-                    />
-                    <Skeleton
-                      height="275px"
-                      width="260px"
-                      style={{ borderRadius: "6px", margin: "6px" }}
-                    />
-                    <Skeleton
-                      height="275px"
-                      width="260px"
-                      style={{ borderRadius: "6px", margin: "6px" }}
-                    />
-                    <Skeleton
-                      height="275px"
-                      width="260px"
-                      style={{ borderRadius: "6px", margin: "6px" }}
-                    />
-                  </>
-                )}
+                <>
+                  <Skeleton
+                    height="275px"
+                    width="260px"
+                    style={{ borderRadius: "6px", margin: "6px" }}
+                  />
+                  <Skeleton
+                    height="275px"
+                    width="260px"
+                    style={{ borderRadius: "6px", margin: "6px" }}
+                  />
+                  <Skeleton
+                    height="275px"
+                    width="260px"
+                    style={{ borderRadius: "6px", margin: "6px" }}
+                  />
+                  <Skeleton
+                    height="275px"
+                    width="260px"
+                    style={{ borderRadius: "6px", margin: "6px" }}
+                  />
+                </>
+              )}
+          </div>
+        </TabPane>
+        <TabPane tabId="2">
+          <div>
+
+
+            {searchNFT && !searchLoading
+              ? searchNFT.map((nft, index) => (
+                <>
+                  <SelectableCard
+                    key={index}
+                    image={nft.metadata.image}
+                    chainId={chainId}
+                    selected={toData.find(
+                      (data) => data.token_hash === nft.token_hash
+                    )}
+                    onClick={() => onClickCard({ ...nft, chainId })}
+                  >
+                    <div className="name">
+                      {shorterName(nft.metadata.name)}
+                      {` `}#{shorterName(nft.token_id)}
+                    </div>
+                  </SelectableCard>
+                </>
+              ))
+              : searchLoading && (
+                <>
+                  <Skeleton
+                    height="275px"
+                    width="260px"
+                    style={{ borderRadius: "6px", margin: "6px" }}
+                  />
+                  <Skeleton
+                    height="275px"
+                    width="260px"
+                    style={{ borderRadius: "6px", margin: "6px" }}
+                  />
+                  <Skeleton
+                    height="275px"
+                    width="260px"
+                    style={{ borderRadius: "6px", margin: "6px" }}
+                  />
+                  <Skeleton
+                    height="275px"
+                    width="260px"
+                    style={{ borderRadius: "6px", margin: "6px" }}
+                  />
+                </>
+              )}
           </div>
         </TabPane>
         <TabPane tabId="2">

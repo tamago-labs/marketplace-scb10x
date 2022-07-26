@@ -21,12 +21,23 @@ const Description = styled.p`
 
 const MainPanel = styled.div`
     max-width: 800px; 
-  margin-left: auto;
-  margin-right: auto;
-  padding: 1rem;  
-  min-height: 250px;
-`
+    margin-left: auto;
+    margin-right: auto;
+    padding: 1rem;  
+    min-height: 250px; 
+    overflow: hidden;
+    border-radius: 8px;
+    padding: 20px;
+    margin-top: 30px;
+    border: 1px solid white;
 
+    p {
+        text-align: center;
+        font-size: 12px;
+        letter-spacing: 1.5px;
+    }
+
+`
 
 const ButtonGroup = styled.div`
   display: flex; 
@@ -171,9 +182,10 @@ const Faucet = () => {
     return (
         <Container>
             <Description>
-                Welcome to the faucet, this allows minting mock NFTs and tokens on Testnet networks
+                    Get testnet tokens / NFTs to use on the Testnet system 
             </Description>
             <MainPanel>
+                <p>Chain</p>
                 <ButtonGroup>
                     <ToggleButton onClick={() => setChain(42)} active={chain === 42}>
                         Kovan
@@ -188,6 +200,7 @@ const Faucet = () => {
                         Fuji Testnet
                     </ToggleButton>
                 </ButtonGroup>
+                <p>Token Type</p>
                 <ButtonGroup>
                     <ToggleButton onClick={() => setNFT(true)} active={isNFT}>
                         NFT
@@ -196,6 +209,7 @@ const Faucet = () => {
                         ERC-20
                     </ToggleButton>
                 </ButtonGroup>
+                <p>To be Minted</p>
                 <ListContainer>
                     {
                         isNFT && mocks.map((nft, index) => (
@@ -225,15 +239,12 @@ const Faucet = () => {
                                 </div>
                             </NFTCard>
                         )
-                    })
-
-                    }
+                    })}
                 </ListContainer>
 
-                {disabled && <div style={{ textAlign: "center", fontWeight: "600", height: "40px" }}>
+                {disabled && <div style={{ textAlign: "center", fontWeight: "600", height: "40px", color : "red" }}>
                     {disabled && "Invalid network!"}
                 </div>}
-
 
             </MainPanel>
         </Container>

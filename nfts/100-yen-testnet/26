@@ -1,0 +1,18 @@
+{
+    "image": "ipfs://bafybeigc6x6bey2qzyuwb6juq6aeja5h5xq2zgdwuflgx6uau4wptlmnfm/26.png",
+    "name": "Grow in the Dark #26",
+    "attributes": [
+        {
+            "trait_type": "body",
+            "value": "lantern"
+        },
+        {
+            "trait_type": "color",
+            "value": "yellow"
+        },
+        {
+            "trait_type": "condition",
+            "value": "new"
+        }
+    ]
+}

@@ -6,8 +6,10 @@ const fs = require("fs")
 
 const { addFirestoreDataToAlgolia } = require("./services/algolia")
 const { orderTrails } = require("./services/order-trails")
-const { updateHistory } = require("./services/history-update")
+const { updateHistory } = require("./services/history-update");
+
 // const { testSendingMail } = require("./sendgrid")
+
 // initialize app
 const app = express();
 app.use(express.json({ limit: "50mb" }))

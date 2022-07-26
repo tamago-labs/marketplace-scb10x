@@ -30,6 +30,29 @@ export const resolveNetworkName = (networkId) => {
 }
 
 
+export const resolveNetworkIconUrl = (networkId) => {
+  switch (networkId) {
+    case 1:
+      return "https://raw.githubusercontent.com/sushiswap/icons/master/network/mainnet.jpg"
+    case 42:
+      return "https://raw.githubusercontent.com/sushiswap/icons/master/network/kovan.jpg"
+    case 56:
+      return "https://raw.githubusercontent.com/sushiswap/icons/master/network/bsc.jpg"
+    case 97:
+      return "https://raw.githubusercontent.com/sushiswap/icons/master/network/bsc.jpg"
+    case 137:
+      return "https://raw.githubusercontent.com/sushiswap/icons/master/network/polygon.jpg"
+    case 80001:
+      return "https://raw.githubusercontent.com/sushiswap/icons/master/network/polygon.jpg"
+    case 43113:
+      return "https://raw.githubusercontent.com/sushiswap/icons/master/network/avalanche.jpg"
+    case 43114:
+      return "https://raw.githubusercontent.com/sushiswap/icons/master/network/avalanche.jpg"
+    default:
+      return "https://via.placeholder.com/30x30"
+  }
+}
+
 export const getProviders = () => {
 
   const chainIds = SUPPORT_CHAINS
@@ -73,3 +96,8 @@ export const getProviders = () => {
 export const shorterName = (name) => {
   return name.length > 28 ? `${name.slice(0, 15)}...${name.slice(-4)}` : name
 }
+
+export const shorterText = (name) => {
+  return name.length > 150 ? `${name.slice(0, 150)}...` : name
+}
+

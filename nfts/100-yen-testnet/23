@@ -1,0 +1,18 @@
+{
+    "image": "ipfs://bafybeigc6x6bey2qzyuwb6juq6aeja5h5xq2zgdwuflgx6uau4wptlmnfm/23.png",
+    "name": "Bucket #23",
+    "attributes": [
+        {
+            "trait_type": "body",
+            "value": "bucket"
+        },
+        {
+            "trait_type": "color",
+            "value": "red"
+        },
+        {
+            "trait_type": "condition",
+            "value": "new"
+        }
+    ]
+}

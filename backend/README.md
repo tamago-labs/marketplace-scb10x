@@ -19,12 +19,14 @@
 
 ## Collections
 
-| HTTP Method | path                               | RequestBody                                                                                                                                    | Response                                                                                    | Notes         |
-| ----------- | ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- | ------------- |
-| GET         | /collections?chain=80001,42        | none                                                                                                                                           | { "status": "ok", collections: [{...},{...},{...}],totalCount }                             | See Notes \*3 |
-| GET         | /collections/{address}/{chainId}   | none                                                                                                                                           | { "status": "ok", collection : {...collection, ownerAddress} }                              |               |
-| GET         | /collections/search/?query={query} | none                                                                                                                                           | { "status": "ok", collections: [{...},{...},{...}] }                                        |               |
-| UPDATE      | /collections/update                | { address, chainId, message, signature, collectionName, slug, description, websiteLink, discordLink, instagramLink, mediumLink, telegramLink } | 201 { status: "ok", {updated fields} } <br> **OR** 200 { status: "ok", {created document} } | See Notes \*6 |
+| HTTP Method | path                               | RequestBody                                                                                                                                    | Response                                                                                    | Notes              |
+| ----------- | ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- | ------------------ |
+| GET         | /collections?chain=80001,42        | none                                                                                                                                           | { "status": "ok", collections: [{...},{...},{...}],totalCount }                             | See Notes \*3      |
+| GET         | /collections/{address}/{chainId}   | none                                                                                                                                           | { "status": "ok", collection : {...collection, ownerAddress} }                              |                    |
+| GET         | /collections/search/?query={query} | none                                                                                                                                           | { "status": "ok", collections: [{...},{...},{...}] }                                        |                    |
+| POST        | /collections/update                | { address, chainId, message, signature, collectionName, slug, description, websiteLink, discordLink, instagramLink, mediumLink, telegramLink } | 201 { status: "ok", {updated fields} } <br> **OR** 200 { status: "ok", {created document} } | See Notes \*6      |
+| POST        | /collections/ban                   | {chainId, address, message, signature}                                                                                                         | { status: "ok", message: "collection banned" }                                              | See Notes \*5 ,\*8 |
+| POST        | /collections/un-ban                | {chainId, address, message, signature}                                                                                                         | { status: "ok", message: "collection unbanned" }                                            | See Notes \*5 ,\*8 |
 
 ---
 
@@ -136,5 +138,9 @@ Notes \*6 :<br>
 Notes \*7 :<br>
 
 - this endpoint is currently not being used by the frontend, it is disabled to avoid potential bugs.
+
+Notes \*8 :<br>
+
+- this endpoint is intended for admin uses only
 
 #### Development Started During SCB10X - MAY 2022 - METATHON (when we made new cool friends!)
