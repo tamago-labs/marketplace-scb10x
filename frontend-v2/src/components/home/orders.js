@@ -82,6 +82,7 @@ const SearchSection = styled.div`
 
 const MainSection = styled.div`
   padding: 20px;
+  padding-top: 0px;
   max-width: 1400px;
     margin-left: auto;
     margin-right: auto;
@@ -244,6 +245,7 @@ const Orders = () => {
                             Fuji Testnet
                         </ToggleButton>
                     </ButtonGroup>
+                    <p style={{marginTop :"15px", fontSize  :"10px"}}>The hackathon version can be accessible from <a style={{color : "inherit"}} href="https://marketplace-10x.tamago.finance" target="_blank">here</a></p>
                 </NetworkPanel>
 
                 {/* <div style={{ fontSize: "12px", padding: "20px", paddingTop: "0px", display: "flex", flexDirection: "row" }}>

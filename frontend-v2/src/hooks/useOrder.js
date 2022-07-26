@@ -25,7 +25,7 @@ const useOrder = () => {
   const Web3Api = useMoralisWeb3Api();
 
   const context = useWeb3React();
-  const { generateMoralisParams, resolveOrderCreatedTable, resolveSwappedTable } = useMoralisAPI()
+  const { generateMoralisParams, resolveOrderCreatedTable, resolveSwappedTable, resolveCanceledTable } = useMoralisAPI()
 
   // const { generateRelayMessages, generateValidatorMessages } = useProof();
 
@@ -307,8 +307,22 @@ const useOrder = () => {
 
     output = output.filter(item => swapCompleted.indexOf(item.cid) === -1)
 
-    // TODO: check cancel events
+    // check cancel events
+    const Canceled = Moralis.Object.extend(`${resolveCanceledTable(chainId)}`);
+    const queryCanceled = new Moralis.Query(Canceled);
 
+    queryCanceled.limit(1000)
+
+    const cancelItems = await queryCanceled.find();
+
+    let cancelCompleted = []
+
+    for (let object of cancelItems) {
+      const cid = object.get("cid")
+      cancelCompleted.push(cid)
+    }
+
+    output = output.filter(item => cancelCompleted.indexOf(item.cid) === -1)
 
     return output.sort(function (a, b) {
       return b.timestamp - a.timestamp;
@@ -354,7 +368,6 @@ const useOrder = () => {
     const Swapped = Moralis.Object.extend(`${resolveSwappedTable(chainId)}`);
     const querySwap = new Moralis.Query(Swapped);
 
-    query.equalTo("assetAddress", assetAddress.toLowerCase());
     querySwap.limit(1000)
 
     const swapItems = await querySwap.find();
@@ -368,8 +381,96 @@ const useOrder = () => {
 
     output = output.filter(item => swapCompleted.indexOf(item.cid) === -1)
 
-    // TODO: check cancel events
+    // check cancel events
+    const Canceled = Moralis.Object.extend(`${resolveCanceledTable(chainId)}`);
+    const queryCanceled = new Moralis.Query(Canceled);
 
+    queryCanceled.limit(1000)
+
+    const cancelItems = await queryCanceled.find();
+
+    let cancelCompleted = []
+
+    for (let object of cancelItems) {
+      const cid = object.get("cid")
+      cancelCompleted.push(cid)
+    }
+
+    output = output.filter(item => cancelCompleted.indexOf(item.cid) === -1)
+
+    return output.sort(function (a, b) {
+      return b.timestamp - a.timestamp;
+    });
+
+  }, [])
+
+  const getOrdersFromAccount = useCallback(async (chainId, account) => {
+
+    await Moralis.start(generateMoralisParams(chainId));
+
+    const OrderCreated = Moralis.Object.extend(`${resolveOrderCreatedTable(chainId)}`);
+    const query = new Moralis.Query(OrderCreated);
+
+    query.equalTo("owner", account.toLowerCase());
+    query.limit(1000)
+
+    const results = await query.find();
+
+    let output = []
+
+    for (let object of results) {
+      const cid = object.get("cid")
+      const timestamp = object.get("block_timestamp")
+      const assetAddress = object.get("assetAddress")
+      const owner = object.get("owner")
+      const tokenId = object.get("tokenId")
+      const tokenType = object.get("tokenType")
+
+      output.push({
+        cid,
+        timestamp,
+        assetAddress,
+        owner,
+        tokenId,
+        tokenType: Number(tokenType),
+        chainId
+      })
+
+    }
+
+    // check swap events
+    const Swapped = Moralis.Object.extend(`${resolveSwappedTable(chainId)}`);
+    const querySwap = new Moralis.Query(Swapped);
+
+    querySwap.limit(1000)
+
+    const swapItems = await querySwap.find();
+
+    let swapCompleted = []
+
+    for (let object of swapItems) {
+      const cid = object.get("cid")
+      swapCompleted.push(cid)
+    }
+
+    output = output.filter(item => swapCompleted.indexOf(item.cid) === -1)
+
+    const Canceled = Moralis.Object.extend(`${resolveCanceledTable(chainId)}`);
+    const queryCanceled = new Moralis.Query(Canceled);
+
+    queryCanceled.equalTo("owner", account.toLowerCase());
+    queryCanceled.limit(1000)
+
+    const cancelItems = await queryCanceled.find();
+
+    let cancelCompleted = []
+
+    for (let object of cancelItems) {
+      const cid = object.get("cid")
+      cancelCompleted.push(cid)
+    }
+
+    output = output.filter(item => cancelCompleted.indexOf(item.cid) === -1)
 
     return output.sort(function (a, b) {
       return b.timestamp - a.timestamp;
@@ -628,6 +729,7 @@ const useOrder = () => {
     approveToken,
     getAllOrders,
     getOrdersFromCollection,
+    getOrdersFromAccount,
     getOrder,
     resolveMetadata,
     resolveTokenValue,

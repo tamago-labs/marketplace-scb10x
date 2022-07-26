@@ -1,0 +1,18 @@
+{
+    "image": "ipfs://bafybeigc6x6bey2qzyuwb6juq6aeja5h5xq2zgdwuflgx6uau4wptlmnfm/1.png",
+    "name": "Greenery Hat #1",
+    "attributes": [
+        {
+            "trait_type": "body",
+            "value": "hat"
+        },
+        {
+            "trait_type": "color",
+            "value": "green"
+        },
+        {
+            "trait_type": "condition",
+            "value": "new"
+        }
+    ]
+}

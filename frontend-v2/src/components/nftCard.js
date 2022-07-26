@@ -3,11 +3,12 @@ import { useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 import { AssetCard } from "./card";
 import useOrder from "../hooks/useOrder";
-import { shorterName } from "../helper" 
+import { shorterName } from "../helper"
 
 const NFTCard = ({
     delay,
-    order
+    order,
+    children
 }) => {
 
     const { resolveMetadata, resolveTokenValue } = useOrder();
@@ -46,6 +47,7 @@ const NFTCard = ({
                     </>
                 }
             </div>
+            {children}
         </AssetCard>
     )
 }

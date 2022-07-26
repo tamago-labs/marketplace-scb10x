@@ -156,10 +156,10 @@ const Header = () => {
                     </Link>
                 </Brand>
                 <Menu>
-                    <Link to="/">
+                    {/* <Link to="/">
                         {` `}Marketplace
                     </Link>
-                    {` `}
+                    {` `} */}
                     <Link to="/launchpad">
                         {` `}Launchpad
                     </Link>
@@ -167,6 +167,12 @@ const Header = () => {
                     <Link to="/faucet">
                         {` `}Faucet
                     </Link>
+                    {` `}
+                    {account && (
+                        <Link to="/account">
+                            {` `}Account
+                        </Link>
+                    )}
                 </Menu>
                 <Buttons>
                     {!account &&
