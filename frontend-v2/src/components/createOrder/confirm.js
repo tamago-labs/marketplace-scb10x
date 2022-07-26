@@ -244,7 +244,10 @@ const Confirm = ({
     setLoading(true);
 
     try {
-      Promise.all(
+      
+      // FIXME : Duplicate approves
+
+      await Promise.all(
         values.map(async (item) => {
           if (item.baseAssetTokenType === 0) {
             await approveToken(item);
@@ -346,7 +349,7 @@ const Confirm = ({
                 >
                   <div className="name">
                     {nft.name}
-                    {` `}#{shorterName(nft.token_address)}
+                    {` `}#{shorterName(nft.token_id)}
                     {/* {nft.baseAssetTokenType !== 0 ? (
                       <>
                         {nft.name}
