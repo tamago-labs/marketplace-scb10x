@@ -4,7 +4,7 @@ import { Container, Row, Col } from "reactstrap"
 import { Button } from "../button"
 import { Link } from "react-router-dom"
 import Skeleton from "react-loading-skeleton";
-import { shorterText } from "../../helper"
+import { resolveNetworkName, shorterText } from "../../helper"
 import { Rings, Audio } from 'react-loading-icons'
 import PROJECTS from "../../data/projects"
 
@@ -126,24 +126,23 @@ const Project = ({ item }) => {
                     <CardBody>
                         <h5>{item.title}</h5>
                         <p>{shorterText(item.description)}</p>
-                         
+
                         <Info
                             name="Chain"
-                            value={"BNB"}
+                            value={resolveNetworkName(item.chainId)}
                         />
                         <Info
                             name="Total"
-                            value={"10000"}
+                            value={item.totalSupply}
                         />
-                         
+
                         <Info
                             name="Mint Price"
-                            value={"1 BUSD,USDC,USDT"}
+                            value={"1 USDC,DAI"}
                         />
                     </CardBody>
                 </Card>
             </Link>
-
         </Col>
     )
 }
@@ -152,9 +151,11 @@ const Launchpad = () => {
     return (
         <StyledContainer>
             <Header>
-                <Button>
-                    Apply Launchpad
-                </Button>
+                <a href="https://docs.google.com/forms/d/e/1FAIpQLSeZzKesutruj9ExCaUi72yB-ar6pD4nQNedcDd8Eh3SCVVR6g/viewform" target="_blank">
+                    <Button>
+                        Apply Launchpad
+                    </Button>
+                </a>
             </Header>
 
             <Body>

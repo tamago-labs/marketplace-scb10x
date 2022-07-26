@@ -11,6 +11,7 @@ import OrderDetails from "./components/orderDetails"
 import Launchpad from "./components/launchpad";
 import Collection from "./components/collection"
 import LaunchpadDetails from "./components/launchpad/details";
+import Account from "./components/account"
 
 import "react-toastify/dist/ReactToastify.css";
 
@@ -45,6 +46,7 @@ function App() {
         <Route path="/launchpad" element={<Launchpad />} />
         <Route path="/launchpad/:slug" element={<LaunchpadDetails />} />
         <Route path="/collection/:chain/:address" element={<Collection />} />
+        <Route path="/account" element={<Account />} />
       </Routes>
       <Footer/>
     </div>

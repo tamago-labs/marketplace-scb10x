@@ -250,7 +250,6 @@ const NFTCard = ({
         }
     }, [assetAddressContractErc721, assetAddressContractErc1155, contractErc20])
 
-
     return (
         <>
             <SwapModal

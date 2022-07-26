@@ -7,7 +7,6 @@ import NFTCard from "../nftCard";
 import { Button, Button2, ToggleButton } from "../../components/button"
 import { AssetCard } from "../card";
 
-
 const ALT_COVER = "https://img.tamago.finance/bg-2.jpg"
 
 const Container = styled.div`
