@@ -1,6 +1,4 @@
 const { db } = require("../../../firebase")
-const { Moralis, MoralisOptions } = require("../../../moralis")
-const { btoa } = require("../../../utils")
 const { NFTStorage } = require('nft.storage')
 //Blob is included in node version 15 or higher (Node version 16 recommended)
 const { Blob } = require("buffer");
