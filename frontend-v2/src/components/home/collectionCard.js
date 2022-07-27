@@ -207,10 +207,10 @@ const Collection = ({ orders, collection }) => {
                         name="Total Volume"
                         value={null}
                     /> */}
-                    <Info
+                    {/* <Info
                         name="Floor Price"
                         value={null}
-                    />
+                    /> */}
                 </CardBody>
             </Card>
         </Link>

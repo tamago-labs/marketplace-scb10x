@@ -179,10 +179,10 @@ const Collection = () => {
                             name="Total Volume"
                             value={null}
                         /> */}
-                        <Info
+                        {/* <Info
                             name="Floor Price"
                             value={null}
-                        />
+                        /> */}
                     </CollectionStatusCard>
                 </CollectionStatusContainer>
             </Header>

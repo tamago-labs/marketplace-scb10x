@@ -50,17 +50,17 @@ const L2Text = styled(L1Text)`
 
 export const Info = styled(({ className, name, value, link }) => {
   return (
-    <div className={className}>
-      <label>{name}</label>
-      {!link ? (
-        <p>{value || <Skeleton width="80px" />}</p>
-      ) : (
-        <Link to={`/orders/owner/${link}`}>
-          <p>{value}</p>
-        </Link>
-      )}
-    </div>
-  );
+      <div className={className}>
+          <label>{name}</label>
+          {!link ? (
+              <p>{value || <Skeleton width="80px" />}</p>
+          ) : (
+              <Link to={`/collection/${link}`}>
+                  <p style={{textDecoration : "underline"}}>{value}</p>
+              </Link>
+          )}
+      </div>
+  )
 })`
   display: inline-block;
   min-width: 100px;
@@ -293,13 +293,14 @@ const NFTCard = ({
 const OrderDetails = () => {
   const { account, library, chainId } = useWeb3React();
 
-  const { getOrder, resolveMetadata, resolveTokenValue, resolveStatus } =
+  const { getOrder, resolveMetadata, resolveTokenValue, resolveStatus, getCollectionInfo } =
     useOrder();
 
   const [order, setOrder] = useState();
   const [data, setData] = useState();
   const [status, setStatus] = useState();
   const [tick, setTick] = useState(0);
+  const [collectionInfo, setCollectionInfo] = useState()
 
   const { id } = useParams();
 
@@ -318,6 +319,7 @@ const OrderDetails = () => {
         tokenId: order.baseAssetTokenIdOrAmount,
         chainId: order.chainId,
       }).then(setData);
+      getCollectionInfo(order.baseAssetAddress, order.chainId).then(setCollectionInfo)
     }
   }, [order]);
 
@@ -399,6 +401,7 @@ const OrderDetails = () => {
           <div
             style={{ display: "flex", flexDirection: "row", marginTop: "1rem" }}
           >
+            <Info link={`${order.chainId}/${order.baseAssetAddress}`} name={"Collection"} value={collectionInfo && collectionInfo.title ? collectionInfo.title : shortAddress(order.baseAssetAddress)} />
             <Info name={"Status"} value={status ? "Sold" : "New"} />
             <Info name={"Chain"} value={resolveNetworkName(order.chainId)} />
             <Info
