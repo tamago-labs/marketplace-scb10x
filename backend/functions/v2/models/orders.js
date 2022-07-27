@@ -2,7 +2,7 @@ const axios = require("axios")
 
 const { redisClient } = require("../../redis")
 const { db } = require("../../firebase")
-const { all } = require("../routes/orders")
+
 
 const getIpfsDataByCid = async (cid) => {
   const url = `https://${cid}.ipfs.infura-ipfs.io/`
@@ -14,7 +14,7 @@ const getIpfsDataByCid = async (cid) => {
 
 const getAllActiveOrders = async () => {
   try {
-
+    await redisClient.connect()
     const orders = await redisClient.get("orders")
 
     if (orders === null) {
@@ -36,6 +36,7 @@ const getAllActiveOrders = async () => {
       console.log("Cache found, sending data to frontend")
       return JSON.parse(orders)
     }
+
   } catch (error) {
     console.log(error)
   }
@@ -44,8 +45,7 @@ const getAllActiveOrders = async () => {
 const getAllOrdersWithChainId = async (chainId) => {
   try {
     const allOrders = await getAllActiveOrders()
-    const orders = allOrders.filter(item => Number(item.chainId) === Number(chainId)
-    )
+    const orders = allOrders.filter(item => Number(item.chainId) === Number(chainId))
     return orders
   } catch (error) {
     console.log(error)

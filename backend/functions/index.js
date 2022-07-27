@@ -17,8 +17,6 @@ app.use(express.json({ limit: "50mb" }))
 app.use(morgan("tiny"))
 app.use(cors())
 
-//connecting to Redis
-connectToRedis()
 
 //test route
 app.use("/testing", async (req, res, next) => {

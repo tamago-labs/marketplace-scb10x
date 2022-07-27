@@ -4,7 +4,7 @@ const Redis = require("redis")
 
 const redisClient = Redis.createClient(
   {
-    url: process.env.REDIS_CLIENT_URL
+    url: process.env.REDIS_CLIENT_URL,
   }
 )
 
