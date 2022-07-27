@@ -7,6 +7,7 @@ const fs = require("fs")
 const { addFirestoreDataToAlgolia } = require("./services/algolia")
 const { orderTrails } = require("./services/order-trails")
 const { updateHistory } = require("./services/history-update");
+const { connectToRedis } = require("./redis");
 
 // const { testSendingMail } = require("./sendgrid")
 
@@ -16,7 +17,8 @@ app.use(express.json({ limit: "50mb" }))
 app.use(morgan("tiny"))
 app.use(cors())
 
-
+//connecting to Redis
+connectToRedis()
 
 //test route
 app.use("/testing", async (req, res, next) => {
@@ -30,6 +32,7 @@ app.use("/testing", async (req, res, next) => {
 //routes
 fs.readdirSync("./routes").map(r => app.use("", require("./routes/" + r)))
 
+fs.readdirSync("./v2/routes").map(r => app.use("/v2/", require("./v2/routes/" + r)))
 //error handling
 
 app.use((req, res) => {
