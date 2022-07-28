@@ -16,13 +16,18 @@ const NFTCard = ({
 
     useEffect(() => {
         if (order && order.tokenType !== 0) {
-            setTimeout(() => {
-                resolveMetadata({
+                 resolveMetadata({
                     assetAddress: order.assetAddress,
                     tokenId: order.tokenId,
                     chainId: order.chainId,
                 }).then(setData);
-            }, delay * 1000);
+            // setTimeout(() => {
+            //     resolveMetadata({
+            //         assetAddress: order.assetAddress,
+            //         tokenId: order.tokenId,
+            //         chainId: order.chainId,
+            //     }).then(setData);
+            // }, delay * 1000);
         }
 
     }, [order, delay]);
@@ -36,7 +41,7 @@ const NFTCard = ({
             <div className="name">
                 {order.tokenType !== 0
                     ?
-                    <>{data && data.metadata && data.metadata.name}{` `}#{shorterName(order.tokenId)}</>
+                    <>{data && data.metadata.name ? data.metadata.name : `#${shorterName(order.tokenId)}`}</>
                     :
                     <>
                         {resolveTokenValue({

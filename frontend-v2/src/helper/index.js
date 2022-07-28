@@ -13,7 +13,7 @@ export const resolveNetworkName = (networkId) => {
     case 42:
       return "Kovan Testnet"
     case 56:
-      return "BNB Smart Chain"
+      return "BNB Chain"
     case 97:
       return "BNB Testnet"
     case 137:
@@ -29,6 +29,32 @@ export const resolveNetworkName = (networkId) => {
   }
 }
 
+
+export const resolveBlockexplorerLink = (networkId, assetAddress, isAddress = true) => {
+
+  const prefix = isAddress ? "address" : "tx"
+
+  switch (networkId) {
+    case 1:
+      return `https://etherscan.io/${prefix}/${assetAddress}`
+    case 42:
+      return `https://kovan.etherscan.io/${prefix}/${assetAddress}`
+    case 97:
+      return `https://testnet.bscscan.com/${prefix}/${assetAddress}`
+    case 80001:
+      return `https://mumbai.polygonscan.com/${prefix}/${assetAddress}`
+    case 137:
+      return `https://polygonscan.com/${prefix}/${assetAddress}`
+    case 56:
+      return `https://bscscan.com/${prefix}/${assetAddress}`
+    case 43113:
+      return `https://testnet.avascan.info/blockchain/c/${prefix}/${assetAddress}`
+    case 43114:
+      return `https://snowtrace.io/${prefix}/${assetAddress}`
+    default:
+      return "#"
+  }
+}
 
 export const resolveNetworkIconUrl = (networkId) => {
   switch (networkId) {

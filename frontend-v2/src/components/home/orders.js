@@ -16,6 +16,7 @@ import { Options } from "../input"
 import NFTCard from "../nftCard"
 import Collection from "./collectionCard"
 import { NETWORK } from "../../config/network"
+import useCoingecko from "../../hooks/useCoingecko";
 
 const ButtonGroup = styled.div`
   display: flex;   
@@ -88,7 +89,7 @@ const MainSection = styled.div`
     margin-right: auto;
 `
 
-const MAX_ITEMS = 16;
+const MAX_ITEMS = 15;
 
 
 
@@ -147,6 +148,7 @@ const Orders = () => {
       setCollections([])
       setMax(MAX_ITEMS)
       getAllOrders(chain).then(setOrders)
+      
     }
 
   }, [chain])
@@ -164,15 +166,25 @@ const Orders = () => {
 
   useEffect(() => {
     const collections = orders.reduce((array, item) => {
-      if (array.indexOf(item.assetAddress) === -1) {
-        array.push(item.assetAddress)
+
+      if (item.tokenType !== 0) {
+        if (array.find(i => i.key === item.assetAddress)) {
+          array = array.map(i => i.key === item.assetAddress ? ({ key: i.key, value: i.value + 1 }) : i)
+        } else {
+          array.push({
+            key: item.assetAddress,
+            value: 1
+          })
+        }
       }
       return array
-    }, [])
+    }, []).sort(function (a, b) {
+      return b.value - a.value;
+    });
 
     const chainId = orders && orders.length > 0 ? orders[0].chainId : 1
 
-    Promise.all(collections.map(item => getCollection(item, chainId))).then(setCollections)
+    Promise.all(collections.map(item => getCollection(item.key, chainId))).then(setCollections)
 
   }, [orders])
 
@@ -308,14 +320,16 @@ const Orders = () => {
                       return;
                     }
                     return (
-                      <NFTCard key={index} delay={index % MAX_ITEMS} order={order} />
+                      <NFTCard key={index} delay={index % MAX_ITEMS} order={order}>
+                        xxx
+                      </NFTCard>
                     );
                   })}
 
               </AllOrdersPanel>
               <div style={{ padding: "20px", marginTop: "1rem", textAlign: "center" }}>
                 {orders.length > max && (
-                  <Button onClick={() => setMax(max + 8)}>View More Items...</Button>
+                  <Button onClick={() => setMax(max + 5)}>View More Items...</Button>
                 )}
               </div>
             </>

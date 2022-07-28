@@ -249,8 +249,6 @@ const To = ({
         </TabPane>
         <TabPane tabId="2">
           <div>
-
-
             {searchNFT && !searchLoading
               ? searchNFT.map((nft, index) => (
                 <>

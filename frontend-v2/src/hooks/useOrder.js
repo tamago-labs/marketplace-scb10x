@@ -20,6 +20,7 @@ import useMoralisAPI from "./useMoralisAPI";
 import { getProviders } from "../helper";
 // import useProof from "./useProof"; 
 import COLLECTIONS from "../data/collections"
+import useCoingecko from "./useCoingecko";
 
 window.Buffer = window.Buffer || require("buffer").Buffer;
 
@@ -31,6 +32,8 @@ const useOrder = () => {
 
   const context = useWeb3React();
   const { generateMoralisParams, resolveOrderCreatedTable, resolveSwappedTable, resolveCanceledTable } = useMoralisAPI()
+
+  const { getLowestPrice } = useCoingecko()
 
   // const { generateRelayMessages, generateValidatorMessages } = useProof();
 
@@ -74,7 +77,7 @@ const useOrder = () => {
             metadata["image"] = data.data["image_url"];
           }
         }
-      } catch (e) {}
+      } catch (e) { }
     }
 
     if (
@@ -545,10 +548,89 @@ const useOrder = () => {
 
   }, [])
 
-  const getCollectionInfo = async (
+  const getFloorPrice = async (
     assetAddress,
     chainId
   ) => {
+
+    const orders = await getOrdersFromCollection(chainId, assetAddress)
+
+    let infos = []
+
+    for (let order of orders) {
+      const info = await getOrder(order.cid)
+      infos.push({
+        ...info,
+        cid: order.cid
+      })
+    }
+
+    const price = await getLowestPrice(infos)
+
+    return price
+  }
+
+  const getCollectionOwners = async (
+    assetAddress,
+    chainId
+  ) => {
+
+    await Moralis.start(generateMoralisParams(chainId));
+
+    let owners = []
+
+    try {
+
+      const options = {
+        address: `${assetAddress}`,
+        chain: `0x${chainId.toString(16)}`,
+      };
+      if (assetAddress !== "0x2953399124f0cbb46d2cbacd8a89cf0599974963") {
+        // let result = await Web3Api.token.getNFTOwners(options);
+        let result = await Moralis.Web3API.token.getNFTOwners(options);
+        owners = result.result.map(item => item['owner_of'])
+
+        await wait()
+
+        while (result.next) {
+          result = await result.next()
+          const o = result.result.map(item => item['owner_of'])
+          owners = owners.concat(o)
+          await wait()
+
+        }
+
+        owners = Array.from(new Set(owners));
+      } else {
+        owners = []
+      }
+    } catch (e) {
+      console.log(e)
+    }
+
+    return owners
+  }
+
+  const wait = async () => {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve()
+      }, 500)
+    })
+  }
+
+  const getCollectionInfo = async (
+    assetAddress,
+    chainId,
+    loadOwners = false
+  ) => {
+
+    await Moralis.start(generateMoralisParams(chainId));
+
+    // Moralis.settings.setAPIRateLimit({
+    //   anonymous: 100, authenticated: 100, windowMs: 60000
+    // })
+
     const data = COLLECTIONS.find(item => item.assetAddress.toLowerCase() === assetAddress && chainId === item.chainId)
 
     let totalSupply = 0
@@ -561,13 +643,40 @@ const useOrder = () => {
         chain: `0x${chainId.toString(16)}`,
       };
 
-      // const owners = await Web3Api.token.getNFTOwners(options);
-      // totalOwners = owners.total
-      const NFTs = await Web3Api.token.getAllTokenIds(options);
-      totalSupply = NFTs.total
+      if (assetAddress !== "0x2953399124f0cbb46d2cbacd8a89cf0599974963") {
+        // const NFTs = await Web3Api.token.getAllTokenIds(options);
+        const NFTs = await Moralis.Web3API.token.getAllTokenIds(options);
+        totalSupply = NFTs.total
+      } else {
+        totalSupply = 1655037
+      }
+
+      // if (loadOwners) {
+      //   if (assetAddress !== "0x2953399124f0cbb46d2cbacd8a89cf0599974963") {
+
+      //     await wait()
+      //     let result = await Web3Api.token.getNFTOwners(options);
+      //     let owners = result.result.map(item => item['owner_of'])
+
+      //     while (result.next) {
+
+      //       await wait()
+
+      //       result = await result.next()
+
+      //       const o = result.result.map(item => item['owner_of'])
+      //       owners = owners.concat(o)
+      //     }
+
+      //     owners = Array.from(new Set(owners));
+      //     totalOwners = owners.length
+      //   } else {
+      //     totalOwners = 1000000
+      //   }
+      // }
 
     } catch (e) {
-
+      console.log(e)
     }
 
     return {
@@ -597,7 +706,7 @@ const useOrder = () => {
           },
         };
       }
-    } catch (e) {}
+    } catch (e) { }
 
     return new Promise((resolve) => {
       axios
@@ -652,8 +761,8 @@ const useOrder = () => {
 
         return data;
       }
-    } catch (e) {}
-    const tokenIdMetadata = await Web3Api.token.getTokenIdMetadata(options);
+    } catch (e) { }
+    const tokenIdMetadata = await Web3Api.token.getTokenIdMetadata(options)
     return await getMetadata(tokenIdMetadata);
   };
 
@@ -665,9 +774,8 @@ const useOrder = () => {
         item.tokenType === 0
     );
 
-    return `${ethers.utils.formatUnits(tokenId, token.decimals)} ${
-      token.symbol
-    } `;
+    return `${ethers.utils.formatUnits(tokenId, token.decimals)} ${token.symbol
+      } `;
   };
 
   const swap = useCallback(
@@ -817,7 +925,9 @@ const useOrder = () => {
     resolveTokenValue,
     swap,
     resolveStatus,
-    getCollectionInfo
+    getCollectionInfo,
+    getFloorPrice,
+    getCollectionOwners
   };
 };
 
