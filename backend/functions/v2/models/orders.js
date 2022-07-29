@@ -29,11 +29,13 @@ const getAllActiveOrders = async () => {
       const activeOrdersData = await Promise.all(activeOrderCids.map(cid => getIpfsDataByCid(cid)))
       activeOrdersData.sort((a, b) => Number(b.timestamp) - Number(a.timestamp))
       await redisClient.set("orders", JSON.stringify(activeOrdersData))
+      await redisClient.quit()
       return activeOrdersData
 
     } else {
       //sending the cache to frontend
-      console.log("Cache found, sending data to frontend")
+      redisClient.quit()
+      await console.log("Cache found, sending data to frontend")
       return JSON.parse(orders)
     }
 
