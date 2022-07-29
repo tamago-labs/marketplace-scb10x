@@ -188,6 +188,7 @@ const From = ({
                         min={1}
                         step={1}
                         value={tokenAmount[index]}
+                        disabled={isSelected}
                         onChange={(e) => {
                           const amount = Number(e.target.value);
                           setTokenAmount(
