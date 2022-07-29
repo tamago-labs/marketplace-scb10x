@@ -154,12 +154,14 @@ const Image = styled.img`
 
 const ALT_COVER = "https://img.tamago.finance/bg-2.jpg"
 
-const Collection = ({ orders, collection }) => {
+const Collection = ({ orders, collection, delay }) => {
 
     const firstRow = orders && orders[0]
 
-    const  { getCollectionInfo } = useOrder()
-    const [info, setInfo ] = useState()
+    const { getCollectionInfo, getFloorPrice, getCollectionOwners } = useOrder()
+    const [info, setInfo] = useState()
+    const [floorPrice, setFloorPrice] = useState()
+    const [owners, setOwners ] = useState()
 
     const address = firstRow && firstRow.assetAddress
     const chain = firstRow && (firstRow.chainId)
@@ -171,6 +173,12 @@ const Collection = ({ orders, collection }) => {
         }
         return
     }, [firstRow])
+
+    useEffect(() => {
+        setTimeout(() => {
+            getFloorPrice(firstRow.assetAddress, firstRow.chainId).then(setFloorPrice);
+        }, delay * 1000);
+    }, [firstRow, delay]);
 
     if (orders.length === 0) {
         return (
@@ -184,17 +192,17 @@ const Collection = ({ orders, collection }) => {
         <Link to={`/collection/${chain}/${address}`}>
             <Card>
                 <CardCover>
-                    <Image src={ collection && collection.cover ? collection.cover  : ALT_COVER } />
+                    <Image src={collection && collection.cover ? collection.cover : ALT_COVER} />
                 </CardCover>
                 <CardBody>
                     <h5>{tokenSymbol ? tokenSymbol : collection && collection.title ? collection.title : shortAddress(address)}</h5>
                     <p>
-                        { collection && collection.description ? shorterText(collection.description) : "" }
+                        {collection && collection.description ? shorterText(collection.description) : ""}
                     </p>
-                    <Info   
+                    <Info
                         name="Items"
-                        value={collection && collection.totalSupply }
-                    /> 
+                        value={collection && collection.totalSupply}
+                    />
                     {/* <Info
                         name="Owners"
                         value={collection && collection.totalOwners}
@@ -207,10 +215,10 @@ const Collection = ({ orders, collection }) => {
                         name="Total Volume"
                         value={null}
                     /> */}
-                    {/* <Info
+                    <Info
                         name="Floor Price"
-                        value={null}
-                    /> */}
+                        value={floorPrice ? `$${Number(floorPrice.all).toLocaleString()}` : null}
+                    />
                 </CardBody>
             </Card>
         </Link>

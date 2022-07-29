@@ -6,6 +6,7 @@ import useOrder from "../../hooks/useOrder";
 import NFTCard from "../nftCard";
 import { Button, Button2, ToggleButton } from "../../components/button"
 import { AssetCard } from "../card";
+import { resolveBlockexplorerLink, shortAddress } from "../../helper";
 
 const ALT_COVER = "https://img.tamago.finance/bg-2.jpg"
 
@@ -92,6 +93,7 @@ const Body = styled.div.attrs(() => ({}))`
     margin-top: 3rem;
     display: flex;
     flex-direction: row;
+    margin-bottom: 3rem;
 `
 
 const CollectionInfoCol = styled.div`
@@ -111,8 +113,7 @@ const CollectionInfoCard = styled.div`
     flex-direction: column;
     padding: 12px;
     box-shadow: 5px 7px black;
-    h5 {
-        margin-bottom: 10px;
+    h5 { 
     }
     p {
         font-size: 12px;
@@ -130,8 +131,15 @@ const CollectionOrderCol = styled.div`
     flex: 9;
 `
 
+const Address = styled.div`
+    font-size: 14px;
+    a {
+        color: inherit;
+    }
+    margin-bottom: 10px;
+`
 
-const MAX_ITEMS = 8;
+const MAX_ITEMS = 10;
 
 const Collection = () => {
 
@@ -139,27 +147,31 @@ const Collection = () => {
 
     const { address, chain } = useParams()
 
-    const { getOrdersFromCollection, getCollectionInfo } = useOrder()
+    const { getOrdersFromCollection, getCollectionInfo, getFloorPrice, getCollectionOwners } = useOrder()
     const [orders, setOrders] = useState([])
     const [info, setInfo] = useState()
+    const [floorPrice, setFloorPrice] = useState()
+    const [owners, setOwners] = useState()
 
     useEffect(() => {
         if (chain) {
             setOrders([])
             setMax(MAX_ITEMS)
             getOrdersFromCollection(Number(chain), address).then(setOrders)
+            getFloorPrice(address, Number(chain)).then(setFloorPrice)
             getCollectionInfo(address, Number(chain)).then(setInfo)
+            // setTimeout(() => {
+            //     getCollectionOwners(address, Number(chain)).then(setOwners)
+            // }, 3000)
         }
 
     }, [chain, address])
-
-
 
     return (
         <Container>
             <Header>
                 <Cover>
-                    <Image src={info && info.cover ? info.cover  : ALT_COVER} />
+                    <Image src={info && info.cover ? info.cover : ALT_COVER} />
                 </Cover>
                 <CollectionStatusContainer>
                     <CollectionStatusCard>
@@ -169,7 +181,7 @@ const Collection = () => {
                         />
                         {/* <Info
                             name="Owners"
-                            value={info && info.totalOwners}
+                            value={owners && owners.length}
                         /> */}
                         <Info
                             name="Listing"
@@ -179,10 +191,10 @@ const Collection = () => {
                             name="Total Volume"
                             value={null}
                         /> */}
-                        {/* <Info
+                        <Info
                             name="Floor Price"
-                            value={null}
-                        /> */}
+                            value={floorPrice ? `$${Number(floorPrice.all).toLocaleString()}` : null}
+                        />
                     </CollectionStatusCard>
                 </CollectionStatusContainer>
             </Header>
@@ -190,6 +202,15 @@ const Collection = () => {
                 <CollectionInfoCol>
                     <CollectionInfoCard>
                         <h5>{info && info.title ? info.title : <Skeleton />}</h5>
+                        {info && (
+                            <Address>
+                                <a target="_blank" href={resolveBlockexplorerLink(Number(chain), address)}>
+                                    {shortAddress(address)}
+                                </a>
+                            </Address>
+                        )
+
+                        }
                         <p>{info && info.description ? info.description : <Skeleton />}</p>
                     </CollectionInfoCard>
                 </CollectionInfoCol>
@@ -203,15 +224,32 @@ const Collection = () => {
                                 if (index > max - 1) {
                                     return;
                                 }
+                                const lowest = floorPrice && floorPrice.items && floorPrice.items.reduce((value, item) => {
+                                    if (item.cid === order.cid) {
+                                        if (value) {
+                                            if (value > item.value) {
+                                                value = item.value
+                                            }
+                                        } else {
+                                            value = item.value
+                                        }
+                                    }
+                                    return value
+                                }, null)
+
                                 return (
-                                    <NFTCard key={index} delay={index % MAX_ITEMS} order={order} />
+                                    <NFTCard key={index} delay={index % MAX_ITEMS} order={order}>
+                                        <p style={{ color: "black", fontSize: "12px", textAlign: "center" }}>
+                                            {lowest && `$${(Number(lowest)).toLocaleString()}`}
+                                        </p>
+                                    </NFTCard>
                                 );
                             })}
 
                     </OrdersPanel>
                     <div style={{ padding: "20px", marginTop: "1rem", textAlign: "center" }}>
                         {orders.length > max && (
-                            <Button onClick={() => setMax(max + 4)}>View More Items...</Button>
+                            <Button onClick={() => setMax(max + 5)}>View More Items...</Button>
                         )}
                     </div>
                 </CollectionOrderCol>
