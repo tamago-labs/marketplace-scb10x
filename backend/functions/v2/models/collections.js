@@ -6,6 +6,9 @@ const { convertDecimalToHexadecimal, wait } = require("../../utils")
 const getCollectionByChainAndAddress = async (chainId, address) => {
   try {
     const result = await db.collection("collections-v2").doc(`${chainId}.${address}`).get()
+    if (result.empty) {
+      return false
+    }
     const collection = result.data()
     return collection
   } catch (error) {

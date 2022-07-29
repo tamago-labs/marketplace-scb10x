@@ -11,6 +11,21 @@ const getIpfsDataByCid = async (cid) => {
   return res.data
 }
 
+// ! redis must be connected to use this function
+const refreshOrderCache = async () => {
+  // ! modification may be needed later
+  const queryResult = await db.collection("orders-v2").where("confirmed", "==", true).where("locked", "==", false).get()
+  const activeOrderCids = (queryResult.docs.map(item => item.id))
+
+  //requesting all orders in parallel
+
+  const activeOrdersData = await Promise.allSettled(activeOrderCids.map(cid => getIpfsDataByCid(cid)))
+  activeOrdersData.sort((a, b) => Number(b.timestamp) - Number(a.timestamp))
+  await redisClient.set("orders", JSON.stringify(activeOrdersData))
+
+  return activeOrdersData
+}
+
 
 const getAllActiveOrders = async () => {
   try {
@@ -20,15 +35,7 @@ const getAllActiveOrders = async () => {
     if (orders === null) {
       //retrieve all orders
       console.log("No cache found, retrieving data from IPFS")
-      // ! modification may be needed later
-      const queryResult = await db.collection("orders-v2").where("canceled", "==", false).where("confirmed", "==", true).where("locked", "==", false).where("visible", "==", true).get()
-      const activeOrderCids = (queryResult.docs.map(item => item.id))
-
-      //requesting all orders in parallel
-
-      const activeOrdersData = await Promise.all(activeOrderCids.map(cid => getIpfsDataByCid(cid)))
-      activeOrdersData.sort((a, b) => Number(b.timestamp) - Number(a.timestamp))
-      await redisClient.set("orders", JSON.stringify(activeOrdersData))
+      const activeOrdersData = await refreshOrderCache()
       await redisClient.quit()
       return activeOrdersData
 
@@ -57,5 +64,6 @@ const getAllOrdersWithChainId = async (chainId) => {
 
 module.exports = {
   getAllActiveOrders,
-  getAllOrdersWithChainId
+  getAllOrdersWithChainId,
+  refreshOrderCache
 }
