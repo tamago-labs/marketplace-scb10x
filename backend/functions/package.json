@@ -29,6 +29,7 @@
     "moralis": "^1.7.0",
     "morgan": "^1.10.0",
     "nft.storage": "^6.4.1",
+    "redis": "^4.2.0",
     "validator": "^13.7.0"
   },
   "devDependencies": {
