@@ -15,7 +15,17 @@ const getCollectionByChainAndAddress = async (chainId, address) => {
   }
 }
 
+const getCollectionsByChain = async (chainId) => {
+  const result = await db.collection("collections-v2").where("chainId", "==", Number(chainId)).get()
+  if (result.empty) {
+
+    return []
+  } else {
+    return result.docs.map(doc => doc.data())
+  }
+}
 
 module.exports = {
-  getCollectionByChainAndAddress
+  getCollectionByChainAndAddress,
+  getCollectionsByChain
 }

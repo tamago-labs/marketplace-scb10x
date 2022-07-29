@@ -44,9 +44,9 @@ app.use((err, req, res, next) => {
 
 // (Important!)DISABLE THE LINES BELOW BEFORE DEPLOYMENT
 //LOCAL DEV ONLY : run node server on port 3000
-// app.listen(process.env.PORT || 3000, () => {
-//   console.log(`listening on port ${process.env.PORT || 3000}`)
-// })
+app.listen(process.env.PORT || 3000, () => {
+  console.log(`listening on port ${process.env.PORT || 3000}`)
+})
 //LOCAL DEV ONLY : order fulfillment update 
 // orderTrails()
 // updateHistory()

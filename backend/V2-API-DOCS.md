@@ -5,6 +5,7 @@
 | METHOD | PATH                                       | REQUEST_BODY | NOTES |
 | ------ | ------------------------------------------ | ------------ | ----- |
 | GET    | /v2/collection/{chainId}/{contractAddress} | none         |       |
+| GET    | /v2/collections/{chainId}                  | none         |       |
 
 ---
 

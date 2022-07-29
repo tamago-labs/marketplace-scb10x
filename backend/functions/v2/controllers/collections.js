@@ -26,6 +26,20 @@ exports.getCOllectionByChainAndAddress = async (req, res, next) => {
   }
 }
 
+exports.getCollectionsByChain = async (req, res, next) => {
+  try {
+    const { chain } = req.params
+    if (!supportedChains.includes(Number(chain))) {
+      return res.status(400).json({ message: "This chain is not supported" })
+    }
+    const collections = await collectionModel.getCollectionsByChain(chain)
+    console.log(collections)
+    return res.json({ status: "ok", collections })
+  } catch (error) {
+    next(error)
+  }
+}
+
 // exports.getCollectionBySlug = async (req, res, next) => {
 //   try {
 //     const { slug } = req.params
