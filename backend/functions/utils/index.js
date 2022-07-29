@@ -353,6 +353,14 @@ const btoa = (string) => {
   return Buffer.from(string, 'binary').toString('base64');
 };
 
+const wait = async () => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve()
+    }, 500)
+  })
+}
+
 module.exports = {
   getMetadata,
   generateRelayMessages,
@@ -361,5 +369,6 @@ module.exports = {
   getRpcUrl,
   recoverAddressFromMessageAndSignature,
   convertDecimalToHexadecimal,
-  btoa
+  btoa,
+  wait
 }

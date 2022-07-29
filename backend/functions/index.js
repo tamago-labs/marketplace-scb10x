@@ -7,7 +7,9 @@ const fs = require("fs")
 const { addFirestoreDataToAlgolia } = require("./services/algolia")
 const { orderTrails } = require("./services/order-trails")
 const { updateHistory } = require("./services/history-update");
-const { connectToRedis } = require("./redis");
+const { updateTotalOwnersAndItems } = require("./services/update-total-owners-and-supply");
+
+
 
 // const { testSendingMail } = require("./sendgrid")
 
@@ -44,9 +46,9 @@ app.use((err, req, res, next) => {
 
 // (Important!)DISABLE THE LINES BELOW BEFORE DEPLOYMENT
 //LOCAL DEV ONLY : run node server on port 3000
-app.listen(process.env.PORT || 3000, () => {
-  console.log(`listening on port ${process.env.PORT || 3000}`)
-})
+// app.listen(process.env.PORT || 3000, () => {
+//   console.log(`listening on port ${process.env.PORT || 3000}`)
+// })
 //LOCAL DEV ONLY : order fulfillment update 
 // orderTrails()
 // updateHistory()
@@ -59,6 +61,10 @@ exports.api = functions.region('asia-east2').https.onRequest(app)
 exports.pubsub = functions.region('asia-east2').pubsub.schedule('every 10 minutes').onRun(() => {
   orderTrails()
   updateHistory()
+  return null
+})
+exports.updateTotalCountsForCollections = functions.region('asia-east2').pubsub.schedule('0 0 * * *').onRun(() => {
+  updateTotalOwnersAndItems()
   return null
 })
 
