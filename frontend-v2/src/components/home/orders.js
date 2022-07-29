@@ -136,7 +136,7 @@ const Orders = () => {
       if (localStorage.getItem("chainId")) {
         setChain(Number(localStorage.getItem("chainId")))
       } else {
-        setChain(1)
+        setChain(43114)
       }
     }, 500)
   }, [])
@@ -230,17 +230,17 @@ const Orders = () => {
       <SearchSection>
         <NetworkPanel>
           <ButtonGroup>
+            <ToggleButton onClick={() => updateChain(43114)} active={chain === 43114}>
+              <img style={{ borderRadius: "50%" }} width={32} src={getIcon(43114)} />{` `}Avalanche
+            </ToggleButton>
+            <ToggleButton onClick={() => updateChain(56)} active={chain === 56}>
+              <img style={{ borderRadius: "50%" }} width={32} src={getIcon(56)} />{` `}BNB
+            </ToggleButton>
             <ToggleButton onClick={() => updateChain(1)} active={chain === 1}>
               <img style={{ borderRadius: "50%" }} width={32} src={getIcon(1)} />{` `}Ethereum
             </ToggleButton>
             <ToggleButton onClick={() => updateChain(137)} active={chain === 137}>
               <img style={{ borderRadius: "50%" }} width={32} src={getIcon(137)} />{` `}Polygon
-            </ToggleButton>
-            <ToggleButton onClick={() => updateChain(56)} active={chain === 56}>
-              <img style={{ borderRadius: "50%" }} width={32} src={getIcon(56)} />{` `}BNB
-            </ToggleButton>
-            <ToggleButton onClick={() => updateChain(43114)} active={chain === 43114}>
-              <img style={{ borderRadius: "50%" }} width={32} src={getIcon(43114)} />{` `}Avalanche
             </ToggleButton>
           </ButtonGroup>
           <ButtonGroup>

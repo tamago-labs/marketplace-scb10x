@@ -762,6 +762,7 @@ const useOrder = () => {
         return data;
       }
     } catch (e) { }
+
     const tokenIdMetadata = await Web3Api.token.getTokenIdMetadata(options)
     return await getMetadata(tokenIdMetadata);
   };

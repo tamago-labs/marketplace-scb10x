@@ -21,6 +21,13 @@ const COLLECTIONS = [
         description: "Ready Player Cat (RPC) is the mascot of the MAO DAO gaming metaverse. They are only born one at a time from loot boxes, and each celebrate distinctive qualities and visual characteristics. RPC Genesis is a curated collection of 5,000 unique RPC NFTs on the Ethereum blockchain that also represent MAO DAO membership. Visit www.maonft.com to learn more."
     },
     {
+        chainId : 1  ,
+        assetAddress : "0x08e795c30476bac6052b28fcda04e44792c7151f",
+        title : "The Alien Doogle",
+        cover :"https://lh3.googleusercontent.com/0IvLEKmRY09zZthu4vSlSOreQFu2u-vsmSXLcXFwVXLLjile-iUggTjnL95emLIhriWowCfPCbsMhRItyXtT2_p_6tTPhGS7nX3q=h600",
+        description: "The Alien Doogle is a 10k derivative project made with love by The Alien Boy in collaboration with a member of our community pennftyak. It is the first derivative project made by a 180 turn from the art style of the OG collection All traits drawn by Caos Boy Beltracchi 3.0 "
+    },
+    {
         chainId : 137  ,
         assetAddress : "0x109440e0a0b37c0e2a17f91bdea42a8fb17663fb",
         title : "CryptoEmpire Avatars",
