@@ -2,6 +2,7 @@ const { db } = require("../../../firebase")
 const { NFTStorage } = require('nft.storage')
 //Blob is included in node version 15 or higher (Node version 16 recommended)
 const { Blob } = require("buffer");
+const { getTotalOwners, getTotalSupply } = require("../../../v2/models/collections");
 
 const COLLECTIONS = [
   {
@@ -74,6 +75,12 @@ const COLLECTIONS = [
     description: "Mock Cryptokitties NFT for testing purpose"
   },
   {
+    chainId: 97,
+    assetAddress: "0xb07a6a775c94f8b87f920984534533110814d242",
+    title: "100 Yen NFT (Testnet)",
+    description: "The first collection on the launchpad made by Tamago team that anyone can mint NFT with $1 (~100 JPY) accept in stablecoins, the NFT represents tools, items that commonly seen in 100 yen shops aim to be used further on any Metaverse platforms with total supply of 10,000. When the event is finished, $10,000 raised will be split equally and given to 3 holders via NFTLuckbox."
+  },
+  {
     chainId: 43113,
     assetAddress: "0xe5209a4f622c6ed2c158dcccddb69b05f9d0e4e0",
     title: "Mock Coolcat",
@@ -81,6 +88,7 @@ const COLLECTIONS = [
   },
 
 ]
+
 
 
 exports.importFrontEndV2CollectionsToDB = async () => {
@@ -93,6 +101,8 @@ exports.importFrontEndV2CollectionsToDB = async () => {
         description: "",
         slug: "",
         cover: "",
+        totalSupply: "",
+        totalOwners: "",
         links: {
           website: "",
           twitterLink: "",
@@ -105,9 +115,11 @@ exports.importFrontEndV2CollectionsToDB = async () => {
       newData.assetAddress = item.assetAddress
       newData.title = item.title
       newData.description = item.description
+      newData.totalOwners = await getTotalOwners(item.chainId, item.assetAddress)
+      newData.totalSupply = await getTotalSupply(item.chainId, item.assetAddress)
 
       await db.collection("collections-v2").doc(`${item.chainId}.${item.assetAddress}`).set(newData)
-      console.log(`Added collection to db with ID ${item.chainId}.${item.assetAddress} `)
+      // console.log(`Added collection to db with ID ${item.chainId}.${item.assetAddress} `)
     }
   } catch (error) {
     console.log(error)
