@@ -38,6 +38,7 @@ const From = ({
 
   const [activeTab, setActiveTab] = useState("1");
   const [tokenAmount, setTokenAmount] = useState([]);
+  const [disabledCard, setDisabledCard] = useState(false);
 
   const toggle = (tab) => {
     setActiveTab(tab);
@@ -69,6 +70,12 @@ const From = ({
       setFromData([...fromData, nft]);
     }
   };
+
+  useEffect(() => {
+    if (fromTokens.length + fromData.length >= 20) {
+      setDisabledCard(true);
+    }
+  }, [fromTokens, fromData]);
 
   return (
     <Wrapper>
@@ -104,6 +111,7 @@ const From = ({
                   key={index}
                   image={nft.metadata.image}
                   chainId={chainId}
+                  disabled={disabledCard}
                   selected={fromData.find(
                     (data) => data.token_hash === nft.token_hash
                   )}
@@ -154,6 +162,7 @@ const From = ({
                   image={"../images/coin.png"}
                   chainId={chainId}
                   selected={isSelected}
+                  disabled={disabledCard}
                   onClick={() => {
                     if (!isSelected) {
                       setFromTokens([
