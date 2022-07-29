@@ -103,12 +103,21 @@ const To = ({
   const [isNft, setNft] = useState(true);
   const [currentToken, setCurrentToken] = useState();
   const [tokenAmount, setTokenAmount] = useState([]);
+  const [disabled, setDisabled] = useState(true);
 
   useEffect(() => {
     if (chainId && isNft) {
       setCurrentToken();
     }
   }, [chainId, isNft]);
+
+  useEffect(() => {
+    if (toData.length !== 0 || toTokens.length !== 0) {
+      setDisabled(false);
+    } else {
+      setDisabled(true);
+    }
+  }, [toTokens, toData]);
 
   const onSearchTextChange = (e) => {
     setSearchText(e.target.value);
@@ -328,7 +337,11 @@ const To = ({
 
       <ButtonContainer>
         {step > 1 && <Button onClick={() => setStep(step - 1)}>Back</Button>}
-        {toData && <Button onClick={() => setStep(step + 1)}>Next</Button>}
+        {toData && (
+          <Button onClick={() => setStep(step + 1)} disabled={disabled}>
+            Next
+          </Button>
+        )}
       </ButtonContainer>
     </Wrapper>
   );

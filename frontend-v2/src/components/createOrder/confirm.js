@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useMemo } from "react";
+import React, { useCallback, useState, useMemo, useEffect } from "react";
 import { useWeb3React } from "@web3-react/core";
 import styled from "styled-components";
 import { ArrowRight, Check, X } from "react-feather";
@@ -149,6 +149,7 @@ const Confirm = ({
   const [orderId, setOrderId] = useState([]);
   const { createOrder, approveNft, approveToken, register } = useOrder();
   const { chainId, account } = useWeb3React();
+  const [approveItem, setApproveItem] = useState([]);
 
   //values return as List[]
   const values = useMemo(() => {
@@ -203,6 +204,15 @@ const Confirm = ({
     return orderList;
   }, [fromData, toData, chainId, toTokens, fromTokens]);
 
+  //get set unique asset address to approve
+  useEffect(() => {
+    const approveItemSet = new Set();
+    values.map((item) => {
+      approveItemSet.add(item.baseAssetAddress);
+    });
+    setApproveItem(approveItemSet);
+  }, [values]);
+
   const onGenerateId = useCallback(async () => {
     let orderIdList = [];
     if (values[0].barterList.length === 0) {
@@ -229,11 +239,8 @@ const Confirm = ({
     setLoading(true);
 
     try {
-      
-      // FIXME : Duplicate approves
-
       await Promise.all(
-        values.map(async (item) => {
+        approveItem.map(async (item) => {
           if (item.baseAssetTokenType === 0) {
             await approveToken(item);
           } else {
