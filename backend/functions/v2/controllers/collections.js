@@ -29,6 +29,9 @@ exports.getCOllectionByChainAndAddress = async (req, res, next) => {
 exports.getCollectionsByChain = async (req, res, next) => {
   try {
     const { chain } = req.params
+    if (!chain) {
+      return res.status(400).json({ message: "Chain is required as input" })
+    }
     if (!supportedChains.includes(Number(chain))) {
       return res.status(400).json({ message: "This chain is not supported" })
     }
