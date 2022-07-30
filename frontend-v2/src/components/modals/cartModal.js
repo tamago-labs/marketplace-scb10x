@@ -26,6 +26,10 @@ const CartModal = () => {
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
+  const arr = [
+    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+  ];
+
   return (
     <>
       <Button variant="primary" onClick={handleShow}>
@@ -37,35 +41,39 @@ const CartModal = () => {
           <Modal.Title>Your NFT Shopping Cart</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <ul>
-            <Preview>
-              #1
-              <div>
-                <img
-                  src={"../images/coin.png"}
-                  width="80px"
-                  height="80px"
-                  style={{ margin: "auto" }}
-                />
-              </div>
-              <div>
-                <div style={{ margin: "auto", textAlign: "center" }}>
-                  <ArrowRight
-                    style={{ marginLeft: "auto", marginRight: "auto" }}
-                    size={32}
-                  />
-                </div>
-              </div>
-              <div>
-                <img
-                  src={"../images/coin.png"}
-                  width="80px"
-                  height="80px"
-                  style={{ margin: "auto" }}
-                />
-              </div>
-            </Preview>
-          </ul>
+          {arr.map((item, index) => {
+            return (
+              <ul>
+                <Preview>
+                  # {index}
+                  <div>
+                    <img
+                      src={"../images/coin.png"}
+                      width="80px"
+                      height="80px"
+                      style={{ margin: "auto" }}
+                    />
+                  </div>
+                  <div>
+                    <div style={{ margin: "auto", textAlign: "center" }}>
+                      <ArrowRight
+                        style={{ marginLeft: "auto", marginRight: "auto" }}
+                        size={32}
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <img
+                      src={"../images/coin.png"}
+                      width="80px"
+                      height="80px"
+                      style={{ margin: "auto" }}
+                    />
+                  </div>
+                </Preview>
+              </ul>
+            );
+          })}
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>
