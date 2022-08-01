@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-// import Button from "react-bootstrap/Button";
+import React, { useState, useContext, useEffect } from "react";
 import Modal from "react-bootstrap/Modal";
 import { ShoppingCart, ArrowRight } from "react-feather";
 import styled from "styled-components";
@@ -17,6 +16,22 @@ const Preview = styled.div`
     margin-left: 3px;
     margin-right: 3px;
     display: flex;
+  }
+`;
+
+const SwapButton = styled.button.attrs(() => ({ className: "btn" }))`
+  color: #ffffff;
+  background: #7a0bc0;
+  font-weight: 600;
+  border-radius: 32px;
+  border: 2px solid transparent;
+  width: 100%;
+  max-width: 300px;
+  cursor: pointer;
+
+  :hover {
+    color: #ffffff;
+    background: #fa58b6;
   }
 `;
 
@@ -76,12 +91,9 @@ const CartModal = () => {
           })}
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>
-            Close
-          </Button>
-          <Button variant="primary" onClick={handleClose}>
+          <SwapButton variant="primary" onClick={handleClose}>
             Checkout
-          </Button>
+          </SwapButton>
         </Modal.Footer>
       </Modal>
     </>
