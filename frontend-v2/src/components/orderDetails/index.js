@@ -288,15 +288,15 @@ const NFTCard = ({
     );
 
     localStorage.setItem(
-      `#${localStorage.length + 1}`,
+      `cart#${localStorage.length + 1}`,
       JSON.stringify(itemObject)
     );
 
-    const localStorageItems = { ...localStorage };
-    console.log(
-      "🚀 ~ file: index.js ~ line 293 ~ handleAddToCart ~ localStorageItems",
-      localStorageItems
-    );
+    // const localStorageItems = { ...localStorage };
+    // console.log(
+    //   "🚀 ~ file: index.js ~ line 293 ~ handleAddToCart ~ localStorageItems",
+    //   localStorageItems
+    // );
   };
 
   return (
