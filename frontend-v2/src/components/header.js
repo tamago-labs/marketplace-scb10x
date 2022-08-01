@@ -43,7 +43,6 @@ const Brand = styled.div`
         text-decoration: none;
     }
 
-
 `
 
 const Menu = styled.div`
@@ -88,8 +87,6 @@ const NetworkBadge = styled(({ className, toggleSwitchChain, chainId }) => {
         </div>
     );
 })`
-    
-
     >button {
         display: flex;
         flex-direction: row;

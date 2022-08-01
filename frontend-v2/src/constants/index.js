@@ -2,9 +2,9 @@ export const MORALIS_URL = process.env.REACT_APP_MORALIS_MAINNET_SERVER_URL;
 export const MORALIS_ID = process.env.REACT_APP_MORALIS_MAINNET_APP_ID;
 export const NFT_STORAGE_TOKEN = process.env.REACT_APP_NFT_STORAGE_TOKEN
 
-export const SUPPORT_CHAINS = [42, 97, 80001, 43113, 137, 56, 43114, 1];
+export const SUPPORT_CHAINS = [42, 97, 80001, 43113, 137, 56, 43114, 1, 25];
 
-export const MAINNET_CHAINS = [137, 56, 43114, 1];
+export const MAINNET_CHAINS = [137, 56, 43114, 1, 25];
 export const TESTNET_CHAINS = [42, 97, 80001, 43113];
 
 export const COIN_GECKO_API_BASE = "https://api.coingecko.com/api/v3";
@@ -13,6 +13,10 @@ export const NFT_MARKETPLACE = [
   {
     chainId: 42,
     contractAddress: "0x49F74a10855288D2f390E784c349dCD3f44499AC",
+  },
+  {
+    chainId: 25,
+    contractAddress: "0xf2260B00250c772CB64606dBb88d9544F709308C",
   },
   {
     chainId: 80001,
@@ -84,7 +88,7 @@ export const MOCK_NFT = {
     ],
   },
   43113: {
-    list: [ 
+    list: [
       {
         name: "Moon Birds",
         address: "0x487f33E1f048159061D059f72a2c165DEc5BCa5c",
@@ -104,7 +108,7 @@ export const MOCK_NFT = {
   },
   97: {
     list: [
-       
+
       {
         name: "Moon Birds",
         address: "0x487f33E1f048159061D059f72a2c165DEc5BCa5c",
@@ -209,6 +213,13 @@ export const ERC20_TOKENS = [
     decimals: 6,
   },
   {
+    chainId: 137,
+    contractAddress: "0x431D5dfF03120AFA4bDf332c61A6e1766eF37BDB",
+    tokenType: 0,
+    symbol: "JPYC",
+    decimals: 18,
+  },
+  {
     chainId: 56,
     contractAddress: "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
     tokenType: 0,
@@ -279,6 +290,13 @@ export const ERC20_TOKENS = [
     decimals: 18,
   },
   {
+    chainId: 43114,
+    contractAddress: "0x431D5dfF03120AFA4bDf332c61A6e1766eF37BDB",
+    tokenType: 0,
+    symbol: "JPYC",
+    decimals: 18,
+  },
+  {
     chainId: 1,
     contractAddress: "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
     tokenType: 0,
@@ -307,67 +325,116 @@ export const ERC20_TOKENS = [
     decimals: 6,
   },
   {
+    chainId: 1,
+    contractAddress: "0x2370f9d504c7a6e775bf6e14b3f12846b594cd53",
+    tokenType: 0,
+    symbol: "JPYC",
+    decimals: 18,
+  },
+  {
     chainId: 42,
     contractAddress: "0x8F6e0835CCA21892d5296D58EB0C8206B623BF2B",
     tokenType: 0,
     symbol: "USDC",
     decimals: 6
-},
-{
+  },
+  {
     chainId: 42,
     contractAddress: "0x8afc69A0C245f4d84Ba160F19df1F76a44991d65",
     tokenType: 0,
     symbol: "USDT",
     decimals: 6
-},
-{
+  },
+  {
     chainId: 42,
     contractAddress: "0xC926A3F31Ad3db8f27Bbfe4aD42a19A0BCaD8059",
     tokenType: 0,
     symbol: "DAI",
     decimals: 18
-},
-{
+  },
+  {
     chainId: 80001,
     contractAddress: "0x553588e084604a2677e10E46ea0a8A8e9D859146",
     tokenType: 0,
     symbol: "USDC",
     decimals: 6
-},
-{
+  },
+  {
     chainId: 80001,
     contractAddress: "0x42209A0A2a3D80Ad48B7D25fC6a61ad355901484",
     tokenType: 0,
     symbol: "DAI",
     decimals: 18
-},
-{
+  },
+  {
     chainId: 97,
     contractAddress: "0x65e38111d8e2561aDC0E2EA1eeA856E6a43dC892",
     tokenType: 0,
     symbol: "USDC",
     decimals: 6
-},
-{
+  },
+  {
     chainId: 97,
     contractAddress: "0x553588e084604a2677e10E46ea0a8A8e9D859146",
     tokenType: 0,
     symbol: "DAI",
     decimals: 18
-},
-{
+  },
+  {
     chainId: 43113,
     contractAddress: "0x65e38111d8e2561aDC0E2EA1eeA856E6a43dC892",
     tokenType: 0,
     symbol: "USDC",
     decimals: 6
-},
-{
+  },
+  {
     chainId: 43113,
     contractAddress: "0x553588e084604a2677e10E46ea0a8A8e9D859146",
     tokenType: 0,
     symbol: "DAI",
     decimals: 18
-}
-
+  },
+  {
+    chainId: 25,
+    contractAddress: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+    tokenType: 3,
+    symbol: "CRO",
+    decimals: 18
+  },
+  {
+    chainId: 25,
+    contractAddress: "0x5C7F8A570d578ED84E63fdFA7b1eE72dEae1AE23",
+    tokenType: 0,
+    symbol: "WCRO",
+    decimals: 18
+  },
+  // {
+  //   chainId: 25,
+  //   contractAddress: "0xe44Fd7fCb2b1581822D0c862B68222998a0c299a",
+  //   tokenType: 0,
+  //   symbol: "WETH",
+  //   decimals: 18
+  // },
+  // {
+  //   chainId: 25,
+  //   contractAddress: "0xc21223249CA28397B4B6541dfFaEcC539BfF0c59",
+  //   tokenType: 0,
+  //   symbol: "USDC",
+  //   decimals: 6
+  // },
+  // {
+  //   chainId: 25,
+  //   contractAddress: "0x66e428c3f67a68878562e79A0234c1F83c208770",
+  //   tokenType: 0,
+  //   symbol: "USDT",
+  //   decimals: 6
+  // },
+  // {
+  //   chainId: 25,
+  //   contractAddress: "0xF2001B145b43032AAF5Ee2884e456CCd805F677D",
+  //   tokenType: 0,
+  //   symbol: "DAI",
+  //   decimals: 18
+  // },
+  
 ];
