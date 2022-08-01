@@ -44,13 +44,9 @@ const From = ({
   };
 
   const tokens = useMemo(() => {
-    const mocks = MOCKS.filter(
+    const mocks = ERC20_TOKENS.filter(
       (item) => item.chainId === chainId && item.tokenType === 0
-    ).concat(
-      ERC20_TOKENS.filter(
-        (item) => item.chainId === chainId && item.tokenType === 0
-      )
-    );
+    )
     let intialAmount = [];
     for (let t of mocks) {
       intialAmount.push(100);

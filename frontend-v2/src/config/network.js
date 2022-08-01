@@ -47,6 +47,18 @@ export const NETWORK = [
     rpcUrls: ['https://bsc-dataseed1.binance.org'],
     blockExplorerUrls: ['https://bscscan.com'],
   },
+  {
+    chainId: "0x19",
+    chainName: "Cronos",
+    icon: "https://cronoscan.com/images/svg/brands/main.svg?v=22.7.3.0",
+    nativeCurrency: {
+      name: "AVAX",
+      symbol: "AVAX",
+      decimals: 18,
+    },
+    rpcUrls: ["https://matic-mainnet.chainstacklabs.com/"],
+    blockExplorerUrls: ["https://polygonscan.com"],
+  },
   //kovan testnet
   {
     chainId: '0x2A',

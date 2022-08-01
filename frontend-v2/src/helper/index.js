@@ -10,6 +10,8 @@ export const resolveNetworkName = (networkId) => {
   switch (networkId) {
     case 1:
       return "Ethereum"
+    case 25:
+      return "Cronos"
     case 42:
       return "Kovan Testnet"
     case 56:
@@ -37,6 +39,8 @@ export const resolveBlockexplorerLink = (networkId, assetAddress, isAddress = tr
   switch (networkId) {
     case 1:
       return `https://etherscan.io/${prefix}/${assetAddress}`
+    case 25:
+      return `https://cronoscan.com/${prefix}/${assetAddress}`
     case 42:
       return `https://kovan.etherscan.io/${prefix}/${assetAddress}`
     case 97:
@@ -60,6 +64,8 @@ export const resolveNetworkIconUrl = (networkId) => {
   switch (networkId) {
     case 1:
       return "https://raw.githubusercontent.com/sushiswap/icons/master/network/mainnet.jpg"
+    case 25:
+      return "https://cronoscan.com/images/svg/brands/main.svg?v=22.7.3.0"
     case 42:
       return "https://raw.githubusercontent.com/sushiswap/icons/master/network/kovan.jpg"
     case 56:
@@ -89,6 +95,8 @@ export const getProviders = () => {
 
     if (chainId === 42) {
       url = "https://kovan.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161"
+    } else if (chainId === 25) {
+      url = "https://evm.cronos.org"
     } else if (chainId === 137) {
       url = "https://nd-643-057-168.p2pify.com/2ffe10d04df48d14f0e9ff6e0409f649"
     } else if (chainId === 80001) {

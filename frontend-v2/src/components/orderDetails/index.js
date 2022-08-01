@@ -15,6 +15,7 @@ import { useERC20 } from "../../hooks/useERC20";
 import { useERC721 } from "../../hooks/useERC721";
 import { AlertWarning } from "../../components/alert";
 import { Button2 } from "../../components/button";
+import { ethers } from "ethers";
 
 const Container = styled.div.attrs(() => ({ className: "container" }))`
   margin-top: 1rem;
@@ -243,8 +244,6 @@ const NFTCard = ({
   }, [orderId, order, swap, item]);
 
   const fetchItem = useCallback(async () => {
-    console.log("start fetching...");
-
     setOwnedItems(undefined);
     setApproval(false);
 
@@ -263,8 +262,12 @@ const NFTCard = ({
       );
       setOwnedItems(balance.toString());
       assetAddressContractErc1155.isApproved().then(setApproval);
+    } else if (item.tokenType === 3) {
+      const balance = await library.getBalance(account)
+      setOwnedItems( Number(ethers.utils.formatEther(balance)).toLocaleString())
+      setApproval(true)
     }
-  }, [assetAddressContractErc721, assetAddressContractErc1155, contractErc20]);
+  }, [assetAddressContractErc721, assetAddressContractErc1155, contractErc20, library, account]);
 
   return (
     <>
@@ -282,7 +285,7 @@ const NFTCard = ({
       />
       <PairAssetCard
         image={
-          item.tokenType === 0
+          (item.tokenType === 0 || item.tokenType === 3)
             ? "../images/coin.png"
             : data && data.metadata && data.metadata.image
         }
@@ -296,7 +299,7 @@ const NFTCard = ({
         }
       >
         <div className="name">
-          {item.tokenType !== 0 ? (
+          {(item.tokenType !== 0 && item.tokenType !== 3) ? (
             <>
               {data && data.metadata.name ? data.metadata.name : `#${shorterName(item.assetTokenIdOrAmount)}`}
             </>
@@ -317,17 +320,9 @@ const NFTCard = ({
             }
             disabled={loading || !account}
           >
-            {/* {loading && (
-                            <Puff height="24px" style={{ marginRight: "5px" }} stroke="#7a0bc0" width="24px" />
-                        )} */}
             Swap
           </Button2>
         </div>
-        {/* <div style={{ textAlign: "center" }}>
-                    <L2Text>
-                        {(ownedItems !== undefined && item.chainId === chainId) ? <>{` ${ownedItems}`}</> : <Skeleton height="16px" />}
-                    </L2Text>
-                </div> */}
       </PairAssetCard>
     </>
   );
@@ -500,7 +495,7 @@ const OrderDetails = () => {
                 <AccordionBody accordionId="1">
 
                   <Row>
-                    {data && data.metadata &&  data.metadata.attributes && data.metadata.attributes.map((item, index) => {
+                    {data && data.metadata && data.metadata.attributes && data.metadata.attributes.map((item, index) => {
                       return (
                         <Col sm="3" key={index} style={{ padding: 10 }}>
                           <div style={{ border: "1px solid white", height: "80px", borderRadius: "8px", padding: "10px", fontSize: "12px" }}>
@@ -519,7 +514,6 @@ const OrderDetails = () => {
                   Information
                 </AccordionHeader>
                 <AccordionBody accordionId="2">
-
                   <ListGroup>
                     <ListGroupItem>
                       <div>
@@ -530,7 +524,6 @@ const OrderDetails = () => {
                           {shortAddress(order.baseAssetAddress)}
                         </a>
                       </div>
-
                     </ListGroupItem>
                     <ListGroupItem>
                       <div>
@@ -561,7 +554,7 @@ const OrderDetails = () => {
                         Added
                       </div>
                       <div>
-                      {new Date(Number(order.timestamp) * 1000).toLocaleDateString()}
+                        {new Date(Number(order.timestamp) * 1000).toLocaleDateString()}
                       </div>
                     </ListGroupItem>
                   </ListGroup>
@@ -569,9 +562,6 @@ const OrderDetails = () => {
               </AccordionItem>
             </Accordion>
           </Attribute>
-
-
-
         </Col>
       </Row>
     </Container >

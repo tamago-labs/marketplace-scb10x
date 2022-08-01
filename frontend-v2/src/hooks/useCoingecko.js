@@ -10,7 +10,7 @@ const useCoingecko = () => {
 
         //get price data from CoinGecko
         const priceData = await axios.get(
-            `${COIN_GECKO_API_BASE}/simple/price?ids=wmatic,weth,dai,busd,wbnb,tether,usd-coin&vs_currencies=usd`
+            `${COIN_GECKO_API_BASE}/simple/price?ids=wmatic,weth,dai,busd,wbnb,tether,usd-coin,crypto-com-chain&vs_currencies=usd`
         );
 
         let items = []
@@ -25,6 +25,7 @@ const useCoingecko = () => {
                         token.assetTokenIdOrAmount,
                         token.decimals
                     );
+                    
                     switch (token.symbol.toLowerCase()) {
                         case "wmatic":
                             tokenUsdPrice = parseFloat(tokenPrice) * priceData.data.wmatic.usd;
@@ -52,6 +53,12 @@ const useCoingecko = () => {
                             break;
                         case "wbnb":
                             tokenUsdPrice = parseFloat(tokenPrice) * priceData.data.wbnb.usd;
+                            break;
+                        case "cro":
+                            tokenUsdPrice = parseFloat(tokenPrice) * priceData.data['crypto-com-chain'].usd;
+                            break;
+                        case "wcro":
+                            tokenUsdPrice = parseFloat(tokenPrice) * priceData.data['crypto-com-chain'].usd;
                             break;
                         default:
                             tokenUsdPrice = parseFloat(tokenPrice);

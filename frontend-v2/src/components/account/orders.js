@@ -48,7 +48,6 @@ const OrderTable = styled(Table)`
   color: #fff;
 `
 
-
 const TableRow = styled.tr`
   cursor: pointer;
   :hover {
