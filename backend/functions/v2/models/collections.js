@@ -59,7 +59,7 @@ const getTotalOwners = async (chain, address) => {
     console.log(e)
   }
 
-  return owners.length
+  return owners.length || NaN
 }
 
 
@@ -72,9 +72,19 @@ const getTotalSupply = async (chain, address) => {
   }
   const NFTs = await Moralis.Web3API.token.getAllTokenIds(options);
 
-  return NFTs.total
+  return NFTs.total || NaN
 }
 
+const getFloorPrice = async (chain, address, days) => {
+  await Moralis.start(MoralisOptions)
+  const options = {
+    address,
+    days,
+    chain: convertDecimalToHexadecimal(chain)
+  }
+  const NFTLowestPrice = await Moralis.Web3API.token.getNFTLowestPrice(options);
+  return NFTLowestPrice.price || NaN
+}
 
 const addCollectionToDb = async (chain, address) => {
   try {
@@ -102,6 +112,7 @@ const addCollectionToDb = async (chain, address) => {
       "title": metaData.name,
       "totalOwners": 0,
       "lastSyncTimestamp": 0,
+      "floorPrice": await getFloorPrice(chain, address, "3"),
     }
     await db.collection("collections-v2").doc(`${chain}.${address}`).set(newData)
     return { status: "ok", metaData: newData }
@@ -114,5 +125,6 @@ module.exports = {
   getCollectionsByChain,
   getTotalOwners,
   getTotalSupply,
+  getFloorPrice,
   addCollectionToDb
 }

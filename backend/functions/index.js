@@ -7,7 +7,7 @@ const fs = require("fs")
 const { addFirestoreDataToAlgolia } = require("./services/algolia")
 const { orderTrails } = require("./services/order-trails")
 const { updateHistory } = require("./services/history-update");
-const { updateTotalOwnersAndItems } = require("./services/update-total-owners-and-supply");
+const { updateCollections } = require("./services/update-collections");
 const { reSyncMetaData, getNFTMetadata } = require("./v2/models/nfts");
 
 
@@ -64,8 +64,8 @@ exports.pubsub = functions.region('asia-east2').pubsub.schedule('every 10 minute
   updateHistory()
   return null
 })
-exports.updateTotalCountsForCollections = functions.runWith({ timeoutSeconds: 540 }).region('asia-east2').pubsub.schedule('0 0 * * *').onRun(() => {
-  updateTotalOwnersAndItems()
+exports.updateCollections = functions.runWith({ timeoutSeconds: 540 }).region('asia-east2').pubsub.schedule('0 0 * * *').onRun(() => {
+  updateCollections()
   return null
 })
 
