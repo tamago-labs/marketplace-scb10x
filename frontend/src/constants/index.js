@@ -9,9 +9,9 @@ export const CLIENT_BASE =
   "https://marketplace-10x.tamago.finance"
 export const COIN_GECKO_API_BASE = "https://api.coingecko.com/api/v3";
 
-export const SUPPORT_CHAINS = [42, 97, 80001, 43113, 137, 56, 43114, 1];
+export const SUPPORT_CHAINS = [42, 97, 80001, 43113, 137, 56, 43114, 1, 25];
 
-export const MAINNET_CHAINS = [137, 56, 43114, 1];
+export const MAINNET_CHAINS = [137, 56, 43114, 1, 25];
 export const TESTNET_CHAINS = [42, 97, 80001, 43113];
 
 export const NFT_MARKETPLACE = [

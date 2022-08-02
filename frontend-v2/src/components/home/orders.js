@@ -236,6 +236,9 @@ const Orders = () => {
             <ToggleButton onClick={() => updateChain(56)} active={chain === 56}>
               <img style={{ borderRadius: "50%" }} width={32} src={getIcon(56)} />{` `}BNB
             </ToggleButton>
+            <ToggleButton onClick={() => updateChain(25)} active={chain === 25}>
+              <img style={{ borderRadius: "50%" }} width={32} src={getIcon(25)} />{` `}Cronos
+            </ToggleButton>
             <ToggleButton onClick={() => updateChain(1)} active={chain === 1}>
               <img style={{ borderRadius: "50%" }} width={32} src={getIcon(1)} />{` `}Ethereum
             </ToggleButton>

@@ -772,7 +772,7 @@ const useOrder = () => {
       (item) =>
         item.chainId === chainId &&
         item.contractAddress.toLowerCase() === assetAddress.toLowerCase() &&
-        item.tokenType === 0
+        (item.tokenType === 0 || item.tokenType === 3)
     );
 
     return `${ethers.utils.formatUnits(tokenId, token.decimals)} ${token.symbol
@@ -827,6 +827,11 @@ const useOrder = () => {
           );
           await tx.wait();
         }
+      } else if (token.tokenType === 3) {
+        // native token
+
+
+
       } else {
         // erc721 / 1155
         const nftContract = new ethers.Contract(
@@ -875,13 +880,26 @@ const useOrder = () => {
         )
       );
 
-      return await contract.swap(
-        orderId,
-        token.assetAddress,
-        token.assetTokenIdOrAmount,
-        token.tokenType,
-        proof
-      );
+      if (token.tokenType === 3) {
+        // native token
+        return await contract.swapWithEth(
+          orderId,
+          proof,
+          {
+            value: token.assetTokenIdOrAmount
+          }
+        );
+      } else {
+        return await contract.swap(
+          orderId,
+          token.assetAddress,
+          token.assetTokenIdOrAmount,
+          token.tokenType,
+          proof
+        );
+      }
+
+
     },
     [account, chainId, library]
   );

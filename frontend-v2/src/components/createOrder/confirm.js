@@ -421,7 +421,7 @@ const Confirm = ({
             <tr>
               <td>1</td>
               <td>
-                Upload your entry to Filecoin
+                Upload your entry to Filecoin & IPFS
                 {/* (CID:
                 {orderId && shortAddress(orderId, 3, -3)}) */}
               </td>
@@ -429,12 +429,12 @@ const Confirm = ({
             </tr>
             <tr>
               <td>2</td>
-              <td>Approve the contract to spend your tokens</td>
+              <td>Approve to spend your tokens</td>
               <td>{process > 1 ? <Check /> : <X />}</td>
             </tr>
             <tr>
               <td>3</td>
-              <td>Register the hash on the contract</td>
+              <td>Register to the smart contract</td>
               <td>{process > 2 ? <Check /> : <X />}</td>
             </tr>
           </tbody>

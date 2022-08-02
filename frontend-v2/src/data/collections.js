@@ -113,7 +113,7 @@ const COLLECTIONS = [
     {
         chainId : 43114  ,
         assetAddress : "0xbcfdd127187eb44e9154fc17c6157875dcdee6df",
-        cover :"https://pbs.twimg.com/profile_banners/1502063881732206637/1657138590/600x200",
+        cover :"https://nftcalendar.io/storage/uploads/2022/01/17/fof_banner_wide_0117202221160661e5dc961c04a.png",
         title : "Friend Forest",
         description: "A community of quirky ffrens regenerating Earth through NFTs. Turning degens into regens."
     },
@@ -158,6 +158,13 @@ const COLLECTIONS = [
         cover :"https://lh3.googleusercontent.com/XDG_JMl6dbvQOwwmKNIVi4XZkjEFtP2ijc5WSbKQwnYmIcDc8qDRyeTZaz7d0MNJ9axtBTse2njEZD61aZZOV7sDbqx65DdIigbSuA=h600",
         title : "OpenSea Shared Storefront",
         description: "These NFTs were minted using OpenSea’s shared contract."
+    },
+    {
+        chainId : 25 ,
+        assetAddress : "0xfa15adecd1cc94bd17cf48dd3b41f066fe2812a7",
+        cover :"https://img.tamago.finance/vintage-cover.png",
+        title : "Vintage Monitor",
+        description: "127 old TV set NFT with different face emotions. No roadmap or promises, purely collectible on Cronos blockchain only."
     },
 
 ]

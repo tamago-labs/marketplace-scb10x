@@ -31,6 +31,7 @@ import { useERC721 } from "../../hooks/useERC721";
 import { AlertWarning } from "../../components/alert";
 import { Button2 } from "../../components/button";
 import { NftCartsContext } from "../../hooks/useNftCarts";
+import { ethers } from "ethers";
 
 const Container = styled.div.attrs(() => ({ className: "container" }))`
   margin-top: 1rem;
@@ -257,8 +258,6 @@ const NFTCard = ({
   }, [orderId, order, swap, item]);
 
   const fetchItem = useCallback(async () => {
-    console.log("start fetching...");
-
     setOwnedItems(undefined);
     setApproval(false);
 
@@ -277,8 +276,18 @@ const NFTCard = ({
       );
       setOwnedItems(balance.toString());
       assetAddressContractErc1155.isApproved().then(setApproval);
+    } else if (item.tokenType === 3) {
+      const balance = await library.getBalance(account);
+      setOwnedItems(Number(ethers.utils.formatEther(balance)).toLocaleString());
+      setApproval(true);
     }
-  }, [assetAddressContractErc721, assetAddressContractErc1155, contractErc20]);
+  }, [
+    assetAddressContractErc721,
+    assetAddressContractErc1155,
+    contractErc20,
+    library,
+    account,
+  ]);
 
   const handleAddToCart = () => {
     let itemObject = {
@@ -336,7 +345,7 @@ const NFTCard = ({
       />
       <PairAssetCard
         image={
-          item.tokenType === 0
+          item.tokenType === 0 || item.tokenType === 3
             ? "../images/coin.png"
             : data && data.metadata && data.metadata.image
         }
@@ -350,7 +359,7 @@ const NFTCard = ({
         }
       >
         <div className="name">
-          {item.tokenType !== 0 ? (
+          {item.tokenType !== 0 && item.tokenType !== 3 ? (
             <>
               {data && data.metadata.name
                 ? data.metadata.name
@@ -373,9 +382,6 @@ const NFTCard = ({
             }}
             disabled={loading || !account}
           >
-            {/* {loading && (
-                            <Puff height="24px" style={{ marginRight: "5px" }} stroke="#7a0bc0" width="24px" />
-                        )} */}
             Swap
           </Button2>
           <div style={{ marginTop: "4px" }}></div>
@@ -390,11 +396,6 @@ const NFTCard = ({
             {cartAdded ? <CheckCircle /> : "add to cart"}
           </Button2> */}
         </div>
-        {/* <div style={{ textAlign: "center" }}>
-                    <L2Text>
-                        {(ownedItems !== undefined && item.chainId === chainId) ? <>{` ${ownedItems}`}</> : <Skeleton height="16px" />}
-                    </L2Text>
-                </div> */}
       </PairAssetCard>
     </>
   );
@@ -658,6 +659,7 @@ const OrderDetails = () => {
                       <div>{resolveNetworkName(order.chainId)}</div>
                     </ListGroupItem>
                     <ListGroupItem>
+                      <div>Added</div>
                       <div>Added</div>
                       <div>
                         {new Date(
