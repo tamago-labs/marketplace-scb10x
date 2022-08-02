@@ -164,7 +164,7 @@ const Header = () => {
             </div>
           )}
         </Buttons>
-        {account && <CartModal />}
+        {account && <CartModal chainId={chainId} />}
       </Container>
     </>
   );

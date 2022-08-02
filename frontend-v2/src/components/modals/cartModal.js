@@ -35,7 +35,7 @@ const SwapButton = styled.button.attrs(() => ({ className: "btn" }))`
   }
 `;
 
-const CartModal = () => {
+const CartModal = ({ chainId }) => {
   const [show, setShow] = useState(false);
   const [cartList, setCartList] = useState([]);
 
@@ -48,32 +48,41 @@ const CartModal = () => {
       if (localStorage.length > 0) {
         for (let i = 0; i < localStorage.length; i++) {
           let key = localStorage.key(i);
-          if (key.includes("cart")) {
+          if (key.includes("Order")) {
             let item = JSON.parse(localStorage.getItem(key));
             cartSet.add(item);
           }
         }
         const array = Array.from(cartSet);
         setCartList(array);
-        console.log(
-          "🚀 ~ file: cartModal.js ~ line 58 ~ handleShow ~ cartSet",
-          cartSet
-        );
       }
     } catch (error) {
       console.log(error.message);
     }
-  }, [localStorage]);
+  }, []);
 
   const handleClearAll = () => {
     localStorage.clear();
     setCartList([]);
   };
 
+  //change network -> clear cart , if refresh -> auto clear, BUG
+  // useEffect(() => {
+  //   console.log("CHANGED NETWORK");
+  //   console.log(
+  //     "🚀 ~ file: cartModal.js ~ line 77 ~ useEffect ~ chainId",
+  //     chainId
+  //   );
+
+  //   localStorage.clear();
+  //   setCartList([]);
+  // }, [chainId]);
+
   return (
     <>
       <Button variant="primary" onClick={handleShow}>
         <ShoppingCart />
+        {cartList.length}
       </Button>
 
       <Modal show={show} onHide={handleClose} style={{ color: "#000" }}>
@@ -127,23 +136,28 @@ const CartModal = () => {
                       style={{ margin: "auto" }}
                     />
                   ) : (
-                    <img
-                      src={"../images/coin.png"}
-                      width="100%"
-                      height="120px"
-                      style={{ margin: "auto" }}
-                    />
+                    <>
+                      {/* <p>{cartItem.item.symbol}</p> */}
+                      <img
+                        src={"../images/coin.png"}
+                        width="100%"
+                        height="120px"
+                        style={{ margin: "auto" }}
+                      />
+                    </>
                   )}
                 </div>
               </Preview>
             );
           })}
+          <hr style={{ background: "#333" }} />
+
+          <div className="text-center">
+            <SwapButton variant="primary" onClick={handleClose}>
+              Checkout
+            </SwapButton>
+          </div>
         </Modal.Body>
-        <Modal.Footer>
-          <SwapButton variant="primary" onClick={handleClose}>
-            Checkout
-          </SwapButton>
-        </Modal.Footer>
       </Modal>
     </>
   );

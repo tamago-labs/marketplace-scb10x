@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { ShoppingBag } from "react-feather";
+import { CheckCircle } from "react-feather";
 import styled from "styled-components";
 import Skeleton from "react-loading-skeleton";
 import { Puff } from "react-loading-icons";
@@ -135,6 +135,8 @@ const NFTCard = ({
   baseMetadata,
   index,
   increaseTick,
+  selectedCard,
+  setSelectedCard,
 }) => {
   const { resolveMetadata, resolveTokenValue, swap } = useOrder();
   const [data, setData] = useState();
@@ -145,6 +147,7 @@ const NFTCard = ({
   const [approved, setApproval] = useState(false);
   const [ownedItems, setOwnedItems] = useState(-1);
   const [tick, setTick] = useState();
+  const [cartAdded, setCartAdded] = useState(false);
 
   useEffect(() => {
     if (item && item.tokenType !== 0) {
@@ -282,22 +285,42 @@ const NFTCard = ({
       baseMetadata: baseMetadata,
       approved: approved,
     };
-    console.log(
-      "🚀 ~ file: index.js ~ line 282 ~ handleAddToCart ~ itemObject",
-      itemObject
-    );
+    localStorage.setItem(`${order.title}`, JSON.stringify(itemObject));
 
-    localStorage.setItem(
-      `cart#${localStorage.length + 1}`,
-      JSON.stringify(itemObject)
-    );
-
-    // const localStorageItems = { ...localStorage };
-    // console.log(
-    //   "🚀 ~ file: index.js ~ line 293 ~ handleAddToCart ~ localStorageItems",
-    //   localStorageItems
-    // );
+    const arr = [];
+    selectedCard.map((item, i) => {
+      if (index == i) {
+        console.log(index, "CLICK", i);
+        arr.push(true);
+      } else {
+        arr.push(false);
+      }
+    });
+    setSelectedCard(arr);
   };
+
+  useEffect(() => {
+    selectedCard.map((item, i) => {
+      if (index == i) {
+        setCartAdded(item);
+      }
+    });
+  }, [selectedCard]);
+
+  useEffect(() => {
+    console.log("🚀 ~ file: index.js ~ line 315 ~ chainId", chainId);
+    console.log(
+      "🚀 ~ file: index.js ~ line 313 ~ useEffect ~ tem.chainId",
+      item.chainId
+    );
+    if (item.chainId !== chainId) {
+      console.log(
+        "🚀 ~ file: index.js ~ line 317 ~ useEffect ~ item.chainId !== chainId",
+        item.chainId !== chainId
+      );
+      localStorage.clear();
+    }
+  }, [chainId]);
 
   return (
     <>
@@ -347,9 +370,9 @@ const NFTCard = ({
         </div>
         <div style={{ padding: "5px", textAlign: "center" }}>
           <Button2
-            onClick={() =>
-              item.chainId === chainId && setSwapModalVisible(true)
-            }
+            onClick={() => {
+              item.chainId === chainId && setSwapModalVisible(true);
+            }}
             disabled={loading || !account}
           >
             {/* {loading && (
@@ -358,7 +381,16 @@ const NFTCard = ({
             Swap
           </Button2>
           <div style={{ marginTop: "4px" }}></div>
-          <Button2 onClick={() => handleAddToCart()}>add to cart</Button2>
+          {item.chainId === chainId ? (
+            <Button2 onClick={handleAddToCart}>
+              {cartAdded ? <CheckCircle /> : "add to cart"}
+            </Button2>
+          ) : (
+            ""
+          )}
+          {/* <Button2 disabled={loading || !account} onClick={handleAddToCart}>
+            {cartAdded ? <CheckCircle /> : "add to cart"}
+          </Button2> */}
         </div>
         {/* <div style={{ textAlign: "center" }}>
                     <L2Text>
@@ -391,6 +423,8 @@ const OrderDetails = () => {
   const [status, setStatus] = useState();
   const [tick, setTick] = useState(0);
   const [collectionInfo, setCollectionInfo] = useState();
+  const [cartAdded, setCartAdded] = useState(false);
+  const [selectedCard, setSelectedCard] = useState([]);
 
   const { id } = useParams();
 
@@ -425,13 +459,16 @@ const OrderDetails = () => {
   }, [id, order, tick]);
 
   const items = useMemo(() => {
+    const arr = [];
     if (order && order.barterList.length > 0) {
       const list = order.barterList.map((item, index) => {
+        arr.push(false);
         return {
           ...item,
           index,
         };
       });
+      setSelectedCard(arr);
       return list;
     }
     return [];
@@ -536,6 +573,10 @@ const OrderDetails = () => {
                   index={index}
                   increaseTick={increaseTick}
                   tick={tick}
+                  cartAdded={cartAdded}
+                  setCartAdded={setCartAdded}
+                  selectedCard={selectedCard}
+                  setSelectedCard={setSelectedCard}
                 />
               );
             })}
