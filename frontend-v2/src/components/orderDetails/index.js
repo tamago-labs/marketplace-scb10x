@@ -320,12 +320,6 @@ const NFTCard = ({
     });
   }, [selectedCard]);
 
-  useEffect(() => {
-    if (item.chainId !== chainId) {
-      localStorage.clear();
-    }
-  }, [chainId]);
-
   return (
     <>
       <SwapModal

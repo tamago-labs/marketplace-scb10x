@@ -3,6 +3,7 @@ import Modal from "react-bootstrap/Modal";
 import { ShoppingCart, ArrowRight } from "react-feather";
 import styled from "styled-components";
 import { Button } from "../button";
+import { NftCartsContext } from "../../hooks/useNftCarts";
 
 const Preview = styled.div`
   display: flex;
@@ -37,7 +38,8 @@ const SwapButton = styled.button.attrs(() => ({ className: "btn" }))`
 
 const CartModal = ({ chainId }) => {
   const [show, setShow] = useState(false);
-  const [cartList, setCartList] = useState([]);
+
+  const { cartList, setCartList } = useContext(NftCartsContext);
 
   const handleClose = () => setShow(false);
 
@@ -61,22 +63,16 @@ const CartModal = ({ chainId }) => {
     }
   }, []);
 
-  const handleClearAll = () => {
+  const handleClearAll = useCallback(() => {
     localStorage.clear();
     setCartList([]);
-  };
+  }, []);
 
-  //change network -> clear cart , if refresh -> auto clear, BUG
-  // useEffect(() => {
-  //   console.log("CHANGED NETWORK");
-  //   console.log(
-  //     "🚀 ~ file: cartModal.js ~ line 77 ~ useEffect ~ chainId",
-  //     chainId
-  //   );
-
-  //   localStorage.clear();
-  //   setCartList([]);
-  // }, [chainId]);
+  //change chain handle
+  useEffect(() => {
+    localStorage.clear();
+    setCartList([]);
+  }, [chainId]);
 
   return (
     <>
