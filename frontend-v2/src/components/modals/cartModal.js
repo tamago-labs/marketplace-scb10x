@@ -36,32 +36,23 @@ const SwapButton = styled.button.attrs(() => ({ className: "btn" }))`
   }
 `;
 
+const RedDot = styled.div`
+  position: relative;
+  left: 15px;
+  bottom: 5px;
+  background-color: #000;
+  color: #ffff;
+  border-radius: 50px;
+`;
+
 const CartModal = ({ chainId }) => {
   const [show, setShow] = useState(false);
+  const [cartListNum, setCartListNum] = useState();
 
   const { cartList, setCartList } = useContext(NftCartsContext);
 
   const handleClose = () => setShow(false);
-
-  const handleShow = useCallback(() => {
-    setShow(true);
-    try {
-      const cartSet = new Set();
-      if (localStorage.length > 0) {
-        for (let i = 0; i < localStorage.length; i++) {
-          let key = localStorage.key(i);
-          if (key.includes("Order")) {
-            let item = JSON.parse(localStorage.getItem(key));
-            cartSet.add(item);
-          }
-        }
-        const array = Array.from(cartSet);
-        setCartList(array);
-      }
-    } catch (error) {
-      console.log(error.message);
-    }
-  }, []);
+  const handleShow = () => setShow(true);
 
   const handleClearAll = useCallback(() => {
     localStorage.clear();
@@ -74,11 +65,15 @@ const CartModal = ({ chainId }) => {
     setCartList([]);
   }, [chainId]);
 
+  useEffect(() => {
+    setCartListNum(cartList.length);
+  }, [cartList]);
+
   return (
     <>
       <Button variant="primary" onClick={handleShow}>
+        <RedDot>{cartListNum}</RedDot>
         <ShoppingCart />
-        {cartList.length}
       </Button>
 
       <Modal show={show} onHide={handleClose} style={{ color: "#000" }}>

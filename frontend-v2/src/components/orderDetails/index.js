@@ -151,7 +151,7 @@ const NFTCard = ({
   const [tick, setTick] = useState();
   const [cartAdded, setCartAdded] = useState(false);
 
-  const { cartList } = useContext(NftCartsContext);
+  const { cartList, setCartList } = useContext(NftCartsContext);
 
   useEffect(() => {
     if (item && item.tokenType !== 0) {
@@ -299,6 +299,7 @@ const NFTCard = ({
     };
     localStorage.setItem(`${order.title}`, JSON.stringify(itemObject));
 
+    //selected card
     const arr = [];
     selectedCard.map((item, i) => {
       if (index == i) {
@@ -309,6 +310,25 @@ const NFTCard = ({
     });
     setSelectedCard(arr);
   };
+
+  useEffect(() => {
+    try {
+      const cartSet = new Set();
+      if (localStorage.length > 0) {
+        for (let i = 0; i < localStorage.length; i++) {
+          let key = localStorage.key(i);
+          if (key.includes("Order")) {
+            let item = JSON.parse(localStorage.getItem(key));
+            cartSet.add(item);
+          }
+        }
+        const array = Array.from(cartSet);
+        setCartList(array);
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  }, [selectedCard]);
 
   //if clear check button
   useEffect(() => {
