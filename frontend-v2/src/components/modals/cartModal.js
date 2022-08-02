@@ -92,7 +92,7 @@ const CartModal = ({ chainId }) => {
           {cartList.map((cartItem, index) => {
             return (
               <Preview>
-                # {index}
+                # {index + 1}
                 <div>
                   {cartItem.item && cartItem.item.tokenType === 0 && (
                     <>
