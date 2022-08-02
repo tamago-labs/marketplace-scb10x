@@ -4,7 +4,7 @@ const collectionController = require("../controllers/collections")
 
 
 
-router.get("/collection/:chain/:contractAddress", collectionController.getCOllectionByChainAndAddress)
+router.get("/collection/:chain/:contractAddress", collectionController.getCollectionByChainAndAddress)
 router.get("/collections/:chain", collectionController.getCollectionsByChain)
 
 // router.get("/collection/slug/:slug", collectionController.getCollectionBySlug)

@@ -3,7 +3,7 @@ const { supportedChains } = require('../../constants')
 const collectionModel = require('../models/collections')
 const validator = require("validator")
 
-exports.getCOllectionByChainAndAddress = async (req, res, next) => {
+exports.getCollectionByChainAndAddress = async (req, res, next) => {
   try {
     const { chain, contractAddress } = req.params
     if (!chain || !contractAddress) {
@@ -17,7 +17,12 @@ exports.getCOllectionByChainAndAddress = async (req, res, next) => {
     }
     const collection = await collectionModel.getCollectionByChainAndAddress(chain, contractAddress)
     if (!collection) {
-      return res.status(400).json({ message: "Cannot find collection with the given inputs" })
+      const result = await collectionModel.addCollectionToDb(chain, contractAddress)
+      if (result.status === "error") {
+        console.log(result.message)
+        return res.status(400).json({ message: "No metadata found! Try again later" })
+      }
+      return res.json({ status: "ok", collection: result })
     }
     //check for empty object
     return res.json({ status: "ok", collection })
