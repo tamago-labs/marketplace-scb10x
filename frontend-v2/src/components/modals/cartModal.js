@@ -85,7 +85,7 @@ const CartModal = ({ chainId }) => {
         <Modal.Header closeButton>
           <Modal.Title>
             Your NFT Shopping Cart{" "}
-            <button onClick={handleClearAll}>clear all</button>
+            <Button onClick={handleClearAll}>clear all</Button>
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>

@@ -81,11 +81,10 @@ const NetworkBadge = styled(({ className, toggleSwitchChain, chainId }) => {
   > button {
     display: flex;
     flex-direction: row;
-        >div {
-            margin: auto;
-        }
-        margin-right: 10px;
+    > div {
+      margin: auto;
     }
+    margin-right: 10px;
 
     .image-container {
       height: 30px;
