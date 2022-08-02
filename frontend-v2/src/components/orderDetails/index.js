@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState, useContext } from "react";
 import { useParams, Link } from "react-router-dom";
 import { CheckCircle } from "react-feather";
 import styled from "styled-components";
@@ -30,6 +30,7 @@ import { useERC20 } from "../../hooks/useERC20";
 import { useERC721 } from "../../hooks/useERC721";
 import { AlertWarning } from "../../components/alert";
 import { Button2 } from "../../components/button";
+import { NftCartsContext } from "../../hooks/useNftCarts";
 
 const Container = styled.div.attrs(() => ({ className: "container" }))`
   margin-top: 1rem;
@@ -148,6 +149,8 @@ const NFTCard = ({
   const [ownedItems, setOwnedItems] = useState(-1);
   const [tick, setTick] = useState();
   const [cartAdded, setCartAdded] = useState(false);
+
+  const { cartList } = useContext(NftCartsContext);
 
   useEffect(() => {
     if (item && item.tokenType !== 0) {
@@ -290,7 +293,6 @@ const NFTCard = ({
     const arr = [];
     selectedCard.map((item, i) => {
       if (index == i) {
-        console.log(index, "CLICK", i);
         arr.push(true);
       } else {
         arr.push(false);
@@ -298,6 +300,17 @@ const NFTCard = ({
     });
     setSelectedCard(arr);
   };
+
+  //if clear check button
+  useEffect(() => {
+    const arr = [];
+    if (cartList.length === 0) {
+      selectedCard.map((item, i) => {
+        arr.push(false);
+      });
+      setSelectedCard(arr);
+    }
+  }, [cartList]);
 
   useEffect(() => {
     selectedCard.map((item, i) => {
@@ -308,16 +321,7 @@ const NFTCard = ({
   }, [selectedCard]);
 
   useEffect(() => {
-    console.log("🚀 ~ file: index.js ~ line 315 ~ chainId", chainId);
-    console.log(
-      "🚀 ~ file: index.js ~ line 313 ~ useEffect ~ tem.chainId",
-      item.chainId
-    );
     if (item.chainId !== chainId) {
-      console.log(
-        "🚀 ~ file: index.js ~ line 317 ~ useEffect ~ item.chainId !== chainId",
-        item.chainId !== chainId
-      );
       localStorage.clear();
     }
   }, [chainId]);
