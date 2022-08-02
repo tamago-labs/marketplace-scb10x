@@ -64,7 +64,7 @@ exports.pubsub = functions.region('asia-east2').pubsub.schedule('every 10 minute
   updateHistory()
   return null
 })
-exports.updateTotalCountsForCollections = functions.region('asia-east2').pubsub.schedule('0 0 * * *').onRun(() => {
+exports.updateTotalCountsForCollections = functions.runWith({ timeoutSeconds: 540 }).region('asia-east2').pubsub.schedule('0 0 * * *').onRun(() => {
   updateTotalOwnersAndItems()
   return null
 })
