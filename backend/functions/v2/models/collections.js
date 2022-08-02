@@ -39,7 +39,6 @@ const getTotalOwners = async (chain, address) => {
       chain: convertDecimalToHexadecimal(chain)
     }
 
-    //TODO 
     if (address !== "0x2953399124f0cbb46d2cbacd8a89cf0599974963" && address !== "0x495f947276749ce646f68ac8c248420045cb7b5e") {
       let result = await Moralis.Web3API.token.getNFTOwners(options);
       owners = result.result.map(item => item['owner_of'])
@@ -76,9 +75,44 @@ const getTotalSupply = async (chain, address) => {
   return NFTs.total
 }
 
+
+const addCollectionToDb = async (chain, address) => {
+  try {
+    await Moralis.start(MoralisOptions)
+    const options = {
+      address,
+      chain: convertDecimalToHexadecimal(chain)
+    }
+    const metaData = await Moralis.Web3API.token.getNFTMetadata(options)
+    console.log(metaData)
+    const newData = {
+      "links": {
+        "twitterLink": "",
+        "chainExplorerLink": "",
+        "website": ""
+      },
+      "description": "",
+      "totalSupply": await getTotalSupply(chain, address),
+      "chainId": Number(chain),
+      "cover": "",
+      "assetAddress": address,
+      "isBanned": false,
+      "slug": "",
+      "isVerified": false,
+      "title": metaData.name,
+      "totalOwners": 0,
+      "lastSyncTimestamp": 0,
+    }
+    await db.collection("collections-v2").doc(`${chain}.${address}`).set(newData)
+    return { status: "ok", metaData: newData }
+  } catch (error) {
+    return { status: "error" }
+  }
+}
 module.exports = {
   getCollectionByChainAndAddress,
   getCollectionsByChain,
   getTotalOwners,
   getTotalSupply,
+  addCollectionToDb
 }
