@@ -39,7 +39,7 @@ exports.getCollectionsByChain = async (req, res, next) => {
     }
     const collections = await collectionModel.getCollectionsByChain(chain)
     for (const collection of collections) {
-      collection.lowestPrice = await collectionModel.getFloorPrice(collection.chainId, collection.baseAssetAddress)
+      collection.lowestPrice = await collectionModel.getFloorPrice(collection.chainId, collection.assetAddress)
     }
     return res.json({ status: "ok", collections })
   } catch (error) {
