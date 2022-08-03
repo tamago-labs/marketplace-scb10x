@@ -70,9 +70,12 @@ const getTotalSupply = async (chain, address) => {
     address,
     chain: convertDecimalToHexadecimal(chain)
   }
-  const NFTs = await Moralis.Web3API.token.getAllTokenIds(options);
-
-  return NFTs.total || NaN
+  if (address !== "0x2953399124f0cbb46d2cbacd8a89cf0599974963" && address !== "0x495f947276749ce646f68ac8c248420045cb7b5e") {
+    const NFTs = await Moralis.Web3API.token.getAllTokenIds(options);
+    return NFTs.total
+  } else {
+    return NaN
+  }
 }
 
 const getFloorPrice = async (chain, address, days) => {
