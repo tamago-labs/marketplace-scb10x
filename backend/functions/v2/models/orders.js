@@ -41,8 +41,8 @@ const getAllActiveOrders = async () => {
 
     } else {
       //sending the cache to frontend
-      redisClient.quit()
-      await console.log("Cache found, sending data to frontend")
+      await redisClient.quit()
+      console.log("Cache found, sending data to frontend")
       return JSON.parse(orders)
     }
 
