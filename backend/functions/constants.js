@@ -48,11 +48,14 @@ const WHITELISTED_ADDRESSES = [
 
 const CLIENT_BASE = "https://marketplace-10x.tamago.finance"
 
+const COIN_GECKO_API_BASE = "https://api.coingecko.com/api/v3";
+
 module.exports = {
     MARKETPLACES,
     supportedChains,
     MAINNET_CHAINS,
     TESTNET_CHAINS,
     WHITELISTED_ADDRESSES,
-    CLIENT_BASE
+    CLIENT_BASE,
+    COIN_GECKO_API_BASE
 }
