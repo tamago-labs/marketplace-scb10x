@@ -9,6 +9,7 @@ const updateCollections = async () => {
       // 259200000 === THREE DAYS
       if (!collection.lastSyncTimestamp || Date.now() - collection.lastSyncTimestamp > 259200000) {
         //updateTotalOwnersAndItemsCount
+        console.log(collection.id)
         const newData = {
           lastSyncTimestamp: Date.now(),
           totalOwners: await getTotalOwners(collection.chainId, collection.assetAddress),

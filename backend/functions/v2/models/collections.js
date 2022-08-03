@@ -82,8 +82,11 @@ const getFloorPrice = async (chain, address, days) => {
     days,
     chain: convertDecimalToHexadecimal(chain)
   }
-  const NFTLowestPrice = await Moralis.Web3API.token.getNFTLowestPrice(options);
-  return NFTLowestPrice.price || NaN
+  const NFTLowestPrice = Moralis.Web3API.token.getNFTLowestPrice(options).then(data => data.price).catch(err => {
+    console.log(err)
+    return NaN
+  })
+  return NFTLowestPrice
 }
 
 const addCollectionToDb = async (chain, address) => {
