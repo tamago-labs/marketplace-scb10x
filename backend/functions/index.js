@@ -10,6 +10,7 @@ const { updateHistory } = require("./services/history-update");
 const { updateCollections } = require("./services/update-collections");
 const { reSyncMetaData, getNFTMetadata } = require("./v2/models/nfts");
 const { importFrontEndV2CollectionsToDB } = require("./services/migrations/v2/collections");
+const { migrateFromCIDToDB } = require("./services/migrations/v2/orders");
 
 
 
@@ -80,3 +81,4 @@ exports.updateCollections = functions.runWith({ timeoutSeconds: 540 }).region('a
 
 //LOCAL DEV ONLY : updating collection database
 // importFrontEndV2CollectionsToDB()
+// migrateFromCIDToDB()
