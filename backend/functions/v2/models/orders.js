@@ -19,14 +19,20 @@ const refreshOrderCache = async () => {
 
   //requesting all orders in parallel
 
-  const activeOrdersData = await Promise.allSettled(activeOrderCids.map(cid => getIpfsDataByCid(cid)))
-  activeOrdersData.sort((a, b) => Number(b.timestamp) - Number(a.timestamp))
+  const ordersData = await Promise.allSettled(activeOrderCids.map(cid => getIpfsDataByCid(cid)))
+
+
+  ordersData.sort((a, b) => Number(b.value.timestamp) - Number(a.value.timestamp))
+
+  flattenedOrderData = ordersData.map(item => item.value)
+
+  console.log(flattenedOrderData)
 
   await redisClient.connect()
-  await redisClient.set("orders", JSON.stringify(activeOrdersData))
+  await redisClient.set("orders", JSON.stringify(flattenedOrderData))
   await redisClient.quit()
 
-  return activeOrdersData
+  return ordersData
 }
 
 
