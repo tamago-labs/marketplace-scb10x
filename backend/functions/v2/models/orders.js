@@ -7,7 +7,7 @@ const { db } = require("../../firebase")
 const getIpfsDataByCid = async (cid) => {
   const url = `https://${cid}.ipfs.infura-ipfs.io/`
   const res = await axios.get(url)
-  console.log(res.data)
+  // console.log(res.data)
   return res.data
 }
 
@@ -21,7 +21,10 @@ const refreshOrderCache = async () => {
 
   const activeOrdersData = await Promise.allSettled(activeOrderCids.map(cid => getIpfsDataByCid(cid)))
   activeOrdersData.sort((a, b) => Number(b.timestamp) - Number(a.timestamp))
+
+  await redisClient.connect()
   await redisClient.set("orders", JSON.stringify(activeOrdersData))
+  await redisClient.quit()
 
   return activeOrdersData
 }
