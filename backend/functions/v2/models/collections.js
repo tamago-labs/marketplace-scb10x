@@ -76,17 +76,7 @@ const getTotalSupply = async (chain, address) => {
 }
 
 const getFloorPrice = async (chain, address, days) => {
-  await Moralis.start(MoralisOptions)
-  const options = {
-    address,
-    days,
-    chain: convertDecimalToHexadecimal(chain)
-  }
-  const NFTLowestPrice = Moralis.Web3API.token.getNFTLowestPrice(options).then(data => data.price).catch(err => {
-    console.log(err)
-    return NaN
-  })
-  return NFTLowestPrice
+  //TODO to be editted
 }
 
 const addCollectionToDb = async (chain, address) => {
@@ -115,7 +105,6 @@ const addCollectionToDb = async (chain, address) => {
       "title": metaData.name,
       "totalOwners": 0,
       "lastSyncTimestamp": 0,
-      "floorPrice": await getFloorPrice(chain, address, "3"),
     }
     await db.collection("collections-v2").doc(`${chain}.${address}`).set(newData)
     return { status: "ok", metaData: newData }

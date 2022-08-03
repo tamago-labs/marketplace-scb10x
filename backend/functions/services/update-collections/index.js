@@ -1,5 +1,5 @@
 const { db } = require("../../firebase");
-const { getTotalOwners, getTotalSupply, getFloorPrice } = require("../../v2/models/collections");
+const { getTotalOwners, getTotalSupply } = require("../../v2/models/collections");
 
 const updateCollections = async () => {
   try {
@@ -14,7 +14,6 @@ const updateCollections = async () => {
           lastSyncTimestamp: Date.now(),
           totalOwners: await getTotalOwners(collection.chainId, collection.assetAddress),
           totalSupply: await getTotalSupply(collection.chainId, collection.assetAddress),
-          floorPrice: await getFloorPrice(collection.chainId, collection.assetAddress, "3")
         }
         await db.collection("collections-v2").doc(collection.id).set({ ...newData }, { merge: true })
       }
