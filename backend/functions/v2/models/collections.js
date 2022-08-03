@@ -1,7 +1,12 @@
 
+const axios = require("axios")
+const { ethers } = require("ethers")
+
 const { db } = require("../../firebase")
 const { Moralis, MoralisOptions } = require("../../moralis")
 const { convertDecimalToHexadecimal, wait } = require("../../utils")
+const { COIN_GECKO_API_BASE } = require("../../constants")
+const { getAllActiveOrders } = require("./orders")
 
 const getCollectionByChainAndAddress = async (chainId, address) => {
   try {
@@ -78,10 +83,78 @@ const getTotalSupply = async (chain, address) => {
   }
 }
 
-const getFloorPrice = async (chain, address, days) => {
-  //TODO to be editted
-}
+const getFloorPrice = async (chain, address) => {
 
+  if (address !== "0x2953399124f0cbb46d2cbacd8a89cf0599974963" && address !== "0x495f947276749ce646f68ac8c248420045cb7b5e") {
+    const priceData = await axios.get(
+      `${COIN_GECKO_API_BASE}/simple/price?ids=wmatic,weth,dai,busd,wbnb,tether,usd-coin,crypto-com-chain&vs_currencies=usd`
+    );
+
+    // fetching orders from cache and filtering out orders from other collections
+    const orders = (await getAllActiveOrders()).filter(order => Number(order.chainId) === Number(chain) && order.baseAssetAddress === address)
+
+    const lowestPrice = orders.reduce((lowest, currentOrder) => {
+      const { barterList } = currentOrder
+      //filtering out non-ERC20
+      const ERC20BarterList = barterList.filter(token => token.tokenType === 0)
+      //getting lowest price for each active order
+      const lowestFromOrder = ERC20BarterList.reduce((lowest, current) => {
+        const tokenPrice = ethers.utils.formatUnits(
+          current.assetTokenIdOrAmount,
+          current.decimals);
+
+        let tokenUsdPrice;
+
+        switch (current.symbol.toLowerCase()) {
+          case "wmatic":
+            tokenUsdPrice = parseFloat(tokenPrice) * priceData.data.wmatic.usd;
+            break;
+          case "usdc":
+            tokenUsdPrice = parseFloat(tokenPrice) * priceData.data['usd-coin'].usd;
+            break;
+          case "usdc.e":
+            tokenUsdPrice = parseFloat(tokenPrice) * priceData.data['usd-coin'].usd;
+            break;
+          case "usdt":
+            tokenUsdPrice = parseFloat(tokenPrice) * priceData.data.tether.usd;
+            break;
+          case "usdt.e":
+            tokenUsdPrice = parseFloat(tokenPrice) * priceData.data.tether.usd;
+            break;
+          case "weth":
+            tokenUsdPrice = parseFloat(tokenPrice) * priceData.data.weth.usd;
+            break;
+          case "dai":
+            tokenUsdPrice = parseFloat(tokenPrice) * priceData.data.dai.usd;
+            break;
+          case "busd":
+            tokenUsdPrice = parseFloat(tokenPrice) * priceData.data.busd.usd;
+            break;
+          case "wbnb":
+            tokenUsdPrice = parseFloat(tokenPrice) * priceData.data.wbnb.usd;
+            break;
+          case "cro":
+            tokenUsdPrice = parseFloat(tokenPrice) * priceData.data['crypto-com-chain'].usd;
+            break;
+          case "wcro":
+            tokenUsdPrice = parseFloat(tokenPrice) * priceData.data['crypto-com-chain'].usd;
+            break;
+          default:
+            tokenUsdPrice = parseFloat(tokenPrice);
+            break;
+        }
+
+        return tokenUsdPrice < lowest ? tokenUsdPrice : lowest
+
+      }, Infinity)
+
+      return lowestFromOrder < lowest ? lowestFromOrder : lowest
+    }, Infinity)
+    return lowestPrice !== Infinity ? lowestPrice : NaN
+  } else {
+    return NaN
+  }
+}
 const addCollectionToDb = async (chain, address) => {
   // try {
   //   await Moralis.start(MoralisOptions)

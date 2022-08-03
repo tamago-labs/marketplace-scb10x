@@ -19,6 +19,7 @@ exports.getCollectionByChainAndAddress = async (req, res, next) => {
     if (!collection) {
       return res.status(503).json({ message: "The collection does not exist in the database. Please contact the backend developer to manually add it." })
     }
+    collection.lowestPrice = await collectionModel.getFloorPrice(collection.chainId, collection.assetAddress)
     //check for empty object
     return res.json({ status: "ok", collection })
   } catch (error) {
@@ -36,6 +37,9 @@ exports.getCollectionsByChain = async (req, res, next) => {
       return res.status(400).json({ message: "This chain is not supported" })
     }
     const collections = await collectionModel.getCollectionsByChain(chain)
+    for (const collection of collections) {
+      collection.lowestPrice = await collectionModel.getFloorPrice(collection.chainId, collection.assetAddress)
+    }
     console.log(collections)
     return res.json({ status: "ok", collections })
   } catch (error) {
