@@ -7,7 +7,7 @@ const getCollectionByChainAndAddress = async (chainId, address) => {
   try {
     const result = await db.collection("collections-v2").doc(`${chainId}.${address}`).get()
     if (result.empty) {
-      return false
+      return null
     }
     const collection = result.data()
     return collection
@@ -80,37 +80,37 @@ const getFloorPrice = async (chain, address, days) => {
 }
 
 const addCollectionToDb = async (chain, address) => {
-  try {
-    await Moralis.start(MoralisOptions)
-    const options = {
-      address,
-      chain: convertDecimalToHexadecimal(chain)
-    }
-    const metaData = await Moralis.Web3API.token.getNFTMetadata(options)
-    console.log(metaData)
-    const newData = {
-      "links": {
-        "twitterLink": "",
-        "chainExplorerLink": "",
-        "website": ""
-      },
-      "description": "",
-      "totalSupply": await getTotalSupply(chain, address),
-      "chainId": Number(chain),
-      "cover": "",
-      "assetAddress": address,
-      "isBanned": false,
-      "slug": "",
-      "isVerified": false,
-      "title": metaData.name,
-      "totalOwners": 0,
-      "lastSyncTimestamp": 0,
-    }
-    await db.collection("collections-v2").doc(`${chain}.${address}`).set(newData)
-    return { status: "ok", metaData: newData }
-  } catch (error) {
-    return { status: "error" }
-  }
+  // try {
+  //   await Moralis.start(MoralisOptions)
+  //   const options = {
+  //     address,
+  //     chain: convertDecimalToHexadecimal(chain)
+  //   }
+  //   const metaData = await Moralis.Web3API.token.getNFTMetadata(options)
+  //   console.log(metaData)
+  //   const newData = {
+  //     "links": {
+  //       "twitterLink": "",
+  //       "chainExplorerLink": "",
+  //       "website": ""
+  //     },
+  //     "description": "",
+  //     "totalSupply": await getTotalSupply(chain, address),
+  //     "chainId": Number(chain),
+  //     "cover": "",
+  //     "assetAddress": address,
+  //     "isBanned": false,
+  //     "slug": "",
+  //     "isVerified": false,
+  //     "title": metaData.name,
+  //     "totalOwners": 0,
+  //     "lastSyncTimestamp": 0,
+  //   }
+  //   await db.collection("collections-v2").doc(`${chain}.${address}`).set(newData)
+  //   return { status: "ok", metaData: newData }
+  // } catch (error) {
+  //   return { status: "error" }
+  // }
 }
 module.exports = {
   getCollectionByChainAndAddress,
@@ -118,5 +118,5 @@ module.exports = {
   getTotalOwners,
   getTotalSupply,
   getFloorPrice,
-  addCollectionToDb
+  // addCollectionToDb
 }

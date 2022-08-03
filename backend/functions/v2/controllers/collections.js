@@ -17,12 +17,7 @@ exports.getCollectionByChainAndAddress = async (req, res, next) => {
     }
     const collection = await collectionModel.getCollectionByChainAndAddress(chain, contractAddress)
     if (!collection) {
-      const result = await collectionModel.addCollectionToDb(chain, contractAddress)
-      if (result.status === "error") {
-        console.log(result.message)
-        return res.status(400).json({ message: "No metadata found! Try again later" })
-      }
-      return res.json({ status: "ok", collection: result })
+      return res.status(503).json({ message: "The collection does not exist in the database. Please contact the backend developer to manually add it." })
     }
     //check for empty object
     return res.json({ status: "ok", collection })
