@@ -36,7 +36,7 @@ const SwapButton = styled.button.attrs(() => ({ className: "btn" }))`
   }
 `;
 
-const RedDot = styled.div`
+const NumDot = styled.div`
   position: relative;
   left: 15px;
   bottom: 5px;
@@ -72,14 +72,14 @@ const CartModal = ({ chainId }) => {
   return (
     <>
       <Button variant="primary" onClick={handleShow}>
-        <RedDot>{cartListNum}</RedDot>
+        <NumDot>{cartListNum}</NumDot>
         <ShoppingCart />
       </Button>
 
       <Modal show={show} onHide={handleClose} style={{ color: "#000" }}>
         <Modal.Header closeButton>
           <Modal.Title>
-            Your NFT Shopping Cart{" "}
+            Your NFT Shopping Cart
             <Button onClick={handleClearAll}>clear all</Button>
           </Modal.Title>
         </Modal.Header>
@@ -87,7 +87,6 @@ const CartModal = ({ chainId }) => {
           {cartList.map((cartItem, index) => {
             return (
               <Preview>
-                # {index + 1}
                 <div>
                   {cartItem.item && cartItem.item.tokenType === 0 && (
                     <>
