@@ -14,7 +14,7 @@ const getIpfsDataByCid = async (cid) => {
 // ! redis must be connected to use this function
 const refreshOrderCache = async () => {
   // ! modification may be needed later
-  const queryResult = await db.collection("orders-v2").where("confirmed", "==", true).where("locked", "==", false).get()
+  const queryResult = await db.collection("orders-v2").get()
   const activeOrderCids = (queryResult.docs.map(item => item.id))
 
   //requesting all orders in parallel
@@ -26,7 +26,8 @@ const refreshOrderCache = async () => {
 
   flattenedOrderData = ordersData.map(item => item.value)
 
-  console.log(flattenedOrderData)
+  console.log(flattenedOrderData.length)
+
 
   await redisClient.connect()
   await redisClient.set("orders", JSON.stringify(flattenedOrderData))
@@ -43,7 +44,7 @@ const getAllActiveOrders = async () => {
 
     if (orders === null) {
       //retrieve all orders
-      console.log("No cache found, retrieving data from IPFS")
+      // console.log("No cache found, retrieving data from IPFS")
       const activeOrdersData = await refreshOrderCache()
       await redisClient.quit()
       return activeOrdersData
@@ -51,7 +52,7 @@ const getAllActiveOrders = async () => {
     } else {
       //sending the cache to frontend
       await redisClient.quit()
-      console.log("Cache found, sending data to frontend")
+      // console.log("Cache found, sending data to frontend")
       return JSON.parse(orders)
     }
 

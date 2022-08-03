@@ -1,6 +1,7 @@
 
 const { supportedChains } = require('../../constants')
 const collectionModel = require('../models/collections')
+const orderModel = require('../models/orders')
 const validator = require("validator")
 
 exports.getCollectionByChainAndAddress = async (req, res, next) => {
@@ -38,9 +39,8 @@ exports.getCollectionsByChain = async (req, res, next) => {
     }
     const collections = await collectionModel.getCollectionsByChain(chain)
     for (const collection of collections) {
-      collection.lowestPrice = await collectionModel.getFloorPrice(collection.chainId, collection.assetAddress)
+      collection.lowestPrice = await collectionModel.getFloorPrice(collection.chainId, collection.baseAssetAddress)
     }
-    console.log(collections)
     return res.json({ status: "ok", collections })
   } catch (error) {
     next(error)

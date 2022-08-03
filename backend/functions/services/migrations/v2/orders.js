@@ -271,18 +271,18 @@ const migrateFromCIDToDB = async () => {
 
     ]
     const flattenedCIDS = CIDS.reduce((result, current) => [...result, ...current], [])
-    // console.log(flattened)
+    console.log(flattenedCIDS.length)
     for (let CID of flattenedCIDS) {
-      const url = `https://${CID}.ipfs.infura-ipfs.io/`
-      const res = await axios.get(url)
-      //use CID and res.data
-      const order = res.data
+      // const url = `https://${CID}.ipfs.infura-ipfs.io/`
+      // const res = await axios.get(url)
+      // //use CID and res.data
+      // const order = res.data
       await db.collection("orders-v2").doc(CID).set({
         visible: true,
         locked: false,
         slug: "",
         canceled: false,
-        confirmed: false,
+        confirmed: true,
         crosschain: false,
       })
     }

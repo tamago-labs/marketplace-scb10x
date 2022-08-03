@@ -91,9 +91,15 @@ const getFloorPrice = async (chain, address) => {
     );
 
     // fetching orders from cache and filtering out orders from other collections
-    const orders = (await getAllActiveOrders()).filter(order => Number(order.chainId) === Number(chain) && order.baseAssetAddress === address)
+    const orders = (await getAllActiveOrders())
+    // console.log(orders)
 
-    const lowestPrice = orders.reduce((lowest, currentOrder) => {
+    const filteredOrders = orders.filter(order => {
+      return Number(order.chainId) === Number(chain) && order.baseAssetAddress === address
+    }
+    )
+
+    const lowestPrice = filteredOrders.reduce((lowest, currentOrder) => {
       const { barterList } = currentOrder
       //filtering out non-ERC20
       const ERC20BarterList = barterList.filter(token => token.tokenType === 0)
