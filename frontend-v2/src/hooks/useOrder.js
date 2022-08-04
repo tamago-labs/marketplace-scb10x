@@ -619,17 +619,47 @@ const useOrder = () => {
     })
   }
 
+  const getCollectionInfoFromCacheServer = ({
+    assetAddress,
+    chainId,
+  }) => {
+
+
+
+    return new Promise((resolve) => {
+      axios
+        .get(
+          `${API_BASE}/v2/collection/${chainId}/${assetAddress}`
+        )
+        .then(({ data }) => {
+          resolve(data);
+        });
+
+      setTimeout(() => {
+        resolve();
+      }, 5000);
+    });
+  };
+
   const getCollectionInfo = async (
     assetAddress,
     chainId,
     loadOwners = false
   ) => {
 
-    await Moralis.start(generateMoralisParams(chainId));
+    // load from cache first
 
-    // Moralis.settings.setAPIRateLimit({
-    //   anonymous: 100, authenticated: 100, windowMs: 60000
-    // })
+    const cacheData = await getCollectionInfoFromCacheServer({
+      assetAddress,
+      chainId
+    })
+    
+    if (cacheData && cacheData.collection) {
+      return cacheData.collection
+    }
+
+
+    await Moralis.start(generateMoralisParams(chainId));
 
     const data = COLLECTIONS.find(item => item.assetAddress.toLowerCase() === assetAddress && chainId === item.chainId)
 
@@ -644,36 +674,11 @@ const useOrder = () => {
       };
 
       if (assetAddress !== "0x2953399124f0cbb46d2cbacd8a89cf0599974963") {
-        // const NFTs = await Web3Api.token.getAllTokenIds(options);
         const NFTs = await Moralis.Web3API.token.getAllTokenIds(options);
         totalSupply = NFTs.total
       } else {
         totalSupply = 1655037
       }
-
-      // if (loadOwners) {
-      //   if (assetAddress !== "0x2953399124f0cbb46d2cbacd8a89cf0599974963") {
-
-      //     await wait()
-      //     let result = await Web3Api.token.getNFTOwners(options);
-      //     let owners = result.result.map(item => item['owner_of'])
-
-      //     while (result.next) {
-
-      //       await wait()
-
-      //       result = await result.next()
-
-      //       const o = result.result.map(item => item['owner_of'])
-      //       owners = owners.concat(o)
-      //     }
-
-      //     owners = Array.from(new Set(owners));
-      //     totalOwners = owners.length
-      //   } else {
-      //     totalOwners = 1000000
-      //   }
-      // }
 
     } catch (e) {
       console.log(e)
@@ -721,7 +726,7 @@ const useOrder = () => {
 
       setTimeout(() => {
         resolve();
-      }, 3000);
+      }, 5000);
     });
   };
 
