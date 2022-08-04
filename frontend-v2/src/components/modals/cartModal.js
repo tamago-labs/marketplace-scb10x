@@ -2,9 +2,17 @@ import React, { useState, useContext, useEffect, useCallback } from "react";
 import Modal from "react-bootstrap/Modal";
 import { ShoppingCart, ArrowRight } from "react-feather";
 import styled from "styled-components";
+import { useWeb3React } from "@web3-react/core";
+import { ethers } from "ethers";
+
 import { Button } from "../button";
 import { NftCartsContext } from "../../hooks/useNftCarts";
+import ERC721ABI from "../../abi/ERC721.json";
+import ERC1155ABI from "../../abi/ERC1155.json";
+import ERC20ABI from "../../abi/erc20.json";
+import { NFT_MARKETPLACE } from "../../constants";
 
+/** Styled-Components */
 const Preview = styled.div`
   display: flex;
   color: #333;
@@ -45,11 +53,15 @@ const NumDot = styled.div`
   border-radius: 50px;
 `;
 
+/** Function */
 const CartModal = ({ chainId }) => {
   const [show, setShow] = useState(false);
   const [cartListNum, setCartListNum] = useState();
+  const [tick, setTick] = useState();
+  const [loading, setLoading] = useState();
 
   const { cartList, setCartList } = useContext(NftCartsContext);
+  const { account, library } = useWeb3React();
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
@@ -66,8 +78,88 @@ const CartModal = ({ chainId }) => {
   }, [chainId]);
 
   useEffect(() => {
+    console.log(
+      "🚀 ~ file: cartModal.js ~ line 81 ~ CartModal ~ cartList",
+      cartList
+    );
     setCartListNum(cartList.length);
   }, [cartList]);
+
+  // useEffect(() => {
+  //   if (account) {
+  //     fetchItem();
+  //   } else {
+  //     setOwnedItems(undefined);
+  //   }
+  // }, [account, cartList, tick]);
+
+  // const sample = new ethers.Contract(address, ERC721ABI, library.getSigner());
+
+  // const assetAddressContractErc721 = useERC721(
+  //   item.assetAddress,
+  //   account,
+  //   library
+  // );
+
+  // const assetAddressContractErc1155 = useERC1155(
+  //   item.assetAddress,
+  //   account,
+  //   library
+  // );
+
+  // const contractErc20 = useERC20(item.assetAddress, account, library);
+
+  const onApprove = useCallback(async () => {
+    setLoading(true);
+    try {
+      await Promise.all(
+        cartList.map(async (cartItem) => {
+          const item = cartItem.item;
+          const { contractAddress } = NFT_MARKETPLACE.find(
+            (item) => item.chainId === chainId
+          );
+          console.log(
+            "🚀 ~ file: cartModal.js ~ line 120 ~ cartList.map ~ contractAddress",
+            contractAddress
+          );
+
+          if (item.tokenType === 0 && cartItem.approved === false) {
+            const erc20 = new ethers.Contract(
+              item.address,
+              ERC20ABI,
+              library.getSigner()
+            );
+            await erc20.approve(contractAddress, ethers.constants.MaxUint256);
+          }
+
+          if (item.tokenType === 1 && cartItem.approved === false) {
+            const erc721 = new ethers.Contract(
+              item.assetAddress,
+              ERC721ABI,
+              library.getSigner()
+            );
+
+            await erc721.setApprovalForAll(contractAddress, true);
+          }
+
+          if (item.tokenType === 2 && cartItem.approved === false) {
+            const erc1155 = new ethers.Contract(
+              item.assetAddress,
+              ERC1155ABI,
+              library.getSigner()
+            );
+
+            await erc1155.setApprovalForAll(contractAddress, true);
+          }
+        })
+      );
+    } catch (e) {
+      console.log(e.message);
+    }
+
+    setTick(tick + 1);
+    setLoading(false);
+  }, [cartList, tick]);
 
   return (
     <>
@@ -143,8 +235,8 @@ const CartModal = ({ chainId }) => {
           <hr style={{ background: "#333" }} />
 
           <div className="text-center">
-            <SwapButton variant="primary" onClick={handleClose}>
-              Checkout
+            <SwapButton variant="primary" onClick={onApprove}>
+              Approve
             </SwapButton>
           </div>
         </Modal.Body>
