@@ -50,6 +50,7 @@ const ButtonContainer = styled.div`
 `;
 
 const Wrapper = styled.div`
+  padding: 1rem;
   padding-bottom: 2rem;
 `;
 
