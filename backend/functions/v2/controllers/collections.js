@@ -1,5 +1,5 @@
 
-const { supportedChains } = require('../../constants')
+const { SUPPORTED_CHAINS } = require('../../constants')
 const collectionModel = require('../models/collections')
 const orderModel = require('../models/orders')
 const validator = require("validator")
@@ -10,7 +10,7 @@ exports.getCollectionByChainAndAddress = async (req, res, next) => {
     if (!chain || !contractAddress) {
       return res.status(400).json({ message: "Chain ID and Contract Address required" })
     }
-    if (!supportedChains.includes(Number(chain))) {
+    if (!SUPPORTED_CHAINS.includes(Number(chain))) {
       return res.status(400).json({ message: "This chain is not supported" })
     }
     if (!validator.isEthereumAddress(contractAddress)) {
@@ -34,7 +34,7 @@ exports.getCollectionsByChain = async (req, res, next) => {
     if (!chain) {
       return res.status(400).json({ message: "Chain is required as input" })
     }
-    if (!supportedChains.includes(Number(chain))) {
+    if (!SUPPORTED_CHAINS.includes(Number(chain))) {
       return res.status(400).json({ message: "This chain is not supported" })
     }
     const collections = await collectionModel.getCollectionsByChain(chain)

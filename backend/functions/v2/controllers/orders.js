@@ -1,4 +1,4 @@
-const { supportedChains } = require('../../constants')
+const { SUPPORTED_CHAINS } = require('../../constants')
 const orderModel = require('../models/orders')
 
 exports.getAllOrders = async (req, res, next) => {
@@ -16,7 +16,7 @@ exports.getOrdersByChain = async (req, res, next) => {
     if (!chainId) {
       return res.status(400).json({ message: "Chain ID is required." })
     }
-    if (!supportedChains.includes(Number(chainId))) {
+    if (!SUPPORTED_CHAINS.includes(Number(chainId))) {
       return res.status(400).json({ message: "Chain ID is not supported." })
     }
     const orders = await orderModel.getAllOrdersWithChainId(chainId)
