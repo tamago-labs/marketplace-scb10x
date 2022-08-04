@@ -45,13 +45,9 @@ const From = ({
   };
 
   const tokens = useMemo(() => {
-    const mocks = MOCKS.filter(
+    const mocks = ERC20_TOKENS.filter(
       (item) => item.chainId === chainId && item.tokenType === 0
-    ).concat(
-      ERC20_TOKENS.filter(
-        (item) => item.chainId === chainId && item.tokenType === 0
-      )
-    );
+    )
     let intialAmount = [];
     for (let t of mocks) {
       intialAmount.push(100);
@@ -90,7 +86,7 @@ const From = ({
             NFT
           </NavLink>
         </NavItem>
-        <NavItem>
+        {/* <NavItem>
           <NavLink
             active={activeTab === "2"}
             onClick={() => {
@@ -99,7 +95,7 @@ const From = ({
           >
             ERC-20
           </NavLink>
-        </NavItem>
+        </NavItem> */}
       </Nav>
       <TabContent activeTab={activeTab}>
         <TabPane tabId="1">

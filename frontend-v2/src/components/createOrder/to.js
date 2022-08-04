@@ -145,13 +145,11 @@ const To = ({
   };
 
   const tokens = useMemo(() => {
-    const mocks = MOCKS.filter(
-      (item) => item.chainId === chainId && item.tokenType === 0
-    ).concat(
+    const mocks = 
       ERC20_TOKENS.filter(
-        (item) => item.chainId === chainId && item.tokenType === 0
+        (item) => item.chainId === chainId && (item.tokenType === 0 || item.tokenType === 3)
       )
-    );
+    
     let intialAmount = [];
     for (let t of mocks) {
       intialAmount.push(100);
@@ -292,7 +290,7 @@ const To = ({
                           assetTokenIdOrAmount: `${ethers.utils
                             .parseUnits(`${tokenAmount[index]}`, token.decimals)
                             .toString()}`,
-                          tokenType: 0,
+                          tokenType:  token.contractAddress === "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE" ? 3 : 0,
                           chainId: token.chainId,
                           decimals: token.decimals,
                           symbol: token.symbol,

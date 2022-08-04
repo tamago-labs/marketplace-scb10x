@@ -16,6 +16,8 @@ const useMoralisAPI = () => {
                 return "bnb"
             case 137:
                 return "polygon"
+            case 25:
+                return "cronos"
             case 43114:
                 return "avax"
             case 1:

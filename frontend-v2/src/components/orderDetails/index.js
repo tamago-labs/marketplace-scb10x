@@ -6,8 +6,8 @@ import Skeleton from "react-loading-skeleton";
 import { Puff } from "react-loading-icons";
 import { useWeb3React } from "@web3-react/core";
 import useOrder from "../../hooks/useOrder";
-import { Row, Col } from "reactstrap";
-import { resolveNetworkName, shortAddress, shorterName } from "../../helper";
+import { Row, Col, Accordion, AccordionBody, AccordionHeader, AccordionItem, List, ListGroup, ListGroupItem } from "reactstrap";
+import { resolveBlockexplorerLink, resolveNetworkName, shortAddress, shorterName } from "../../helper";
 import { PairAssetCard } from "../card";
 import SwapModal from "../modals/swapModal";
 import { useERC1155 } from "../../hooks/useERC1155";
@@ -15,6 +15,7 @@ import { useERC20 } from "../../hooks/useERC20";
 import { useERC721 } from "../../hooks/useERC721";
 import { AlertWarning } from "../../components/alert";
 import { Button2 } from "../../components/button";
+import { ethers } from "ethers";
 
 const Container = styled.div.attrs(() => ({ className: "container" }))`
   margin-top: 1rem;
@@ -48,23 +49,61 @@ const L2Text = styled(L1Text)`
   font-size: 12px;
 `;
 
+
+const Attribute = styled.div` 
+
+  .accordion-item {
+    background: transparent;
+    border: 1px solid white;
+  }
+  .accordion-header {
+    
+  }
+
+  .list-group-item {
+    color: white; 
+    padding-top: 15px;
+    font-size: 14px;
+    padding-bottom: 15px;
+    background: transparent;
+    border: 1px solid white;
+    div {
+      flex: 1;
+      a {
+        color: inherit;
+      }
+      :last-child {
+        text-align: right;
+      }
+    }
+    display: flex;
+    flex-direction: row;
+    :not(:last-child) {
+      border-bottom: 0px;
+    }
+  }
+
+
+`
+
 export const Info = styled(({ className, name, value, link }) => {
   return (
-      <div className={className}>
-          <label>{name}</label>
-          {!link ? (
-              <p>{value || <Skeleton width="80px" />}</p>
-          ) : (
-              <Link to={`/collection/${link}`}>
-                  <p style={{textDecoration : "underline"}}>{value}</p>
-              </Link>
-          )}
-      </div>
+    <div className={className}>
+      <label>{name}</label>
+      {!link ? (
+        <p>{value || <Skeleton width="80px" />}</p>
+      ) : (
+        <Link to={`/collection/${link}`}>
+          <p style={{ textDecoration: "underline" }}>{value}</p>
+        </Link>
+      )}
+    </div>
   )
 })`
   display: inline-block;
   min-width: 100px;
   text-align: left;
+  flex: 1;
   label {
     padding: 0px;
     margin: 0px;
@@ -75,9 +114,10 @@ export const Info = styled(({ className, name, value, link }) => {
   a {
     color: inherit;
     text-decoration: none;
-  }
-  margin-right: 10px;
+  } 
 `;
+
+
 
 const NFTCard = ({
   orderId,
@@ -101,13 +141,18 @@ const NFTCard = ({
 
   useEffect(() => {
     if (item && item.tokenType !== 0) {
-      setTimeout(() => {
-        resolveMetadata({
-          assetAddress: item.assetAddress,
-          tokenId: item.assetTokenIdOrAmount,
-          chainId: item.chainId,
-        }).then(setData);
-      }, index * 1000);
+      resolveMetadata({
+        assetAddress: item.assetAddress,
+        tokenId: item.assetTokenIdOrAmount,
+        chainId: item.chainId,
+      }).then(setData);
+      // setTimeout(() => {
+      //   resolveMetadata({
+      //     assetAddress: item.assetAddress,
+      //     tokenId: item.assetTokenIdOrAmount,
+      //     chainId: item.chainId,
+      //   }).then(setData);
+      // }, index * 1000);
     }
   }, [item, index]);
 
@@ -199,8 +244,6 @@ const NFTCard = ({
   }, [orderId, order, swap, item]);
 
   const fetchItem = useCallback(async () => {
-    console.log("start fetching...");
-
     setOwnedItems(undefined);
     setApproval(false);
 
@@ -219,8 +262,12 @@ const NFTCard = ({
       );
       setOwnedItems(balance.toString());
       assetAddressContractErc1155.isApproved().then(setApproval);
+    } else if (item.tokenType === 3) {
+      const balance = await library.getBalance(account)
+      setOwnedItems( Number(ethers.utils.formatEther(balance)).toLocaleString())
+      setApproval(true)
     }
-  }, [assetAddressContractErc721, assetAddressContractErc1155, contractErc20]);
+  }, [assetAddressContractErc721, assetAddressContractErc1155, contractErc20, library, account]);
 
   return (
     <>
@@ -238,7 +285,7 @@ const NFTCard = ({
       />
       <PairAssetCard
         image={
-          item.tokenType === 0
+          (item.tokenType === 0 || item.tokenType === 3)
             ? "../images/coin.png"
             : data && data.metadata && data.metadata.image
         }
@@ -252,10 +299,9 @@ const NFTCard = ({
         }
       >
         <div className="name">
-          {item.tokenType !== 0 ? (
+          {(item.tokenType !== 0 && item.tokenType !== 3) ? (
             <>
-              {data && data.metadata && data.metadata.name}
-              {` `}#{shorterName(item.assetTokenIdOrAmount)}
+              {data && data.metadata.name ? data.metadata.name : `#${shorterName(item.assetTokenIdOrAmount)}`}
             </>
           ) : (
             <>
@@ -274,17 +320,9 @@ const NFTCard = ({
             }
             disabled={loading || !account}
           >
-            {/* {loading && (
-                            <Puff height="24px" style={{ marginRight: "5px" }} stroke="#7a0bc0" width="24px" />
-                        )} */}
             Swap
           </Button2>
         </div>
-        {/* <div style={{ textAlign: "center" }}>
-                    <L2Text>
-                        {(ownedItems !== undefined && item.chainId === chainId) ? <>{` ${ownedItems}`}</> : <Skeleton height="16px" />}
-                    </L2Text>
-                </div> */}
       </PairAssetCard>
     </>
   );
@@ -295,6 +333,11 @@ const OrderDetails = () => {
 
   const { getOrder, resolveMetadata, resolveTokenValue, resolveStatus, getCollectionInfo } =
     useOrder();
+
+  const [open, setOpen] = useState('2');
+  const toggle = (id) => {
+    open === id ? setOpen() : setOpen(id);
+  };
 
   const [order, setOrder] = useState();
   const [data, setData] = useState();
@@ -368,7 +411,7 @@ const OrderDetails = () => {
             )}
           </ImageContainer>
         </Col>
-        <Col sm="7">
+        <Col style={{ paddingBottom: "4rem" }} sm="7">
           {order.baseAssetTokenType !== 0 && (
             <>
               <Title>
@@ -403,11 +446,11 @@ const OrderDetails = () => {
           >
             <Info link={`${order.chainId}/${order.baseAssetAddress}`} name={"Collection"} value={collectionInfo && collectionInfo.title ? collectionInfo.title : shortAddress(order.baseAssetAddress)} />
             <Info name={"Status"} value={status ? "Sold" : "New"} />
-            <Info name={"Chain"} value={resolveNetworkName(order.chainId)} />
+            {/* <Info name={"Chain"} value={resolveNetworkName(order.chainId)} />
             <Info
               name={"Added"}
-              value={new Date(Number(order.timestamp) * 1000).toLocaleString()}
-            />
+              value={new Date(Number(order.timestamp) * 1000).toLocaleDateString()}
+            /> */}
           </div>
 
           <hr />
@@ -440,9 +483,88 @@ const OrderDetails = () => {
               );
             })}
           </div>
+
+          <hr />
+
+          <Attribute>
+            <Accordion open={open} toggle={toggle}>
+              <AccordionItem>
+                <AccordionHeader targetId="1">
+                  Attributes ({data && data.metadata.attributes && data.metadata.attributes.length || 0})
+                </AccordionHeader>
+                <AccordionBody accordionId="1">
+
+                  <Row>
+                    {data && data.metadata && data.metadata.attributes && data.metadata.attributes.map((item, index) => {
+                      return (
+                        <Col sm="3" key={index} style={{ padding: 10 }}>
+                          <div style={{ border: "1px solid white", height: "80px", borderRadius: "8px", padding: "10px", fontSize: "12px" }}>
+                            <h5 style={{ fontSize: "16px" }}>{item.trait_type || "Key"}</h5>
+                            <b>{item.value || "Value"}</b>
+                          </div>
+                        </Col>
+                      )
+                    })}
+                  </Row>
+
+                </AccordionBody>
+              </AccordionItem>
+              <AccordionItem>
+                <AccordionHeader targetId="2">
+                  Information
+                </AccordionHeader>
+                <AccordionBody accordionId="2">
+                  <ListGroup>
+                    <ListGroupItem>
+                      <div>
+                        Contract Addresss
+                      </div>
+                      <div>
+                        <a target="_blank" href={resolveBlockexplorerLink(order.chainId, order.baseAssetAddress)}>
+                          {shortAddress(order.baseAssetAddress)}
+                        </a>
+                      </div>
+                    </ListGroupItem>
+                    <ListGroupItem>
+                      <div>
+                        Token ID
+                      </div>
+                      <div>
+                        #{shorterName(order.baseAssetTokenIdOrAmount)}
+                      </div>
+                    </ListGroupItem>
+                    <ListGroupItem>
+                      <div>
+                        Token Standard
+                      </div>
+                      <div>
+                        {order.baseAssetTokenType === 0 ? "ERC-20" : order.baseAssetTokenType === 1 ? "ERC-721" : "ERC-1155"}
+                      </div>
+                    </ListGroupItem>
+                    <ListGroupItem>
+                      <div>
+                        Blockchain
+                      </div>
+                      <div>
+                        {resolveNetworkName(order.chainId)}
+                      </div>
+                    </ListGroupItem>
+                    <ListGroupItem>
+                      <div>
+                        Added
+                      </div>
+                      <div>
+                        {new Date(Number(order.timestamp) * 1000).toLocaleDateString()}
+                      </div>
+                    </ListGroupItem>
+                  </ListGroup>
+                </AccordionBody>
+              </AccordionItem>
+            </Accordion>
+          </Attribute>
         </Col>
       </Row>
-    </Container>
+    </Container >
   );
 };
 

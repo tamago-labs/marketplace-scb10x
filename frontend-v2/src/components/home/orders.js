@@ -16,6 +16,7 @@ import { Options } from "../input"
 import NFTCard from "../nftCard"
 import Collection from "./collectionCard"
 import { NETWORK } from "../../config/network"
+import useCoingecko from "../../hooks/useCoingecko";
 
 const ButtonGroup = styled.div`
   display: flex;   
@@ -88,7 +89,7 @@ const MainSection = styled.div`
     margin-right: auto;
 `
 
-const MAX_ITEMS = 16;
+const MAX_ITEMS = 15;
 
 
 
@@ -135,7 +136,7 @@ const Orders = () => {
       if (localStorage.getItem("chainId")) {
         setChain(Number(localStorage.getItem("chainId")))
       } else {
-        setChain(1)
+        setChain(43114)
       }
     }, 500)
   }, [])
@@ -147,6 +148,7 @@ const Orders = () => {
       setCollections([])
       setMax(MAX_ITEMS)
       getAllOrders(chain).then(setOrders)
+      
     }
 
   }, [chain])
@@ -164,15 +166,25 @@ const Orders = () => {
 
   useEffect(() => {
     const collections = orders.reduce((array, item) => {
-      if (array.indexOf(item.assetAddress) === -1) {
-        array.push(item.assetAddress)
+
+      if (item.tokenType !== 0) {
+        if (array.find(i => i.key === item.assetAddress)) {
+          array = array.map(i => i.key === item.assetAddress ? ({ key: i.key, value: i.value + 1 }) : i)
+        } else {
+          array.push({
+            key: item.assetAddress,
+            value: 1
+          })
+        }
       }
       return array
-    }, [])
+    }, []).sort(function (a, b) {
+      return b.value - a.value;
+    });
 
     const chainId = orders && orders.length > 0 ? orders[0].chainId : 1
 
-    Promise.all(collections.map(item => getCollection(item, chainId))).then(setCollections)
+    Promise.all(collections.map(item => getCollection(item.key, chainId))).then(setCollections)
 
   }, [orders])
 
@@ -218,17 +230,20 @@ const Orders = () => {
       <SearchSection>
         <NetworkPanel>
           <ButtonGroup>
+            <ToggleButton onClick={() => updateChain(43114)} active={chain === 43114}>
+              <img style={{ borderRadius: "50%" }} width={32} src={getIcon(43114)} />{` `}Avalanche
+            </ToggleButton>
+            <ToggleButton onClick={() => updateChain(56)} active={chain === 56}>
+              <img style={{ borderRadius: "50%" }} width={32} src={getIcon(56)} />{` `}BNB
+            </ToggleButton>
+            <ToggleButton onClick={() => updateChain(25)} active={chain === 25}>
+              <img style={{ borderRadius: "50%" }} width={32} src={getIcon(25)} />{` `}Cronos
+            </ToggleButton>
             <ToggleButton onClick={() => updateChain(1)} active={chain === 1}>
               <img style={{ borderRadius: "50%" }} width={32} src={getIcon(1)} />{` `}Ethereum
             </ToggleButton>
             <ToggleButton onClick={() => updateChain(137)} active={chain === 137}>
               <img style={{ borderRadius: "50%" }} width={32} src={getIcon(137)} />{` `}Polygon
-            </ToggleButton>
-            <ToggleButton onClick={() => updateChain(56)} active={chain === 56}>
-              <img style={{ borderRadius: "50%" }} width={32} src={getIcon(56)} />{` `}BNB
-            </ToggleButton>
-            <ToggleButton onClick={() => updateChain(43114)} active={chain === 43114}>
-              <img style={{ borderRadius: "50%" }} width={32} src={getIcon(43114)} />{` `}Avalanche
             </ToggleButton>
           </ButtonGroup>
           <ButtonGroup>
@@ -308,14 +323,16 @@ const Orders = () => {
                       return;
                     }
                     return (
-                      <NFTCard key={index} delay={index % MAX_ITEMS} order={order} />
+                      <NFTCard key={index} delay={index % MAX_ITEMS} order={order}>
+                        
+                      </NFTCard>
                     );
                   })}
 
               </AllOrdersPanel>
               <div style={{ padding: "20px", marginTop: "1rem", textAlign: "center" }}>
                 {orders.length > max && (
-                  <Button onClick={() => setMax(max + 8)}>View More Items...</Button>
+                  <Button onClick={() => setMax(max + 5)}>View More Items...</Button>
                 )}
               </div>
             </>

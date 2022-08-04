@@ -74,7 +74,7 @@ const SwapModal = ({
             <ModalBody>
                 <Preview>
                     <div>
-                        {item && item.tokenType === 0 && (
+                        {item && (item.tokenType === 0 || item.tokenType === 3) && (
                             <>
                                 <img src={"../images/coin.png"} width="100%" height="120px" style={{ margin: "auto" }} />
                             </>
@@ -117,7 +117,6 @@ const SwapModal = ({
                         </Button>
                     }
                 </div>
-
             </ModalBody>
 
         </Modal>

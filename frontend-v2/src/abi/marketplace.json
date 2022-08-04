@@ -2,38 +2,13 @@
   {
     "inputs": [
       {
-        "internalType": "address",
-        "name": "_gatewayAddress",
-        "type": "address"
+        "internalType": "uint256",
+        "name": "_chainId",
+        "type": "uint256"
       }
     ],
     "stateMutability": "nonpayable",
     "type": "constructor"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "string",
-        "name": "cid",
-        "type": "string"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "fromAddress",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "bool",
-        "name": "isOriginChain",
-        "type": "bool"
-      }
-    ],
-    "name": "Claimed",
-    "type": "event"
   },
   {
     "anonymous": false,
@@ -102,25 +77,6 @@
     "inputs": [
       {
         "indexed": false,
-        "internalType": "string",
-        "name": "cid",
-        "type": "string"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "fromAddress",
-        "type": "address"
-      }
-    ],
-    "name": "PartialSwapped",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
         "internalType": "address",
         "name": "account",
         "type": "address"
@@ -162,6 +118,10 @@
     "type": "event"
   },
   {
+    "stateMutability": "payable",
+    "type": "fallback"
+  },
+  {
     "inputs": [
       {
         "internalType": "string",
@@ -188,67 +148,16 @@
     "type": "function"
   },
   {
-    "inputs": [
+    "inputs": [],
+    "name": "chainId",
+    "outputs": [
       {
-        "internalType": "string",
-        "name": "_cid",
-        "type": "string"
-      },
-      {
-        "internalType": "address",
-        "name": "_to",
-        "type": "address"
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
       }
     ],
-    "name": "cancelPartialSwap",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "string",
-        "name": "_cid",
-        "type": "string"
-      },
-      {
-        "internalType": "bool",
-        "name": "_isOriginChain",
-        "type": "bool"
-      },
-      {
-        "internalType": "bytes32[]",
-        "name": "_proof",
-        "type": "bytes32[]"
-      }
-    ],
-    "name": "claim",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "string[]",
-        "name": "_cids",
-        "type": "string[]"
-      },
-      {
-        "internalType": "bool",
-        "name": "_isOriginChain",
-        "type": "bool"
-      },
-      {
-        "internalType": "bytes32[][]",
-        "name": "_proofs",
-        "type": "bytes32[][]"
-      }
-    ],
-    "name": "claimBatch",
-    "outputs": [],
-    "stateMutability": "nonpayable",
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -339,74 +248,6 @@
       },
       {
         "internalType": "address",
-        "name": "_claimer",
-        "type": "address"
-      },
-      {
-        "internalType": "bool",
-        "name": "_isOriginChain",
-        "type": "bool"
-      },
-      {
-        "internalType": "bytes32[]",
-        "name": "_proof",
-        "type": "bytes32[]"
-      }
-    ],
-    "name": "eligibleToClaim",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "string",
-        "name": "_cid",
-        "type": "string"
-      },
-      {
-        "internalType": "address",
-        "name": "_assetAddress",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_tokenIdOrAmount",
-        "type": "uint256"
-      },
-      {
-        "internalType": "bytes32[]",
-        "name": "_proof",
-        "type": "bytes32[]"
-      }
-    ],
-    "name": "eligibleToPartialSwap",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "string",
-        "name": "_cid",
-        "type": "string"
-      },
-      {
-        "internalType": "address",
         "name": "_assetAddress",
         "type": "address"
       },
@@ -432,19 +273,6 @@
         "internalType": "bool",
         "name": "",
         "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "gateway",
-    "outputs": [
-      {
-        "internalType": "contract IGateway",
-        "name": "",
-        "type": "address"
       }
     ],
     "stateMutability": "view",
@@ -630,116 +458,6 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "string",
-        "name": "_cid",
-        "type": "string"
-      },
-      {
-        "internalType": "address",
-        "name": "_assetAddress",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_tokenIdOrAmount",
-        "type": "uint256"
-      },
-      {
-        "internalType": "enum Marketplace.TokenType",
-        "name": "_type",
-        "type": "uint8"
-      },
-      {
-        "internalType": "bytes32[]",
-        "name": "_proof",
-        "type": "bytes32[]"
-      }
-    ],
-    "name": "partialSwap",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "string[]",
-        "name": "_cids",
-        "type": "string[]"
-      },
-      {
-        "internalType": "address[]",
-        "name": "_assetAddresses",
-        "type": "address[]"
-      },
-      {
-        "internalType": "uint256[]",
-        "name": "_tokenIdOrAmounts",
-        "type": "uint256[]"
-      },
-      {
-        "internalType": "enum Marketplace.TokenType[]",
-        "name": "_types",
-        "type": "uint8[]"
-      },
-      {
-        "internalType": "bytes32[][]",
-        "name": "_proofs",
-        "type": "bytes32[][]"
-      }
-    ],
-    "name": "partialSwapBatch",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "string",
-        "name": "",
-        "type": "string"
-      }
-    ],
-    "name": "partials",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "active",
-        "type": "bool"
-      },
-      {
-        "internalType": "bool",
-        "name": "ended",
-        "type": "bool"
-      },
-      {
-        "internalType": "address",
-        "name": "buyer",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "assetAddress",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "tokenIdOrAmount",
-        "type": "uint256"
-      },
-      {
-        "internalType": "enum Marketplace.TokenType",
-        "name": "tokenType",
-        "type": "uint8"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
     "inputs": [],
     "name": "paused",
     "outputs": [
@@ -769,11 +487,11 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_gatewayAddress",
+        "name": "_devAddress",
         "type": "address"
       }
     ],
-    "name": "setGateway",
+    "name": "setDevAddress",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -904,6 +622,24 @@
     "type": "function"
   },
   {
+    "inputs": [
+      {
+        "internalType": "string[]",
+        "name": "_cids",
+        "type": "string[]"
+      },
+      {
+        "internalType": "bytes32[][]",
+        "name": "_proofs",
+        "type": "bytes32[][]"
+      }
+    ],
+    "name": "swapBatchWithEth",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
     "inputs": [],
     "name": "swapFee",
     "outputs": [
@@ -915,5 +651,27 @@
     ],
     "stateMutability": "view",
     "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
+        "name": "_cid",
+        "type": "string"
+      },
+      {
+        "internalType": "bytes32[]",
+        "name": "_proof",
+        "type": "bytes32[]"
+      }
+    ],
+    "name": "swapWithEth",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "stateMutability": "payable",
+    "type": "receive"
   }
 ]

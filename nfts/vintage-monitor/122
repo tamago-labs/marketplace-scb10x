@@ -1,0 +1,19 @@
+{
+    "image": "ipfs://bafybeibzmdhxj7r7pihdoanpkqtp2dwou35b6w7dkjy6akrwgnf5reputq/122.png",
+    "name": "Vintage Monitor #122",
+    "description" : "127 old TV set NFT with different face emotions. No roadmap or promises, purely collectible on Cronos blockchain only.",
+    "attributes": [
+        {
+            "trait_type": "face",
+            "value": "17"
+        },
+        {
+            "trait_type": "background",
+            "value": "white"
+        },
+        {
+            "trait_type": "model",
+            "value": "tv3"
+        }
+    ]
+}
