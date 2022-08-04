@@ -4,6 +4,7 @@ import { ShoppingCart, ArrowRight } from "react-feather";
 import styled from "styled-components";
 import { useWeb3React } from "@web3-react/core";
 import { ethers } from "ethers";
+import { Puff } from "react-loading-icons";
 
 import { Button } from "../button";
 import { NftCartsContext } from "../../hooks/useNftCarts";
@@ -59,6 +60,7 @@ const CartModal = ({ chainId }) => {
   const [cartListNum, setCartListNum] = useState();
   const [tick, setTick] = useState();
   const [loading, setLoading] = useState();
+  const [isApprovedAll, setIsApprovedAll] = useState(false);
 
   const { cartList, setCartList } = useContext(NftCartsContext);
   const { account, library } = useWeb3React();
@@ -72,87 +74,72 @@ const CartModal = ({ chainId }) => {
   }, []);
 
   //change chain handle
-  useEffect(() => {
-    localStorage.clear();
-    setCartList([]);
-  }, [chainId]);
+  // useEffect(() => {
+  //   localStorage.clear();
+  //   setCartList([]);
+  // }, [chainId]);
 
   useEffect(() => {
-    console.log(
-      "🚀 ~ file: cartModal.js ~ line 81 ~ CartModal ~ cartList",
-      cartList
-    );
     setCartListNum(cartList.length);
   }, [cartList]);
 
-  // useEffect(() => {
-  //   if (account) {
-  //     fetchItem();
-  //   } else {
-  //     setOwnedItems(undefined);
-  //   }
-  // }, [account, cartList, tick]);
-
-  // const sample = new ethers.Contract(address, ERC721ABI, library.getSigner());
-
-  // const assetAddressContractErc721 = useERC721(
-  //   item.assetAddress,
-  //   account,
-  //   library
-  // );
-
-  // const assetAddressContractErc1155 = useERC1155(
-  //   item.assetAddress,
-  //   account,
-  //   library
-  // );
-
-  // const contractErc20 = useERC20(item.assetAddress, account, library);
-
   const onApprove = useCallback(async () => {
     setLoading(true);
+    const { contractAddress } = NFT_MARKETPLACE.find(
+      (item) => item.chainId === chainId
+    );
+    let assetAddressSet = new Set();
     try {
       await Promise.all(
         cartList.map(async (cartItem) => {
           const item = cartItem.item;
-          const { contractAddress } = NFT_MARKETPLACE.find(
-            (item) => item.chainId === chainId
-          );
           console.log(
-            "🚀 ~ file: cartModal.js ~ line 120 ~ cartList.map ~ contractAddress",
-            contractAddress
+            "🚀 ~ file: cartModal.js ~ line 97 ~ cartList.map ~ cartItem.approved",
+            cartItem.approved
           );
+          if (
+            !assetAddressSet.has(item.assetAddress) &&
+            cartItem.approved === false
+          ) {
+            assetAddressSet.add(item.assetAddress);
 
-          if (item.tokenType === 0 && cartItem.approved === false) {
-            const erc20 = new ethers.Contract(
-              item.address,
-              ERC20ABI,
-              library.getSigner()
-            );
-            await erc20.approve(contractAddress, ethers.constants.MaxUint256);
-          }
+            if (item.tokenType === 0) {
+              console.log("erc20");
+              const erc20 = new ethers.Contract(
+                item.assetAddress,
+                ERC20ABI,
+                library.getSigner()
+              );
+              await erc20.approve(contractAddress, ethers.constants.MaxUint256);
+            }
 
-          if (item.tokenType === 1 && cartItem.approved === false) {
-            const erc721 = new ethers.Contract(
-              item.assetAddress,
-              ERC721ABI,
-              library.getSigner()
-            );
+            if (item.tokenType === 1) {
+              console.log("erc721");
 
-            await erc721.setApprovalForAll(contractAddress, true);
-          }
+              const erc721 = new ethers.Contract(
+                item.assetAddress,
+                ERC721ABI,
+                library.getSigner()
+              );
 
-          if (item.tokenType === 2 && cartItem.approved === false) {
-            const erc1155 = new ethers.Contract(
-              item.assetAddress,
-              ERC1155ABI,
-              library.getSigner()
-            );
+              await erc721.setApprovalForAll(contractAddress, true);
+            }
 
-            await erc1155.setApprovalForAll(contractAddress, true);
+            if (item.tokenType === 2) {
+              console.log("erc1155");
+
+              const erc1155 = new ethers.Contract(
+                item.assetAddress,
+                ERC1155ABI,
+                library.getSigner()
+              );
+
+              await erc1155.setApprovalForAll(contractAddress, true);
+            }
           }
         })
       );
+      setIsApprovedAll(true);
     } catch (e) {
       console.log(e.message);
     }
@@ -235,9 +222,31 @@ const CartModal = ({ chainId }) => {
           <hr style={{ background: "#333" }} />
 
           <div className="text-center">
-            <SwapButton variant="primary" onClick={onApprove}>
-              Approve
-            </SwapButton>
+            {isApprovedAll ? (
+              <SwapButton variant="primary">
+                {loading && (
+                  <Puff
+                    height="24px"
+                    style={{ marginRight: "5px" }}
+                    stroke="white"
+                    width="24px"
+                  />
+                )}
+                Swap
+              </SwapButton>
+            ) : (
+              <SwapButton variant="primary" onClick={onApprove}>
+                {loading && (
+                  <Puff
+                    height="24px"
+                    style={{ marginRight: "5px" }}
+                    stroke="white"
+                    width="24px"
+                  />
+                )}
+                Approve
+              </SwapButton>
+            )}
           </div>
         </Modal.Body>
       </Modal>
