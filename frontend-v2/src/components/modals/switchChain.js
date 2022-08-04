@@ -82,8 +82,7 @@ function WalletsModal({ toggleModal, modalVisible }) {
     setActiveTab(tab);
   };
 
-  const availableNetworks = useMemo(() => {
-    console.log(NETWORK)
+  const availableNetworks = useMemo(() => { 
     return (NETWORK.filter((item) => {
       const CHAINS = activeTab === "1" ? MAINNET_CHAINS : TESTNET_CHAINS
       return CHAINS.indexOf(parseInt(item.chainId, 16)) !== -1

@@ -7,6 +7,7 @@ import NFTCard from "../nftCard";
 import { Button, Button2, ToggleButton } from "../../components/button"
 import { AssetCard } from "../card";
 import { resolveBlockexplorerLink, shortAddress } from "../../helper";
+import { ExternalLink, FileText, Twitter } from "react-feather"
 
 const ALT_COVER = "https://img.tamago.finance/bg-2.jpg"
 
@@ -139,6 +140,33 @@ const Address = styled.div`
     margin-bottom: 10px;
 `
 
+const Icons = styled.div`
+    display: flex;
+    flex-direction: row;
+    height: 30px;
+    margin-bottom: 10px;
+`
+
+const Icon = styled.div`
+    background: red;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    color: white;
+    background: #9370DB;
+
+  :not(:last-child) {
+      margin-right: 3px;
+  }
+
+  a {
+      color: inherit;
+      margin: auto;
+  }
+
+`
+
 const MAX_ITEMS = 10;
 
 const Collection = () => {
@@ -152,6 +180,8 @@ const Collection = () => {
     const [info, setInfo] = useState()
     const [floorPrice, setFloorPrice] = useState()
     const [owners, setOwners] = useState()
+
+    console.log("info --> ", info)
 
     useEffect(() => {
         if (chain) {
@@ -201,14 +231,36 @@ const Collection = () => {
                     <CollectionInfoCard>
                         <h5>{info && info.title ? info.title : <Skeleton />}</h5>
                         {info && (
-                            <Address>
-                                <a target="_blank" href={resolveBlockexplorerLink(Number(chain), address)}>
-                                    {shortAddress(address)}
-                                </a>
-                            </Address>
-                        )
+                            <>
+                                <Icons>
+                                    <Icon>
+                                        <a target="_blank" href={resolveBlockexplorerLink(Number(chain), address)}>
+                                            <FileText size={16} />
+                                        </a>
+                                    </Icon>
+                                    {info.links && info.links.website && (
+                                        <Icon>
+                                            <a target="_blank" href={info.links.website}>
+                                                <ExternalLink style={{ margin: "auto" }} size={16} />
+                                            </a>
+                                        </Icon>
+                                    )}
+                                    {info.links && info.links.twitterLink && (
+                                        <Icon>
+                                            <a target="_blank" href={info.links.twitterLink}>
+                                                <Twitter size={16} />
+                                            </a>
+                                        </Icon>
+                                    )}
+                                </Icons>
+                                {/* <Address>
+                                    <a target="_blank" href={resolveBlockexplorerLink(Number(chain), address)}>
+                                        {shortAddress(address)}
+                                    </a>
+                                </Address> */}
 
-                        }
+                            </>
+                        )}
                         <p>{info && info.description ? info.description : <Skeleton />}</p>
                     </CollectionInfoCard>
                 </CollectionInfoCol>
@@ -243,7 +295,6 @@ const Collection = () => {
                                     </NFTCard>
                                 );
                             })}
-
                     </OrdersPanel>
                     <div style={{ padding: "20px", marginTop: "1rem", textAlign: "center" }}>
                         {orders.length > max && (
