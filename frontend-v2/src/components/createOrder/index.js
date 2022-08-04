@@ -226,7 +226,7 @@ const CreateOrder = () => {
   }, [account, chainId]);
 
   return (
-    <Container>
+    <div>
       <Description>
         To list the asset simply by define the list of pair assets, upload it to
         Filecoin and register the hash on the contract then wait for someone
@@ -251,6 +251,7 @@ const CreateOrder = () => {
           <div className="circle">3</div>Confirm
         </Step>
       </StepHeader>
+      
 
       {/* From Section */}
       {step === 1 && (
@@ -299,7 +300,7 @@ const CreateOrder = () => {
           fromTokens={fromTokens}
         />
       )}
-    </Container>
+    </div>
   );
 };
 
