@@ -7,6 +7,7 @@ import NFTCard from "../nftCard";
 import { Button, Button2, ToggleButton } from "../../components/button"
 import { AssetCard } from "../card";
 import { resolveBlockexplorerLink, shortAddress } from "../../helper";
+import { ExternalLink, FileText, Twitter } from "react-feather"
 
 const ALT_COVER = "https://img.tamago.finance/bg-2.jpg"
 
@@ -139,6 +140,33 @@ const Address = styled.div`
     margin-bottom: 10px;
 `
 
+const Icons = styled.div`
+    display: flex;
+    flex-direction: row;
+    height: 30px;
+    margin-bottom: 10px;
+`
+
+const Icon = styled.div`
+    background: red;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    color: white;
+    background: #9370DB;
+
+  :not(:last-child) {
+      margin-right: 3px;
+  }
+
+  a {
+      color: inherit;
+      margin: auto;
+  }
+
+`
+
 const MAX_ITEMS = 10;
 
 const Collection = () => {
@@ -153,16 +181,16 @@ const Collection = () => {
     const [floorPrice, setFloorPrice] = useState()
     const [owners, setOwners] = useState()
 
+    console.log("info --> ", info)
+
     useEffect(() => {
         if (chain) {
             setOrders([])
             setMax(MAX_ITEMS)
             getOrdersFromCollection(Number(chain), address).then(setOrders)
-            getFloorPrice(address, Number(chain)).then(setFloorPrice)
             getCollectionInfo(address, Number(chain)).then(setInfo)
-            // setTimeout(() => {
-            //     getCollectionOwners(address, Number(chain)).then(setOwners)
-            // }, 3000)
+            getFloorPrice(address, Number(chain)).then(setFloorPrice)
+
         }
 
     }, [chain, address])
@@ -179,10 +207,10 @@ const Collection = () => {
                             name="Items"
                             value={info && info.totalSupply}
                         />
-                        {/* <Info
+                        <Info
                             name="Owners"
-                            value={owners && owners.length}
-                        /> */}
+                            value={info && info.totalOwners}
+                        />
                         <Info
                             name="Listing"
                             value={orders ? orders.length : null}
@@ -193,7 +221,7 @@ const Collection = () => {
                         /> */}
                         <Info
                             name="Floor Price"
-                            value={floorPrice ? `$${Number(floorPrice.all).toLocaleString()}` : null}
+                            value={info && info.lowestPrice ? `$${Number(info.lowestPrice).toLocaleString()}` : null}
                         />
                     </CollectionStatusCard>
                 </CollectionStatusContainer>
@@ -203,14 +231,36 @@ const Collection = () => {
                     <CollectionInfoCard>
                         <h5>{info && info.title ? info.title : <Skeleton />}</h5>
                         {info && (
-                            <Address>
-                                <a target="_blank" href={resolveBlockexplorerLink(Number(chain), address)}>
-                                    {shortAddress(address)}
-                                </a>
-                            </Address>
-                        )
+                            <>
+                                <Icons>
+                                    <Icon>
+                                        <a target="_blank" href={resolveBlockexplorerLink(Number(chain), address)}>
+                                            <FileText size={16} />
+                                        </a>
+                                    </Icon>
+                                    {info.links && info.links.website && (
+                                        <Icon>
+                                            <a target="_blank" href={info.links.website}>
+                                                <ExternalLink style={{ margin: "auto" }} size={16} />
+                                            </a>
+                                        </Icon>
+                                    )}
+                                    {info.links && info.links.twitterLink && (
+                                        <Icon>
+                                            <a target="_blank" href={info.links.twitterLink}>
+                                                <Twitter size={16} />
+                                            </a>
+                                        </Icon>
+                                    )}
+                                </Icons>
+                                {/* <Address>
+                                    <a target="_blank" href={resolveBlockexplorerLink(Number(chain), address)}>
+                                        {shortAddress(address)}
+                                    </a>
+                                </Address> */}
 
-                        }
+                            </>
+                        )}
                         <p>{info && info.description ? info.description : <Skeleton />}</p>
                     </CollectionInfoCard>
                 </CollectionInfoCol>
@@ -245,7 +295,6 @@ const Collection = () => {
                                     </NFTCard>
                                 );
                             })}
-
                     </OrdersPanel>
                     <div style={{ padding: "20px", marginTop: "1rem", textAlign: "center" }}>
                         {orders.length > max && (

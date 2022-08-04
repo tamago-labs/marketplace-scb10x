@@ -324,7 +324,7 @@ const Orders = () => {
                     }
                     return (
                       <NFTCard key={index} delay={index % MAX_ITEMS} order={order}>
-                        xxx
+                        
                       </NFTCard>
                     );
                   })}

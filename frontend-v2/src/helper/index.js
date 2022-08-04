@@ -85,6 +85,10 @@ export const resolveNetworkIconUrl = (networkId) => {
   }
 }
 
+export const getRandomItem = (array) => {
+  return array[Math.floor(Math.random() * array.length)];
+}
+
 export const getProviders = () => {
 
   const chainIds = SUPPORT_CHAINS
@@ -101,10 +105,10 @@ export const getProviders = () => {
       url = "https://nd-643-057-168.p2pify.com/2ffe10d04df48d14f0e9ff6e0409f649"
     } else if (chainId === 80001) {
       url = "https://nd-546-345-588.p2pify.com/8947d77065859cda88213b612a0f8679"
-    } else if (chainId === 97) {
-      url = "https://nd-390-191-961.p2pify.com/0645132aa2a233d3fbe27116f3b8828b"
+    } else if (chainId === 97) { 
+      url = getRandomItem(["https://data-seed-prebsc-1-s1.binance.org:8545", "https://data-seed-prebsc-2-s1.binance.org:8545", "https://data-seed-prebsc-1-s3.binance.org:8545", "https://data-seed-prebsc-2-s3.binance.org:8545"])
     } else if (chainId === 56) {
-      url = "https://nd-886-059-484.p2pify.com/b62941033adcd0358ff9f38df217f856"
+      url = getRandomItem(["https://bsc-dataseed1.binance.org","https://bsc-dataseed2.binance.org" ,"https://bsc-dataseed3.binance.org", "https://bsc-dataseed4.binance.org"])
     } else if (chainId === 43113) {
       url = "https://nd-473-270-876.p2pify.com/613a7805f3d64a52349b6ca19b6e27a7/ext/bc/C/rpc"
     } else if (chainId === 43114) {

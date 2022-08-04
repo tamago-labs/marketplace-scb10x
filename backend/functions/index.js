@@ -9,6 +9,8 @@ const { orderTrails } = require("./services/order-trails")
 const { updateHistory } = require("./services/history-update");
 const { updateCollections } = require("./services/update-collections");
 const { reSyncMetaData, getNFTMetadata } = require("./v2/models/nfts");
+const { importFrontEndV2CollectionsToDB } = require("./services/migrations/v2/collections");
+const { migrateFromCIDToDB } = require("./services/migrations/v2/orders");
 
 
 
@@ -45,17 +47,6 @@ app.use((err, req, res, next) => {
   res.status(500).json({ message: "internal server error" })
 })
 
-// (Important!)DISABLE THE LINES BELOW BEFORE DEPLOYMENT
-//LOCAL DEV ONLY : run node server on port 3000
-// app.listen(process.env.PORT || 8000, () => {
-//   console.log(`listening on port ${process.env.PORT || 8000}`)
-// })
-//LOCAL DEV ONLY : order fulfillment update 
-// orderTrails()
-// updateHistory()
-// addFirestoreDataToAlgolia()
-//LOCAL DEV ONLY : test sending email
-// testSendingMail()
 
 //The lines below provision cloud infrastructures
 exports.api = functions.region('asia-east2').https.onRequest(app)
@@ -72,3 +63,22 @@ exports.updateCollections = functions.runWith({ timeoutSeconds: 540 }).region('a
 //Since Algolia search was configured to sync with firestore via console. uncommenting the code below is not necessary in most cases,
 // exports.addFirestoreDataToAlgolia = functions.region('asia-east2').https.onRequest(
 // )
+
+// (Important!)DISABLE THE LINES BELOW BEFORE DEPLOYMENT
+
+//LOCAL DEV ONLY : run node server on port 3000
+// app.listen(process.env.PORT || 8000, () => {
+//   console.log(`listening on port ${process.env.PORT || 8000}`)
+// })
+
+//LOCAL DEV ONLY : order fulfillment update
+// orderTrails()
+// updateHistory()
+// addFirestoreDataToAlgolia()
+
+//LOCAL DEV ONLY : test sending email
+// testSendingMail()
+
+//LOCAL DEV ONLY : updating collection database
+// importFrontEndV2CollectionsToDB()
+// migrateFromCIDToDB()

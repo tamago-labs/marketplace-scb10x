@@ -26,3 +26,12 @@ exports.getOrdersByChain = async (req, res, next) => {
     next(error)
   }
 }
+
+exports.refreshOrderCache = async (req, res, next) => {
+  try {
+    await orderModel.refreshOrderCache()
+    return res.json({ status: "ok", message: "cache refreshed" })
+  } catch (error) {
+    next(error)
+  }
+}

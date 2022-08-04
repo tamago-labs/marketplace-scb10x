@@ -7,23 +7,33 @@ const { db } = require("../../firebase")
 const getIpfsDataByCid = async (cid) => {
   const url = `https://${cid}.ipfs.infura-ipfs.io/`
   const res = await axios.get(url)
-  console.log(res.data)
+  // console.log(res.data)
   return res.data
 }
 
 // ! redis must be connected to use this function
 const refreshOrderCache = async () => {
   // ! modification may be needed later
-  const queryResult = await db.collection("orders-v2").where("confirmed", "==", true).where("locked", "==", false).get()
+  const queryResult = await db.collection("orders-v2").get()
   const activeOrderCids = (queryResult.docs.map(item => item.id))
 
   //requesting all orders in parallel
 
-  const activeOrdersData = await Promise.allSettled(activeOrderCids.map(cid => getIpfsDataByCid(cid)))
-  activeOrdersData.sort((a, b) => Number(b.timestamp) - Number(a.timestamp))
-  await redisClient.set("orders", JSON.stringify(activeOrdersData))
+  const ordersData = await Promise.allSettled(activeOrderCids.map(cid => getIpfsDataByCid(cid)))
 
-  return activeOrdersData
+
+  ordersData.sort((a, b) => Number(b.value.timestamp) - Number(a.value.timestamp))
+
+  flattenedOrderData = ordersData.map(item => item.value)
+
+  console.log(flattenedOrderData.length)
+
+
+  await redisClient.connect()
+  await redisClient.set("orders", JSON.stringify(flattenedOrderData))
+  await redisClient.quit()
+
+  return ordersData
 }
 
 
@@ -34,15 +44,15 @@ const getAllActiveOrders = async () => {
 
     if (orders === null) {
       //retrieve all orders
-      console.log("No cache found, retrieving data from IPFS")
+      // console.log("No cache found, retrieving data from IPFS")
       const activeOrdersData = await refreshOrderCache()
       await redisClient.quit()
       return activeOrdersData
 
     } else {
       //sending the cache to frontend
-      redisClient.quit()
-      await console.log("Cache found, sending data to frontend")
+      await redisClient.quit()
+      // console.log("Cache found, sending data to frontend")
       return JSON.parse(orders)
     }
 
