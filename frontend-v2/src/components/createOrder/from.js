@@ -79,7 +79,7 @@ const From = ({
             NFT
           </NavLink>
         </NavItem>
-        <NavItem>
+        {/* <NavItem>
           <NavLink
             active={activeTab === "2"}
             onClick={() => {
@@ -88,7 +88,7 @@ const From = ({
           >
             ERC-20
           </NavLink>
-        </NavItem>
+        </NavItem> */}
       </Nav>
       <TabContent activeTab={activeTab}>
         <TabPane tabId="1">

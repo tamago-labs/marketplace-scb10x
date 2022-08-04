@@ -158,11 +158,9 @@ const Collection = () => {
             setOrders([])
             setMax(MAX_ITEMS)
             getOrdersFromCollection(Number(chain), address).then(setOrders)
-            getFloorPrice(address, Number(chain)).then(setFloorPrice)
             getCollectionInfo(address, Number(chain)).then(setInfo)
-            // setTimeout(() => {
-            //     getCollectionOwners(address, Number(chain)).then(setOwners)
-            // }, 3000)
+            getFloorPrice(address, Number(chain)).then(setFloorPrice)
+
         }
 
     }, [chain, address])
@@ -179,10 +177,10 @@ const Collection = () => {
                             name="Items"
                             value={info && info.totalSupply}
                         />
-                        {/* <Info
+                        <Info
                             name="Owners"
-                            value={owners && owners.length}
-                        /> */}
+                            value={info && info.totalOwners}
+                        />
                         <Info
                             name="Listing"
                             value={orders ? orders.length : null}
@@ -193,7 +191,7 @@ const Collection = () => {
                         /> */}
                         <Info
                             name="Floor Price"
-                            value={floorPrice ? `$${Number(floorPrice.all).toLocaleString()}` : null}
+                            value={info && info.lowestPrice ? `$${Number(info.lowestPrice).toLocaleString()}` : null}
                         />
                     </CollectionStatusCard>
                 </CollectionStatusContainer>
