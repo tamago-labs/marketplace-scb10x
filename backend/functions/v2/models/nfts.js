@@ -11,8 +11,8 @@ const reSyncMetaData = async (chain, address, tokenId,) => {
       address,
       flag: "uri",
     }
-    const NFTLowestPrice = await Moralis.Web3API.token.reSyncMetadata(options)
-    return NFTLowestPrice
+    await Moralis.Web3API.token.reSyncMetadata(options)
+    return
   } catch (error) {
     console.log(error)
   }
