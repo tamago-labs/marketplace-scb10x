@@ -116,7 +116,7 @@ module.exports = {
     WHITELISTED_ADDRESSES,
     CLIENT_BASE,
     COIN_GECKO_API_BASE,
-    //RPC SERVERS
+    //rpc servers below
     POLYGON_RPC_SERVERS,
     MAINNET_RPC_SERVERS,
     KOVAN_RPC_SERVERS,

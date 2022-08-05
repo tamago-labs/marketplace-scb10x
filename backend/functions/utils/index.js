@@ -13,7 +13,8 @@ const { SUPPORTED_CHAINS,
   BNB_RPC_SERVERS,
   FUJI_RPC_SERVERS,
   BNB_TESTNET_RPC_SERVERS,
-  AVALANCHE_C_CHAIN_RPC_SERVERS
+  AVALANCHE_C_CHAIN_RPC_SERVERS,
+  CRONOS_RPC_SERVERS,
 } = require('../constants')
 const { Moralis, generateMoralisParams } = require('../moralis')
 
@@ -105,6 +106,8 @@ const getProviders = () => {
       url = getRandomItem(AVALANCHE_C_CHAIN_RPC_SERVERS)
     } else if (chainId === 1) {
       url = getRandomItem(MAINNET_RPC_SERVERS)
+    } else if (chainId === 25) {
+      url = getRandomItem(CRONOS_RPC_SERVERS)
     }
 
     if (!url) {
@@ -323,6 +326,9 @@ const getRpcUrl = (chainId) => {
   switch (Number(chainId)) {
     case 1:
       rpcUrl = getRandomItem(MAINNET_RPC_SERVERS)
+      break;
+    case 25:
+      rpcUrl = getRandomItem(CRONOS_RPC_SERVERS)
       break;
     case 42:
       rpcUrl = getRandomItem(KOVAN_RPC_SERVERS)
