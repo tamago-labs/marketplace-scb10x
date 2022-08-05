@@ -1,11 +1,21 @@
+require("dotenv").config()
 const axios = require('axios')
 
-require("dotenv").config()
 const { db } = require('../firebase')
 const { MARKETPLACES } = require('../constants')
 const { ethers } = require('ethers')
 const { MARKETPLACE_ABI } = require('../abi')
-const { supportedChains } = require('../constants')
+const { SUPPORTED_CHAINS,
+  POLYGON_RPC_SERVERS,
+  MAINNET_RPC_SERVERS,
+  KOVAN_RPC_SERVERS,
+  MUMBAI_RPC_SERVERS,
+  BNB_RPC_SERVERS,
+  FUJI_RPC_SERVERS,
+  BNB_TESTNET_RPC_SERVERS,
+  AVALANCHE_C_CHAIN_RPC_SERVERS,
+  CRONOS_RPC_SERVERS,
+} = require('../constants')
 const { Moralis, generateMoralisParams } = require('../moralis')
 
 const getMetadata = async (nft) => {
@@ -68,30 +78,36 @@ const generateRelayMessages = async () => {
   return messages
 }
 
+const getRandomItem = (array) => {
+  return array[Math.floor(Math.random() * array.length)];
+}
+
 const getProviders = () => {
 
-  const chainIds = supportedChains
+  const chainIds = SUPPORTED_CHAINS
 
   return chainIds.map(chainId => {
 
     let url
 
     if (chainId === 42) {
-      url = "https://kovan.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161"
+      url = getRandomItem(KOVAN_RPC_SERVERS)
     } else if (chainId === 137) {
-      url = "https://nd-643-057-168.p2pify.com/2ffe10d04df48d14f0e9ff6e0409f649"
+      url = getRandomItem(POLYGON_RPC_SERVERS)
     } else if (chainId === 80001) {
-      url = "https://nd-546-345-588.p2pify.com/8947d77065859cda88213b612a0f8679"
+      url = getRandomItem(MUMBAI_RPC_SERVERS)
     } else if (chainId === 97) {
-      url = "https://nd-390-191-961.p2pify.com/0645132aa2a233d3fbe27116f3b8828b"
+      url = getRandomItem(BNB_TESTNET_RPC_SERVERS)
     } else if (chainId === 56) {
-      url = "https://nd-886-059-484.p2pify.com/b62941033adcd0358ff9f38df217f856"
+      url = getRandomItem(BNB_RPC_SERVERS)
     } else if (chainId === 43113) {
-      url = "https://nd-473-270-876.p2pify.com/613a7805f3d64a52349b6ca19b6e27a7/ext/bc/C/rpc"
+      url = getRandomItem(FUJI_RPC_SERVERS)
     } else if (chainId === 43114) {
-      url = "https://nd-752-163-197.p2pify.com/fd84ccbd64f32d8f8a99adb5d4557b0e/ext/bc/C/rpc"
+      url = getRandomItem(AVALANCHE_C_CHAIN_RPC_SERVERS)
     } else if (chainId === 1) {
-      url = "https://nd-814-913-142.p2pify.com/cb3fe487ef9afa11bda3c38e54b868a3"
+      url = getRandomItem(MAINNET_RPC_SERVERS)
+    } else if (chainId === 25) {
+      url = getRandomItem(CRONOS_RPC_SERVERS)
     }
 
     if (!url) {
@@ -196,7 +212,7 @@ const generateSellerTickets = async ({
 }) => {
   let claims = []
 
-  for (let chainId of supportedChains) {
+  for (let chainId of SUPPORTED_CHAINS) {
 
     await Moralis.start(generateMoralisParams(chainId));
 
@@ -309,28 +325,31 @@ const getRpcUrl = (chainId) => {
   let rpcUrl
   switch (Number(chainId)) {
     case 1:
-      rpcUrl = process.env.MAINNET_RPC_SERVER
+      rpcUrl = getRandomItem(MAINNET_RPC_SERVERS)
+      break;
+    case 25:
+      rpcUrl = getRandomItem(CRONOS_RPC_SERVERS)
       break;
     case 42:
-      rpcUrl = process.env.KOVAN_RPC_SERVER
+      rpcUrl = getRandomItem(KOVAN_RPC_SERVERS)
       break;
     case 56:
-      rpcUrl = process.env.BNB_RPC_SERVER
+      rpcUrl = getRandomItem(BNB_RPC_SERVERS)
       break;
     case 97:
-      rpcUrl = process.env.BNB_TESTNET_RPC_SERVER
+      rpcUrl = getRandomItem(BNB_TESTNET_RPC_SERVERS)
       break;
     case 137:
-      rpcUrl = process.env.POLYGON_RPC_SERVER
+      rpcUrl = getRandomItem(POLYGON_RPC_SERVERS)
       break;
     case 43113:
-      rpcUrl = process.env.FUJI_RPC_SERVER
+      rpcUrl = getRandomItem(FUJI_RPC_SERVERS)
       break;
     case 43114:
-      rpcUrl = process.env.AVALANCHE_C_CHAIN_RPC
+      rpcUrl = getRandomItem(AVALANCHE_C_CHAIN_RPC_SERVERS)
       break;
     case 80001:
-      rpcUrl = process.env.MUMBAI_RPC_SERVER
+      rpcUrl = getRandomItem(MUMBAI_RPC_SERVERS)
       break;
     default:
       break;
@@ -370,5 +389,6 @@ module.exports = {
   recoverAddressFromMessageAndSignature,
   convertDecimalToHexadecimal,
   btoa,
-  wait
+  wait,
+  getRandomItem
 }

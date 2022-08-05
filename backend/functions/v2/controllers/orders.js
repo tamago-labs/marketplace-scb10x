@@ -1,9 +1,18 @@
-const { supportedChains } = require('../../constants')
+const { SUPPORTED_CHAINS } = require('../../constants')
+const { redisClient } = require("../../redis")
 const orderModel = require('../models/orders')
 
 exports.getAllOrders = async (req, res, next) => {
   try {
+
+    //connect to cache
+    redisClient.connect()
+
     const orders = await orderModel.getAllActiveOrders()
+
+    //disconnect from cache
+    redisClient.quit()
+
     return res.json({ status: "ok", orders })
   } catch (error) {
     next(error)
@@ -13,14 +22,26 @@ exports.getAllOrders = async (req, res, next) => {
 exports.getOrdersByChain = async (req, res, next) => {
   try {
     const { chainId } = req.params
+
+    //input validation
+
+    //connect to cache
+    redisClient.connect()
+
     if (!chainId) {
       return res.status(400).json({ message: "Chain ID is required." })
     }
-    if (!supportedChains.includes(Number(chainId))) {
+    if (!SUPPORTED_CHAINS.includes(Number(chainId))) {
       return res.status(400).json({ message: "Chain ID is not supported." })
     }
     const orders = await orderModel.getAllOrdersWithChainId(chainId)
     console.log(orders)
+
+
+    //disconnect from cache
+    redisClient.quit()
+
+
     return res.json({ status: "ok", chainId, orders })
   } catch (error) {
     next(error)

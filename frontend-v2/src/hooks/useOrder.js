@@ -318,8 +318,7 @@ const useOrder = () => {
       // text/plain;UTF-8
       const blob = new Blob([str]);
       const cid = await client.storeBlob(blob);
-
-      console.log("cid : ", cid);
+ 
 
       return {
         orderId: cid,
@@ -838,6 +837,7 @@ const useOrder = () => {
 
 
       } else {
+        
         // erc721 / 1155
         const nftContract = new ethers.Contract(
           token.assetAddress,

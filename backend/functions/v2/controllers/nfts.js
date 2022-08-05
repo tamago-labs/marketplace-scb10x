@@ -1,6 +1,6 @@
 const validator = require("validator")
 
-const { supportedChains } = require('../../constants')
+const { SUPPORTED_CHAINS } = require('../../constants')
 const { getCollectionByChainAndAddress } = require("../models/collections")
 const { reSyncMetaData, refreshNFTMetadata } = require("../models/nfts")
 
@@ -10,7 +10,7 @@ exports.refreshMetadata = async (req, res, next) => {
     if (!chain || !contractAddress || !tokenId) {
       return res.status(400).json({ message: "Some required input(s) missing." })
     }
-    if (!supportedChains.includes(Number(chain))) {
+    if (!SUPPORTED_CHAINS.includes(Number(chain))) {
       return res.status(400).json({ message: "This chain is not supported" })
     }
     if (!validator.isEthereumAddress(contractAddress)) {

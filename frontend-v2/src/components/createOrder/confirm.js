@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useMemo } from "react";
+import React, { useCallback, useState, useMemo, useEffect } from "react";
 import { useWeb3React } from "@web3-react/core";
 import styled from "styled-components";
 import { ArrowRight, Check, X } from "react-feather";
@@ -14,6 +14,7 @@ import { CommonCard } from "../card";
 import { useOpenSeaOrders } from "react-moralis";
 
 const Wrapper = styled.div`
+  padding: 1rem;
   padding-bottom: 2rem;
 `;
 
@@ -92,13 +93,15 @@ const Title = styled.div`
 `;
 
 const PreviewFrom = styled.div`
-  flex: 2;
+  flex: 5;
   display: flex;
   flex-direction: column;
 
   > div {
     padding-top: 20px;
     margin: auto;
+    display: flex;
+    flex-wrap: wrap;
   }
 `;
 
@@ -108,7 +111,7 @@ const PreviewDivider = styled.div`
 `;
 
 const PreviewTo = styled.div`
-  flex: 3;
+  flex: 5;
   display: flex;
   flex-direction: column;
 
@@ -149,6 +152,7 @@ const Confirm = ({
   const [orderId, setOrderId] = useState([]);
   const { createOrder, approveNft, approveToken, register } = useOrder();
   const { chainId, account } = useWeb3React();
+  // const [approveItem, setApproveItem] = useState([]);
 
   //values return as List[]
   const values = useMemo(() => {
@@ -203,6 +207,15 @@ const Confirm = ({
     return orderList;
   }, [fromData, toData, chainId, toTokens, fromTokens]);
 
+  //get set unique asset address to approve
+  // useEffect(() => {
+  //   const approveItemSet = new Set();
+  //   values.map((item) => {
+  //     approveItemSet.add(item.baseAssetAddress);
+  //   });
+  //   setApproveItem(approveItemSet);
+  // }, [values]);
+
   const onGenerateId = useCallback(async () => {
     let orderIdList = [];
     if (values[0].barterList.length === 0) {
@@ -229,15 +242,21 @@ const Confirm = ({
     setLoading(true);
 
     try {
-      
-      // FIXME : Duplicate approves
+
+      const approveItemSet = values.reduce((arr, item) => {
+        if (arr.indexOf(item.baseAssetAddress) === -1) {
+          arr.push(item.baseAssetAddress)
+        }
+        return arr
+      },[])
 
       await Promise.all(
-        values.map(async (item) => {
-          if (item.baseAssetTokenType === 0) {
-            await approveToken(item);
+        approveItemSet.map(async (item) => {
+          const value = values.find(v => v.baseAssetAddress === item)
+          if (value.baseAssetTokenType === 0) {
+            await approveToken(value);
           } else {
-            await approveNft(item);
+            await approveNft(value);
           }
         })
       );
@@ -470,7 +489,6 @@ const Confirm = ({
             {loading && (
               <Puff height="24px" style={{ marginRight: "5px" }} width="24px" />
             )}
-
             {process === PROCESS.FILL && "Confirm"}
             {process === PROCESS.GENERATE_ID && "Approve"}
             {process === PROCESS.DEPOSIT && "Register"}

@@ -36,15 +36,15 @@ export const NFT_MARKETPLACE = [
   },
   {
     chainId: 56,
-    contractAddress: "0x5Cd0BC81Fc176ea4f1e571D5279AFDee35dda618",
+    contractAddress: "0xC8def0BE43D35a247e03EEd09C9afBd5FC866769",
   },
   {
     chainId: 43114,
-    contractAddress: "0x42209A0A2a3D80Ad48B7D25fC6a61ad355901484",
+    contractAddress: "0x7D17d5903eDEdB8597c9343c94FeD74E93589e47",
   },
   {
     chainId: 137,
-    contractAddress: "0xcf30E553633737258A0392D07A5062Ba2C79Ca9F",
+    contractAddress: "0xd0B14b314B6B983889b68E6EA307BF210156A050",
   }
 ];
 
@@ -179,6 +179,13 @@ export const MOCK_TOKEN = [
 export const ERC20_TOKENS = [
   {
     chainId: 137,
+    contractAddress: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+    tokenType: 3,
+    symbol: "MATIC",
+    decimals: 18
+  },
+  {
+    chainId: 137,
     contractAddress: "0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270",
     tokenType: 0,
     symbol: "WMATIC",
@@ -221,6 +228,13 @@ export const ERC20_TOKENS = [
   },
   {
     chainId: 56,
+    contractAddress: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+    tokenType: 3,
+    symbol: "BNB",
+    decimals: 18
+  },
+  {
+    chainId: 56,
     contractAddress: "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
     tokenType: 0,
     symbol: "WBNB",
@@ -246,6 +260,13 @@ export const ERC20_TOKENS = [
     tokenType: 0,
     symbol: "USDC",
     decimals: 18,
+  },
+  {
+    chainId: 43114,
+    contractAddress: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+    tokenType: 3,
+    symbol: "AVAX",
+    decimals: 18
   },
   {
     chainId: 43114,
