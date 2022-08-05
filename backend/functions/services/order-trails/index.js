@@ -3,7 +3,7 @@ require("dotenv").config();
 
 const { db } = require("../../firebase")
 const { getProvider } = require("../")
-const { MARKETPLACES, supportedChains, CLIENT_BASE } = require("../../constants")
+const { MARKETPLACES, SUPPORTED_CHAINS, CLIENT_BASE } = require("../../constants")
 const { MARKETPLACE_ABI } = require("../../abi")
 const { sgMail, msg } = require("../../sendgrid")
 const { getRpcUrl, convertDecimalToHexadecimal } = require("../../utils")
@@ -26,7 +26,7 @@ const orderTrails = async () => {
       const { chainId, orderId, DocID, ownerAddress, baseAssetAddress, baseAssetTokenId } = order
 
 
-      if (supportedChains.indexOf(chainId) !== -1) {
+      if (SUPPORTED_CHAINS.indexOf(chainId) !== -1) {
 
         let rpcUrl = getRpcUrl(chainId)
 

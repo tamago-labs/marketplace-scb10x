@@ -183,7 +183,7 @@ const importFrontEndV2CollectionsToDB = async () => {
       const existingDocument = await db.collection("collections-v2").where("chainId", "==", Number(item.chainId)).where("assetAddress", "==", item.assetAddress).get()
 
       if (existingDocument.empty) {
-        //adding new document if it does not exist
+        // adding new document if it does not exist
         let newData = {
           chainId: 0,
           assetAddress: "",
@@ -205,10 +205,11 @@ const importFrontEndV2CollectionsToDB = async () => {
         newData.assetAddress = item.assetAddress
         newData.title = item.title
         newData.description = item.description
+        newData.cover = item.cover || ""
         newData.totalOwners = await getTotalOwners(item.chainId, item.assetAddress)
         newData.totalSupply = await getTotalSupply(item.chainId, item.assetAddress)
 
-        await db.collection("collections-v2").doc(`${item.chainId}.${item.assetAddress}`).set(newData)
+        await db.collection("collections-v2").doc(`${item.chainId}.${item.assetAddress}`).set(newData, { merge: true })
 
         console.log(`Added collection to db with ID ${item.chainId}.${item.assetAddress} `)
       } else {

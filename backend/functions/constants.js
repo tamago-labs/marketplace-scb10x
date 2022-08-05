@@ -4,6 +4,10 @@ const MARKETPLACES = [
         contractAddress: "0x0213468b5ED54826b363bbC4A90BBc0A5f972c39"
     },
     {
+        chainId: 25,
+        contractAddress: "0xf2260B00250c772CB64606dBb88d9544F709308C",
+    },
+    {
         chainId: 42,
         contractAddress: "0xBa9c7eC462dB716E6F79B7D58a38D0b5E5f79141"
     },
@@ -33,11 +37,11 @@ const MARKETPLACES = [
     },
 ]
 
-const supportedChains = MARKETPLACES.map(chain => {
+const SUPPORTED_CHAINS = MARKETPLACES.map(chain => {
     return chain.chainId
 })
 
-const MAINNET_CHAINS = [137, 56, 43114, 1]
+const MAINNET_CHAINS = [137, 56, 43114, 1, 25];
 const TESTNET_CHAINS = [42, 97, 80001, 43113]
 
 const WHITELISTED_ADDRESSES = [
@@ -52,7 +56,7 @@ const COIN_GECKO_API_BASE = "https://api.coingecko.com/api/v3";
 
 module.exports = {
     MARKETPLACES,
-    supportedChains,
+    SUPPORTED_CHAINS,
     MAINNET_CHAINS,
     TESTNET_CHAINS,
     WHITELISTED_ADDRESSES,

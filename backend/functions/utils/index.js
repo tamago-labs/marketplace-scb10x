@@ -5,7 +5,7 @@ const { db } = require('../firebase')
 const { MARKETPLACES } = require('../constants')
 const { ethers } = require('ethers')
 const { MARKETPLACE_ABI } = require('../abi')
-const { supportedChains } = require('../constants')
+const { SUPPORTED_CHAINS } = require('../constants')
 const { Moralis, generateMoralisParams } = require('../moralis')
 
 const getMetadata = async (nft) => {
@@ -70,7 +70,7 @@ const generateRelayMessages = async () => {
 
 const getProviders = () => {
 
-  const chainIds = supportedChains
+  const chainIds = SUPPORTED_CHAINS
 
   return chainIds.map(chainId => {
 
@@ -196,7 +196,7 @@ const generateSellerTickets = async ({
 }) => {
   let claims = []
 
-  for (let chainId of supportedChains) {
+  for (let chainId of SUPPORTED_CHAINS) {
 
     await Moralis.start(generateMoralisParams(chainId));
 

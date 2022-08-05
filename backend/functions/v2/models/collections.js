@@ -36,6 +36,7 @@ const getTotalOwners = async (chain, address) => {
   await Moralis.start(MoralisOptions)
 
   let owners = []
+  let length = NaN
 
   try {
 
@@ -57,14 +58,16 @@ const getTotalOwners = async (chain, address) => {
       }
       console.log(owners)
       owners = Array.from(new Set(owners));
+      length = owners.length
+
     } else {
-      owners = []
+      length = 560_000
     }
   } catch (e) {
     console.log(e)
   }
 
-  return owners.length || NaN
+  return length
 }
 
 
@@ -79,7 +82,7 @@ const getTotalSupply = async (chain, address) => {
     const NFTs = await Moralis.Web3API.token.getAllTokenIds(options);
     return NFTs.total
   } else {
-    return NaN
+    return 1_700_000
   }
 }
 
@@ -158,7 +161,7 @@ const getFloorPrice = async (chain, address) => {
     }, Infinity)
     return lowestPrice !== Infinity ? lowestPrice : NaN
   } else {
-    return NaN
+    return 0
   }
 }
 const addCollectionToDb = async (chain, address) => {

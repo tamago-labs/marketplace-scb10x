@@ -4,7 +4,7 @@ const { getRpcUrl, recoverAddressFromMessageAndSignature } = require("../utils")
 const { getProvider } = require("../services")
 const { db } = require("../firebase")
 const { algoliaClient } = require("../services/algolia")
-const { supportedChains } = require("../constants")
+const { SUPPORTED_CHAINS } = require("../constants")
 const { OWNER_ABI } = require("../abi")
 const { WHITELISTED_ADDRESSES } = require("../constants")
 const { dbIsBanned } = require("../models/collections")
@@ -57,7 +57,7 @@ exports.getCollectionByAddress = async (req, res, next) => {
     if (!validator.isEthereumAddress(address)) {
       return res.status(400).json({ message: "Invalid wallet address." })
     }
-    if (!supportedChains.includes(Number(chainId))) {
+    if (!SUPPORTED_CHAINS.includes(Number(chainId))) {
       return res.status(400).json({ message: "Invalid chain or chain not supported." })
     }
     //get the owner's address from the smart contract
@@ -173,7 +173,7 @@ exports.updateCollection = async (req, res, next) => {
       return res.status(400).json({ message: "Invalid wallet address." })
     }
     //validate that chain is supported
-    if (!supportedChains.includes(Number(chainId))) {
+    if (!SUPPORTED_CHAINS.includes(Number(chainId))) {
       return res.status(400).json({ message: "Invalid chain or chain not supported." })
     }
 
@@ -315,7 +315,7 @@ exports.banCollection = async (req, res, next) => {
       return res.status(400).json({ message: "Invalid wallet address." })
     }
     //validate that chain is supported
-    if (!supportedChains.includes(Number(chainId))) {
+    if (!SUPPORTED_CHAINS.includes(Number(chainId))) {
       return res.status(400).json({ message: "Invalid chain or chain not supported." })
     }
 
@@ -358,7 +358,7 @@ exports.unBanCollection = async (req, res, next) => {
       return res.status(400).json({ message: "Invalid wallet address." })
     }
     //validate that chain is supported
-    if (!supportedChains.includes(Number(chainId))) {
+    if (!SUPPORTED_CHAINS.includes(Number(chainId))) {
       return res.status(400).json({ message: "Invalid chain or chain not supported." })
     }
 
