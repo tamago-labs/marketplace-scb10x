@@ -4,12 +4,12 @@
 
 | METHOD | PATH                                       | REQUEST_BODY | NOTES |
 | ------ | ------------------------------------------ | ------------ | ----- |
-| GET    | /v2/collection/{chainId}/{contractAddress} | none         |       |
-| GET    | /v2/collections/{chainId}                  | none         |       |
+| GET    | /v2/collection/{chainId}/{contractAddress} | none         | 1     |
+| GET    | /v2/collections/{chainId}                  | none         | 1     |
 
 ### notes
 
-- The floorprice(lowestPrice) of each collection returned in the response object is cached and is set to expire every hour. Then it would be subjected to recalculation.
+1. The floorprice(lowestPrice) of each collection(s) returned in the response object is cached and is set to expire every hour. Then it would be subjected to recalculation on the first API call after it expires.
 
 ---
 
@@ -26,11 +26,11 @@
 
 | METHOD | PATH                                                | REQUEST_BODY | NOTES |
 | ------ | --------------------------------------------------- | ------------ | ----- |
-| GET    | /v2/nft/refresh/{chain}/{contractAddress}/{tokenId} | none         | 1.    |
+| GET    | /v2/nft/refresh/{chain}/{contractAddress}/{tokenId} | none         | 1, 2  |
 
 ### notes
 
-- This endpoint make a request to moralis API for updating a token's metadata in moralisDB. It also updates the database in the backend.
-- This endpoint needed to be call twice with wait time in between.(Will find a way to manage this soon.)
+1. This endpoint make a request to moralis API for updating a token's metadata in moralisDB. It also updates the database in the backend.
+2. This endpoint needed to be call twice with wait time in between.
 
 ---
