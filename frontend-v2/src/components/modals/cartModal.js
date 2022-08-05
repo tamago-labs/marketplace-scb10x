@@ -68,7 +68,7 @@ const CartModal = ({ chainId }) => {
 
   const { cartList, setCartList } = useContext(NftCartsContext);
   const { account, library } = useWeb3React();
-  const { swap } = useOrder();
+  const { swapBatch } = useOrder();
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
@@ -87,35 +87,21 @@ const CartModal = ({ chainId }) => {
   //   setCartList([]);
   // }, [chainId]);
 
-  //set up before swap batch
   useEffect(() => {
     setCartListNum(cartList.length);
     console.log(
       "🚀 ~ file: cartModal.js ~ line 66 ~ CartModal ~ cartList",
       cartList
     );
-
-    //Order Id List
-    const orderIdArr = [];
-    const orderArr = [];
-    const tokenIndexArr = [];
-    cartList.map((cartItem) => {
-      orderIdArr.push(cartItem.orderId);
-      orderArr.push(cartItem.order);
-      tokenIndexArr.push(cartItem.item.index);
-    });
-
-    setOrderIdList(orderIdArr);
-    setOrderList(orderArr);
-    setTokenIndexList(tokenIndexArr);
   }, [cartList]);
 
-  // useEffect(() => {
-  //   console.log(
-  //     "🚀 ~ file: cartModal.js ~ line 108 ~ CartModal ~ orderIdList",
-  //     orderIdList
-  //   );
-  // }, [orderIdList]);
+  useEffect(() => {
+    console.log(
+      "🚀 ~ file: cartModal.js ~ line 108 ~ CartModal ~ orderIdList",
+      orderIdList
+    );
+    console.log(orderList);
+  }, [orderIdList]);
 
   const increaseTick = useCallback(() => {
     setTick(tick + 1);
@@ -126,6 +112,20 @@ const CartModal = ({ chainId }) => {
     const { contractAddress } = NFT_MARKETPLACE.find(
       (item) => item.chainId === chainId
     );
+
+    //initial before swap batch
+    const orderIdArr = [];
+    const orderArr = [];
+    const tokenIndexArr = [];
+    cartList.map((cartItem) => {
+      orderIdArr.push(cartItem.orderId);
+      orderArr.push(cartItem.order);
+      tokenIndexArr.push(cartItem.item.index);
+    });
+    setOrderIdList(orderIdArr);
+    setOrderList(orderArr);
+    setTokenIndexList(tokenIndexArr);
+
     let assetAddressSet = new Set();
     try {
       await Promise.all(
@@ -189,7 +189,7 @@ const CartModal = ({ chainId }) => {
   const onSwap = useCallback(async () => {
     setLoading(true);
     try {
-      const tx = await swap(orderIdList, orderList, tokenIndexList);
+      const tx = await swapBatch(orderIdList, orderList, tokenIndexList);
       await tx.wait();
     } catch (e) {
       console.log(e, e.error);

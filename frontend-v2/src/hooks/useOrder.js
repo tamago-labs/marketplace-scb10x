@@ -18,8 +18,8 @@ import ERC20ABI from "../abi/erc20.json";
 import { NFTStorage } from "nft.storage";
 import useMoralisAPI from "./useMoralisAPI";
 import { getProviders } from "../helper";
-// import useProof from "./useProof"; 
-import COLLECTIONS from "../data/collections"
+// import useProof from "./useProof";
+import COLLECTIONS from "../data/collections";
 import useCoingecko from "./useCoingecko";
 
 window.Buffer = window.Buffer || require("buffer").Buffer;
@@ -31,9 +31,14 @@ const useOrder = () => {
   const Web3Api = useMoralisWeb3Api();
 
   const context = useWeb3React();
-  const { generateMoralisParams, resolveOrderCreatedTable, resolveSwappedTable, resolveCanceledTable } = useMoralisAPI()
+  const {
+    generateMoralisParams,
+    resolveOrderCreatedTable,
+    resolveSwappedTable,
+    resolveCanceledTable,
+  } = useMoralisAPI();
 
-  const { getLowestPrice } = useCoingecko()
+  const { getLowestPrice } = useCoingecko();
 
   // const { generateRelayMessages, generateValidatorMessages } = useProof();
 
@@ -77,7 +82,7 @@ const useOrder = () => {
             metadata["image"] = data.data["image_url"];
           }
         }
-      } catch (e) { }
+      } catch (e) {}
     }
 
     if (
@@ -318,7 +323,6 @@ const useOrder = () => {
       // text/plain;UTF-8
       const blob = new Blob([str]);
       const cid = await client.storeBlob(blob);
- 
 
       return {
         orderId: cid,
@@ -381,46 +385,46 @@ const useOrder = () => {
     const Canceled = Moralis.Object.extend(`${resolveCanceledTable(chainId)}`);
     const queryCanceled = new Moralis.Query(Canceled);
 
-    queryCanceled.limit(1000)
+    queryCanceled.limit(1000);
 
     const cancelItems = await queryCanceled.find();
 
-    let cancelCompleted = []
+    let cancelCompleted = [];
 
     for (let object of cancelItems) {
-      const cid = object.get("cid")
-      cancelCompleted.push(cid)
+      const cid = object.get("cid");
+      cancelCompleted.push(cid);
     }
 
-    output = output.filter(item => cancelCompleted.indexOf(item.cid) === -1)
+    output = output.filter((item) => cancelCompleted.indexOf(item.cid) === -1);
 
     return output.sort(function (a, b) {
       return b.timestamp - a.timestamp;
     });
-
-  }, [])
+  }, []);
 
   const getOrdersFromCollection = useCallback(async (chainId, assetAddress) => {
-
     await Moralis.start(generateMoralisParams(chainId));
 
-    const OrderCreated = Moralis.Object.extend(`${resolveOrderCreatedTable(chainId)}`);
+    const OrderCreated = Moralis.Object.extend(
+      `${resolveOrderCreatedTable(chainId)}`
+    );
     const query = new Moralis.Query(OrderCreated);
 
     query.equalTo("assetAddress", assetAddress.toLowerCase());
-    query.limit(1000)
+    query.limit(1000);
 
     const results = await query.find();
 
-    let output = []
+    let output = [];
 
     for (let object of results) {
-      const cid = object.get("cid")
-      const timestamp = object.get("block_timestamp")
-      const assetAddress = object.get("assetAddress")
-      const owner = object.get("owner")
-      const tokenId = object.get("tokenId")
-      const tokenType = object.get("tokenType")
+      const cid = object.get("cid");
+      const timestamp = object.get("block_timestamp");
+      const assetAddress = object.get("assetAddress");
+      const owner = object.get("owner");
+      const tokenId = object.get("tokenId");
+      const tokenType = object.get("tokenType");
 
       output.push({
         cid,
@@ -429,44 +433,43 @@ const useOrder = () => {
         owner,
         tokenId,
         tokenType: Number(tokenType),
-        chainId
-      })
-
+        chainId,
+      });
     }
 
     // check swap events
     const Swapped = Moralis.Object.extend(`${resolveSwappedTable(chainId)}`);
     const querySwap = new Moralis.Query(Swapped);
 
-    querySwap.limit(1000)
+    querySwap.limit(1000);
 
     const swapItems = await querySwap.find();
 
-    let swapCompleted = []
+    let swapCompleted = [];
 
     for (let object of swapItems) {
-      const cid = object.get("cid")
-      swapCompleted.push(cid)
+      const cid = object.get("cid");
+      swapCompleted.push(cid);
     }
 
-    output = output.filter(item => swapCompleted.indexOf(item.cid) === -1)
+    output = output.filter((item) => swapCompleted.indexOf(item.cid) === -1);
 
     // check cancel events
     const Canceled = Moralis.Object.extend(`${resolveCanceledTable(chainId)}`);
     const queryCanceled = new Moralis.Query(Canceled);
 
-    queryCanceled.limit(1000)
+    queryCanceled.limit(1000);
 
     const cancelItems = await queryCanceled.find();
 
-    let cancelCompleted = []
+    let cancelCompleted = [];
 
     for (let object of cancelItems) {
-      const cid = object.get("cid")
-      cancelCompleted.push(cid)
+      const cid = object.get("cid");
+      cancelCompleted.push(cid);
     }
 
-    output = output.filter(item => cancelCompleted.indexOf(item.cid) === -1)
+    output = output.filter((item) => cancelCompleted.indexOf(item.cid) === -1);
 
     return output.sort(function (a, b) {
       return b.timestamp - a.timestamp;
@@ -474,26 +477,27 @@ const useOrder = () => {
   }, []);
 
   const getOrdersFromAccount = useCallback(async (chainId, account) => {
-
     await Moralis.start(generateMoralisParams(chainId));
 
-    const OrderCreated = Moralis.Object.extend(`${resolveOrderCreatedTable(chainId)}`);
+    const OrderCreated = Moralis.Object.extend(
+      `${resolveOrderCreatedTable(chainId)}`
+    );
     const query = new Moralis.Query(OrderCreated);
 
     query.equalTo("owner", account.toLowerCase());
-    query.limit(1000)
+    query.limit(1000);
 
     const results = await query.find();
 
-    let output = []
+    let output = [];
 
     for (let object of results) {
-      const cid = object.get("cid")
-      const timestamp = object.get("block_timestamp")
-      const assetAddress = object.get("assetAddress")
-      const owner = object.get("owner")
-      const tokenId = object.get("tokenId")
-      const tokenType = object.get("tokenType")
+      const cid = object.get("cid");
+      const timestamp = object.get("block_timestamp");
+      const assetAddress = object.get("assetAddress");
+      const owner = object.get("owner");
+      const tokenId = object.get("tokenId");
+      const tokenType = object.get("tokenType");
 
       output.push({
         cid,
@@ -502,84 +506,73 @@ const useOrder = () => {
         owner,
         tokenId,
         tokenType: Number(tokenType),
-        chainId
-      })
-
+        chainId,
+      });
     }
 
     // check swap events
     const Swapped = Moralis.Object.extend(`${resolveSwappedTable(chainId)}`);
     const querySwap = new Moralis.Query(Swapped);
 
-    querySwap.limit(1000)
+    querySwap.limit(1000);
 
     const swapItems = await querySwap.find();
 
-    let swapCompleted = []
+    let swapCompleted = [];
 
     for (let object of swapItems) {
-      const cid = object.get("cid")
-      swapCompleted.push(cid)
+      const cid = object.get("cid");
+      swapCompleted.push(cid);
     }
 
-    output = output.filter(item => swapCompleted.indexOf(item.cid) === -1)
+    output = output.filter((item) => swapCompleted.indexOf(item.cid) === -1);
 
     const Canceled = Moralis.Object.extend(`${resolveCanceledTable(chainId)}`);
     const queryCanceled = new Moralis.Query(Canceled);
 
     queryCanceled.equalTo("owner", account.toLowerCase());
-    queryCanceled.limit(1000)
+    queryCanceled.limit(1000);
 
     const cancelItems = await queryCanceled.find();
 
-    let cancelCompleted = []
+    let cancelCompleted = [];
 
     for (let object of cancelItems) {
-      const cid = object.get("cid")
-      cancelCompleted.push(cid)
+      const cid = object.get("cid");
+      cancelCompleted.push(cid);
     }
 
-    output = output.filter(item => cancelCompleted.indexOf(item.cid) === -1)
+    output = output.filter((item) => cancelCompleted.indexOf(item.cid) === -1);
 
     return output.sort(function (a, b) {
       return b.timestamp - a.timestamp;
     });
+  }, []);
 
-  }, [])
+  const getFloorPrice = async (assetAddress, chainId) => {
+    const orders = await getOrdersFromCollection(chainId, assetAddress);
 
-  const getFloorPrice = async (
-    assetAddress,
-    chainId
-  ) => {
-
-    const orders = await getOrdersFromCollection(chainId, assetAddress)
-
-    let infos = []
+    let infos = [];
 
     for (let order of orders) {
-      const info = await getOrder(order.cid)
+      const info = await getOrder(order.cid);
       infos.push({
         ...info,
-        cid: order.cid
-      })
+        cid: order.cid,
+      });
     }
 
-    const price = await getLowestPrice(infos)
+    const price = await getLowestPrice(infos);
 
-    return price
-  }
+    return price;
+  };
 
-  const getCollectionOwners = async (
-    assetAddress,
-    chainId
-  ) => {
-
+  const getCollectionOwners = async (assetAddress, chainId) => {
     await Moralis.start(generateMoralisParams(chainId));
 
-    let owners = []
+    let owners = [];
 
     try {
-
       const options = {
         address: `${assetAddress}`,
         chain: `0x${chainId.toString(16)}`,
@@ -587,49 +580,40 @@ const useOrder = () => {
       if (assetAddress !== "0x2953399124f0cbb46d2cbacd8a89cf0599974963") {
         // let result = await Web3Api.token.getNFTOwners(options);
         let result = await Moralis.Web3API.token.getNFTOwners(options);
-        owners = result.result.map(item => item['owner_of'])
+        owners = result.result.map((item) => item["owner_of"]);
 
-        await wait()
+        await wait();
 
         while (result.next) {
-          result = await result.next()
-          const o = result.result.map(item => item['owner_of'])
-          owners = owners.concat(o)
-          await wait()
-
+          result = await result.next();
+          const o = result.result.map((item) => item["owner_of"]);
+          owners = owners.concat(o);
+          await wait();
         }
 
         owners = Array.from(new Set(owners));
       } else {
-        owners = []
+        owners = [];
       }
     } catch (e) {
-      console.log(e)
+      console.log(e);
     }
 
-    return owners
-  }
+    return owners;
+  };
 
   const wait = async () => {
     return new Promise((resolve) => {
       setTimeout(() => {
-        resolve()
-      }, 500)
-    })
-  }
+        resolve();
+      }, 500);
+    });
+  };
 
-  const getCollectionInfoFromCacheServer = ({
-    assetAddress,
-    chainId,
-  }) => {
-
-
-
+  const getCollectionInfoFromCacheServer = ({ assetAddress, chainId }) => {
     return new Promise((resolve) => {
       axios
-        .get(
-          `${API_BASE}/v2/collection/${chainId}/${assetAddress}`
-        )
+        .get(`${API_BASE}/v2/collection/${chainId}/${assetAddress}`)
         .then(({ data }) => {
           resolve(data);
         });
@@ -645,28 +629,29 @@ const useOrder = () => {
     chainId,
     loadOwners = false
   ) => {
-
     // load from cache first
 
     const cacheData = await getCollectionInfoFromCacheServer({
       assetAddress,
-      chainId
-    })
-    
-    if (cacheData && cacheData.collection) {
-      return cacheData.collection
-    }
+      chainId,
+    });
 
+    if (cacheData && cacheData.collection) {
+      return cacheData.collection;
+    }
 
     await Moralis.start(generateMoralisParams(chainId));
 
-    const data = COLLECTIONS.find(item => item.assetAddress.toLowerCase() === assetAddress && chainId === item.chainId)
+    const data = COLLECTIONS.find(
+      (item) =>
+        item.assetAddress.toLowerCase() === assetAddress &&
+        chainId === item.chainId
+    );
 
-    let totalSupply = 0
-    let totalOwners = 0
+    let totalSupply = 0;
+    let totalOwners = 0;
 
     try {
-
       const options = {
         address: `${assetAddress}`,
         chain: `0x${chainId.toString(16)}`,
@@ -674,21 +659,20 @@ const useOrder = () => {
 
       if (assetAddress !== "0x2953399124f0cbb46d2cbacd8a89cf0599974963") {
         const NFTs = await Moralis.Web3API.token.getAllTokenIds(options);
-        totalSupply = NFTs.total
+        totalSupply = NFTs.total;
       } else {
-        totalSupply = 1655037
+        totalSupply = 1655037;
       }
-
     } catch (e) {
-      console.log(e)
+      console.log(e);
     }
 
     return {
       ...data,
       totalOwners,
-      totalSupply
-    }
-  }
+      totalSupply,
+    };
+  };
 
   const resolveMetadataFromCacheServer = ({
     assetAddress,
@@ -710,7 +694,7 @@ const useOrder = () => {
           },
         };
       }
-    } catch (e) { }
+    } catch (e) {}
 
     return new Promise((resolve) => {
       axios
@@ -765,9 +749,9 @@ const useOrder = () => {
 
         return data;
       }
-    } catch (e) { }
+    } catch (e) {}
 
-    const tokenIdMetadata = await Web3Api.token.getTokenIdMetadata(options)
+    const tokenIdMetadata = await Web3Api.token.getTokenIdMetadata(options);
     return await getMetadata(tokenIdMetadata);
   };
 
@@ -779,8 +763,9 @@ const useOrder = () => {
         (item.tokenType === 0 || item.tokenType === 3)
     );
 
-    return `${ethers.utils.formatUnits(tokenId, token.decimals)} ${token.symbol
-      } `;
+    return `${ethers.utils.formatUnits(tokenId, token.decimals)} ${
+      token.symbol
+    } `;
   };
 
   const swap = useCallback(
@@ -833,11 +818,7 @@ const useOrder = () => {
         }
       } else if (token.tokenType === 3) {
         // native token
-
-
-
       } else {
-        
         // erc721 / 1155
         const nftContract = new ethers.Contract(
           token.assetAddress,
@@ -887,13 +868,9 @@ const useOrder = () => {
 
       if (token.tokenType === 3) {
         // native token
-        return await contract.swapWithEth(
-          orderId,
-          proof,
-          {
-            value: token.assetTokenIdOrAmount
-          }
-        );
+        return await contract.swapWithEth(orderId, proof, {
+          value: token.assetTokenIdOrAmount,
+        });
       } else {
         return await contract.swap(
           orderId,
@@ -903,8 +880,93 @@ const useOrder = () => {
           proof
         );
       }
+    },
+    [account, chainId, library]
+  );
 
+  const swapBatch = useCallback(
+    async (orderIdList, orderList, tokenIndexList) => {
+      if (!account) {
+        throw new Error("Wallet not connected");
+      }
+      const tokenList = [];
+      orderList.map((orderList, index) => {
+        tokenList.push(orderList.barterList[tokenIndexList[index]]);
+      });
 
+      //initial list for swapbatch
+      const assetAddressList = [];
+      const tokenIdList = [];
+      const tokenTypeList = [];
+      tokenIdList.map((token) => {
+        assetAddressList.push(token.assetAddress);
+        tokenIdList.push(token.assetTokenIdOrAmount);
+        tokenTypeList.push(token.tokenType);
+      });
+
+      const { contractAddress } = NFT_MARKETPLACE.find(
+        (item) => item.chainId === chainId
+      );
+
+      const contract = new ethers.Contract(
+        contractAddress,
+        MarketplaceABI,
+        library.getSigner()
+      );
+
+      let leavesList = [];
+      for (let i = 0; i < orderList.length; i++) {
+        const leaves = orderList[i].barterList
+          .filter((item) => item.chainId === orderList[i].chainId)
+          .map((item) =>
+            ethers.utils.keccak256(
+              ethers.utils.solidityPack(
+                ["string", "uint256", "address", "uint256"],
+                [
+                  `${orderIdList[i]}`,
+                  Number(item.chainId),
+                  item.assetAddress,
+                  item.assetTokenIdOrAmount,
+                ]
+              )
+            )
+          );
+        leavesList.push(leaves);
+      }
+
+      let treeList = [];
+      leavesList.map((leaves) => {
+        const tree = new MerkleTree(leaves, keccak256, {
+          sortPairs: true,
+        });
+        treeList.push(tree);
+      });
+
+      let proofList = [];
+      for (let i = 0; i < orderList.length; i++) {
+        const proof = treeList[i].getHexProof(
+          ethers.utils.keccak256(
+            ethers.utils.solidityPack(
+              ["string", "uint256", "address", "uint256"],
+              [
+                orderIdList[i],
+                tokenList[i].chainId,
+                tokenList[i].assetAddress,
+                tokenList[i].assetTokenIdOrAmount,
+              ]
+            )
+          )
+        );
+        proofList.push(proof);
+      }
+
+      return await contract.swapBatch(
+        orderIdList,
+        assetAddressList,
+        tokenIdList,
+        tokenTypeList,
+        proofList
+      );
     },
     [account, chainId, library]
   );
@@ -948,10 +1010,11 @@ const useOrder = () => {
     resolveMetadata,
     resolveTokenValue,
     swap,
+    swapBatch,
     resolveStatus,
     getCollectionInfo,
     getFloorPrice,
-    getCollectionOwners
+    getCollectionOwners,
   };
 };
 
