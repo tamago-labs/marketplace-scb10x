@@ -3,6 +3,7 @@ const axios = require("axios")
 const { redisClient } = require("../../redis")
 const { db } = require("../../firebase")
 
+// ! Redis connection required to use caches
 
 const getIpfsDataByCid = async (cid) => {
   const url = `https://${cid}.ipfs.infura-ipfs.io/`
@@ -11,7 +12,6 @@ const getIpfsDataByCid = async (cid) => {
   return res.data
 }
 
-// ! redis must be connected to use this function
 const refreshOrderCache = async () => {
   // ! modification may be needed later
   const queryResult = await db.collection("orders-v2").get()
@@ -28,10 +28,7 @@ const refreshOrderCache = async () => {
 
   console.log(flattenedOrderData.length)
 
-
-  await redisClient.connect()
   await redisClient.set("orders", JSON.stringify(flattenedOrderData))
-  await redisClient.quit()
 
   return ordersData
 }
@@ -39,19 +36,16 @@ const refreshOrderCache = async () => {
 
 const getAllActiveOrders = async () => {
   try {
-    await redisClient.connect()
     const orders = await redisClient.get("orders")
 
     if (orders === null) {
       //retrieve all orders
       // console.log("No cache found, retrieving data from IPFS")
       const activeOrdersData = await refreshOrderCache()
-      await redisClient.quit()
       return activeOrdersData
 
     } else {
       //sending the cache to frontend
-      await redisClient.quit()
       // console.log("Cache found, sending data to frontend")
       return JSON.parse(orders)
     }
@@ -75,5 +69,5 @@ const getAllOrdersWithChainId = async (chainId) => {
 module.exports = {
   getAllActiveOrders,
   getAllOrdersWithChainId,
-  refreshOrderCache
+  refreshOrderCache,
 }

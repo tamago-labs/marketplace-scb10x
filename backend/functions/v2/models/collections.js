@@ -2,11 +2,24 @@
 const axios = require("axios")
 const { ethers } = require("ethers")
 
+const { getAllActiveOrders } = require("./orders")
+const { COIN_GECKO_API_BASE } = require("../../constants")
 const { db } = require("../../firebase")
 const { Moralis, MoralisOptions } = require("../../moralis")
+const { redisClient } = require("../../redis")
 const { convertDecimalToHexadecimal, wait } = require("../../utils")
-const { COIN_GECKO_API_BASE } = require("../../constants")
-const { getAllActiveOrders } = require("./orders")
+
+// ! Redis connection required to use caches
+
+// ! modification may be needed later
+const cacheCollectionFloorPrice = async (chain, address) => {
+
+  const floorPrice = await calculateFloorPrice(chain, address)
+  await redisClient.setEx(`floorPrice${chain}.${address}`, 3600, JSON.stringify(floorPrice))
+  return floorPrice
+}
+
+
 
 const getCollectionByChainAndAddress = async (chainId, address) => {
   try {
@@ -86,7 +99,28 @@ const getTotalSupply = async (chain, address) => {
   }
 }
 
-const getFloorPrice = async (chain, address) => {
+const getCollectionFloorPrice = async (chain, address) => {
+  try {
+    const floorPrice = await redisClient.get(`floorPrice${chain}.${address}`)
+
+    if (floorPrice === null) {
+      //retrieve floorPrice
+      // console.log("No cache found, calculating...")
+      const newFloorPrice = await cacheCollectionFloorPrice(chain, address)
+      return newFloorPrice
+
+    } else {
+      //sending the cache to frontend
+      // console.log("Cache found, sending data to frontend")
+      return JSON.parse(floorPrice)
+    }
+
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+const calculateFloorPrice = async (chain, address) => {
 
   if (address !== "0x2953399124f0cbb46d2cbacd8a89cf0599974963" && address !== "0x495f947276749ce646f68ac8c248420045cb7b5e") {
     const priceData = await axios.get(
@@ -198,10 +232,12 @@ const addCollectionToDb = async (chain, address) => {
   // }
 }
 module.exports = {
+  cacheCollectionFloorPrice,
   getCollectionByChainAndAddress,
   getCollectionsByChain,
   getTotalOwners,
   getTotalSupply,
-  getFloorPrice,
+  calculateFloorPrice,
+  getCollectionFloorPrice,
   // addCollectionToDb
 }
