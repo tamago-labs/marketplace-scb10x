@@ -55,52 +55,53 @@ const CLIENT_BASE = "https://marketplace-10x.tamago.finance"
 const COIN_GECKO_API_BASE = "https://api.coingecko.com/api/v3";
 
 // RPC server urls retrieved from chainlist.org
-POLYGON_RPC_SERVERS = [
+const POLYGON_RPC_SERVERS = [
     "https://polygon-mainnet.public.blastapi.io",
     "https://polygon-rpc.com",
     "https://polygonapi.terminet.io/rpc",
     "https://rpc-mainnet.matic.quiknode.pro",
 ]
 
-MAINNET_RPC_SERVERS = [
+const MAINNET_RPC_SERVERS = [
     "https://eth-rpc.gateway.pokt.network",
     "https://eth-mainnet.public.blastapi.io",
     "https://rpc.ankr.com/eth",
 ]
 
 //note: no good rpc servers on chainlist (using the old infura server for now)
-KOVAN_RPC_SERVERS = [
+const KOVAN_RPC_SERVERS = [
     "https://kovan.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161",
 ]
 
-MUMBAI_RPC_SERVERS = [
+const MUMBAI_RPC_SERVERS = [
     "https://polygontestapi.terminet.io/rpc",
     "https://rpc.ankr.com/polygon_mumbai",
 ]
 
-BNB_RPC_SERVERS = [
+const BNB_RPC_SERVERS = [
     "https://bsc-dataseed2.binance.org",
     "https://bscapi.terminet.io/rpc",
     "https://rpc.ankr.com/bsc",
     "https://bsc-dataseed3.binance.org",
 ]
 
-FUJI_RPC_SERVERS = [
+const FUJI_RPC_SERVERS = [
     "https://rpc.ankr.com/avalanche_fuji",
     "https://avalanchetestapi.terminet.io/ext/bc/C/rpc",
 ]
 
-BNB_TESTNET_RPC_SERVERS = [
+const BNB_TESTNET_RPC_SERVERS = [
     "https://bsctestapi.terminet.io/rpc",
     "https://data-seed-prebsc-2-s2.binance.org:8545",
     "https://data-seed-prebsc-1-s1.binance.org:8545",
 ]
-AVALANCHE_C_CHAIN_RPC_SERVERS = [
+const AVALANCHE_C_CHAIN_RPC_SERVERS = [
     "https://rpc.ankr.com/avalanche",
     "https://avalancheapi.terminet.io/ext/bc/C/rpc",
     "https://ava-mainnet.public.blastapi.io/ext/bc/C/rpc",
 ]
-CRONOS_RPC_SERVERS = ["https://cronosrpc-1.xstaking.sg",
+const CRONOS_RPC_SERVERS = [
+    "https://cronosrpc-1.xstaking.sg",
     "https://evm.cronos.org",
 ]
 
