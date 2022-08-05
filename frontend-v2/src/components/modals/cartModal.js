@@ -12,6 +12,7 @@ import ERC721ABI from "../../abi/ERC721.json";
 import ERC1155ABI from "../../abi/ERC1155.json";
 import ERC20ABI from "../../abi/erc20.json";
 import { NFT_MARKETPLACE } from "../../constants";
+import useOrder from "../../hooks/useOrder";
 
 /** Styled-Components */
 const Preview = styled.div`
@@ -61,9 +62,13 @@ const CartModal = ({ chainId }) => {
   const [tick, setTick] = useState();
   const [loading, setLoading] = useState();
   const [isApprovedAll, setIsApprovedAll] = useState(false);
+  const [orderIdList, setOrderIdList] = useState([]);
+  const [orderList, setOrderList] = useState([]);
+  const [tokenIndexList, setTokenIndexList] = useState([]);
 
   const { cartList, setCartList } = useContext(NftCartsContext);
   const { account, library } = useWeb3React();
+  const { swap } = useOrder();
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
@@ -71,6 +76,9 @@ const CartModal = ({ chainId }) => {
   const handleClearAll = useCallback(() => {
     localStorage.clear();
     setCartList([]);
+    setOrderIdList([]);
+    setOrderList([]);
+    setTokenIndexList([]);
   }, []);
 
   //change chain handle
@@ -79,9 +87,39 @@ const CartModal = ({ chainId }) => {
   //   setCartList([]);
   // }, [chainId]);
 
+  //set up before swap batch
   useEffect(() => {
     setCartListNum(cartList.length);
+    console.log(
+      "🚀 ~ file: cartModal.js ~ line 66 ~ CartModal ~ cartList",
+      cartList
+    );
+
+    //Order Id List
+    const orderIdArr = [];
+    const orderArr = [];
+    const tokenIndexArr = [];
+    cartList.map((cartItem) => {
+      orderIdArr.push(cartItem.orderId);
+      orderArr.push(cartItem.order);
+      tokenIndexArr.push(cartItem.item.index);
+    });
+
+    setOrderIdList(orderIdArr);
+    setOrderList(orderArr);
+    setTokenIndexList(tokenIndexArr);
   }, [cartList]);
+
+  // useEffect(() => {
+  //   console.log(
+  //     "🚀 ~ file: cartModal.js ~ line 108 ~ CartModal ~ orderIdList",
+  //     orderIdList
+  //   );
+  // }, [orderIdList]);
+
+  const increaseTick = useCallback(() => {
+    setTick(tick + 1);
+  }, [tick]);
 
   const onApprove = useCallback(async () => {
     setLoading(true);
@@ -147,6 +185,23 @@ const CartModal = ({ chainId }) => {
     setTick(tick + 1);
     setLoading(false);
   }, [cartList, tick]);
+
+  const onSwap = useCallback(async () => {
+    setLoading(true);
+    try {
+      const tx = await swap(orderIdList, orderList, tokenIndexList);
+      await tx.wait();
+    } catch (e) {
+      console.log(e, e.error);
+
+      const message =
+        e.error && e.error.data && e.error.data.message
+          ? e.error.data.message
+          : e.message;
+    }
+    setLoading(false);
+    increaseTick();
+  }, [cartList]);
 
   return (
     <>
@@ -223,7 +278,7 @@ const CartModal = ({ chainId }) => {
 
           <div className="text-center">
             {isApprovedAll ? (
-              <SwapButton variant="primary">
+              <SwapButton variant="primary" onClick={onSwap}>
                 {loading && (
                   <Puff
                     height="24px"

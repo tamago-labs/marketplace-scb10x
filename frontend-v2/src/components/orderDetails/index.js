@@ -296,6 +296,7 @@ const NFTCard = ({
       pairMetadata: data,
       baseMetadata: baseMetadata,
       approved: approved,
+      orderId: orderId,
     };
     localStorage.setItem(`${order.title}`, JSON.stringify(itemObject));
 
