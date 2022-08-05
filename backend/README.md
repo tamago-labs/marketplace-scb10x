@@ -1,3 +1,5 @@
+Link to v2 Docs : https://github.com/tamago-finance/marketplace-scb10x/blob/main/backend/functions/v2/V2-API-DOCS.md
+
 # MARKETPLACE-APIS
 
 ## Accounts
