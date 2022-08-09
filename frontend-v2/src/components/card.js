@@ -5,6 +5,8 @@ import { Badge } from "reactstrap";
 import { Link } from "react-router-dom";
 import { resolveNetworkName } from "../helper";
 import { Check } from "react-feather";
+import useOrder from "../hooks/useOrder";
+import { shorterName } from "../helper";
 
 const AssetCardContainer = styled.div`
   background-color: white;
@@ -163,18 +165,10 @@ const CollectionCardContainer = styled.div`
   }
 `;
 
-
-export const CollectionCard = ({
-  children,
-  image,
-  chain,
-  address
-}) => (
+export const CollectionCard = ({ children, image, chain, address }) => (
   <CollectionCardContainer>
     <Link to={`/collection/${chain}/${address}`}>
-      <div className="--card">
-        {children}
-      </div>
+      <div className="--card">{children}</div>
     </Link>
   </CollectionCardContainer>
 );
@@ -234,6 +228,59 @@ export const SelectableCard = ({
     {children}
   </SelectableCardContainer>
 );
+
+export const SelectableCardCancelOrder = ({
+  chainId,
+  onClickCard,
+  order,
+  cancelData,
+  account,
+}) => {
+  const [data, setData] = useState();
+
+  const { resolveMetadata, resolveTokenValue } = useOrder();
+
+  useEffect(() => {
+    if (order && order.tokenType !== 0) {
+      resolveMetadata({
+        assetAddress: order.assetAddress,
+        tokenId: order.tokenId,
+        chainId: order.chainId,
+      }).then(setData);
+    }
+  }, [account]);
+  return (
+    <SelectableCard
+      image={
+        order.tokenType === 0
+          ? "../../images/coin.png"
+          : data && data.metadata && data.metadata.image
+      }
+      chainId={chainId}
+      selected={cancelData.find((data) => data.cid === order.cid)}
+      onClick={() => onClickCard({ ...order, chainId })}
+      account={account}
+    >
+      <div className="name">
+        {order.tokenType !== 0 ? (
+          <>
+            {data && data.metadata.name
+              ? data.metadata.name
+              : `#${shorterName(order.tokenId)}`}
+          </>
+        ) : (
+          <>
+            {resolveTokenValue({
+              assetAddress: order.assetAddress,
+              tokenId: order.tokenId,
+              chainId: order.chainId,
+            })}
+          </>
+        )}
+      </div>
+    </SelectableCard>
+  );
+};
 
 const CommonCardContainer = styled(BaseAssetCardContainer)`
   min-height: 225px;
