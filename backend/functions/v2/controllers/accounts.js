@@ -1,7 +1,7 @@
 const { SUPPORTED_CHAINS } = require('../../constants');
 const { redisClient } = require('../../redis');
 const accountModel = require('../models/accounts');
-const { isEthereumAddress } = require('validator');
+const { isEthereumAddress, isEmail, isURL } = require('validator');
 
 exports.getAccount = async (req, res, next) => {
   try {
@@ -26,6 +26,9 @@ exports.getAccount = async (req, res, next) => {
 
 exports.updateAccount = async (req, res, next) => {
   try {
+    const { address, email, description, profile, cover, social, collections } =
+      req.body;
+
     const NewData = {
       email: '',
       walletAddress: '',
@@ -33,20 +36,50 @@ exports.updateAccount = async (req, res, next) => {
       profile: '',
       cover: '',
       verified: false,
-      social: [
-        {
-          twitter: '',
-        },
-      ],
-      collections: [{}],
+      social: {},
+      collections: [],
       followers: [],
     };
-    //TODO use multer to handle images and upload it to IPFS
+    //TODO handle images and upload it to IPFS
 
-    //TODO recover address from message and signature to authorize
-
-    //TODO data validation
-
+    //TODO data validation for existing inputs
+    if (email && !isEmail(email)) {
+      return res.status(400).json({ message: ' Invalid email' });
+    }
+    if (
+      description &&
+      (typeof description !== 'string' ||
+        String(description).trim().length < 10 ||
+        String(description).trim().length > 200)
+    ) {
+      return res
+        .status(400)
+        .json({ message: 'Description length should be between 10 and 200' });
+    }
+    if (profile && !isURL(profile)) {
+      return res.status(400).json({ message: 'Invalid profile image URL' });
+    }
+    if (cover && !isURL(cover)) {
+      return res.status(400).json({ message: 'Invalid cover image URL' });
+    }
+    if (
+      social &&
+      (typeof social !== 'object' ||
+        !Object.values(social).reduce((result, current) => {
+          return result && isURL(current);
+        }, true))
+    ) {
+      return res.status(400).json({
+        message:
+          'social should be an object, the value to each key must be valid URLs',
+      });
+    }
+    //! The validation below will need to be checked before merging into main branch
+    if (collections && Array.isArray(collections)) {
+      return res.status(400).json({
+        message: 'collections must be array of (!!! slugs or CIDs)',
+      });
+    }
     //TODO finding an existing entry in DB
 
     //TODO creating new entry in the database if not exist
