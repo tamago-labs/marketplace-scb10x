@@ -247,7 +247,7 @@ const Orders = () => {
                   <LoadingSpinner />
                 </span>
               )}
-              Cancel
+              Cancel Order(s)
             </div>
           </button>
         </FixedButtonContainer>
