@@ -1,5 +1,48 @@
 # **V2-MARKETPLACE-APIS**
 
+## **ACCOUNTS**
+
+| METHOD | PATH                  | REQUEST_BODY                                                                           | NOTES |
+| ------ | --------------------- | -------------------------------------------------------------------------------------- | ----- |
+| GET    | /v2/account/{address} | none                                                                                   |       |
+| POST   | /v2/account/update    | {message, signature, address, email, description, profile, cover, social, collections} | 1     |
+
+### notes
+
+1. POST /v2/account/update  
+   1.1 - This endpoint is configured to handle account creating, and updating.
+
+   1.2 - message, signature, address ARE ALWAYS REQUIRED
+
+   1.3 - email, description ARE REQUIRED when CREATING.
+
+   1.4 - other keys are optional
+
+   1.5 - social and collections send in the request shall replace those in the database
+
+example request body :
+
+  <pre>
+ {
+    "message":"???",
+    "signature":"???",
+    "address": "0x.......",
+    "email":"123132@sddfsadf.com",
+    "description" : "example description",
+    "profile" : "ipfs://bafybeifnerbi7xsp34byxyiylgc6stfghh3iqvg5i2xkoybfusyyw2inma/269.png",
+    "cover" : "https://ipfs.io/ipfs/bafybeifnerbi7xsp34byxyiylgc6stfghh3iqvg5i2xkoybfusyyw2inma/269.png",
+    "social" : {
+        "twitter" : "https://twitter.com/tamagofinance",
+        "website" : "tamago.finance"
+    },
+    "collections" : {
+       "neowft" : "https://opensea.io/collection/neowft"
+    }
+  }
+  </pre>
+
+---
+
 ## **COLLECTIONS**
 
 | METHOD | PATH                                       | REQUEST_BODY | NOTES |
