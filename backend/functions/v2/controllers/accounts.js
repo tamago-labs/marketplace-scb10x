@@ -1,8 +1,9 @@
-const { SUPPORTED_CHAINS } = require('../../constants');
-const { redisClient } = require('../../redis');
-const accountModel = require('../models/accounts');
 const { isEthereumAddress, isEmail, isURL } = require('validator');
 
+const { SUPPORTED_CHAINS } = require('../../constants');
+const { redisClient } = require('../../redis');
+const { isIpfsUrl } = require('../../utils');
+const accountModel = require('../models/accounts');
 exports.getAccount = async (req, res, next) => {
   try {
     // inputs
@@ -29,20 +30,7 @@ exports.updateAccount = async (req, res, next) => {
     const { address, email, description, profile, cover, social, collections } =
       req.body;
 
-    const NewData = {
-      email: '',
-      walletAddress: '',
-      description: '',
-      profile: '',
-      cover: '',
-      verified: false,
-      social: {},
-      collections: [],
-      followers: [],
-    };
-    //TODO handle images and upload it to IPFS
-
-    //TODO data validation for existing inputs
+    //data validation for existing inputs
     if (email && !isEmail(email)) {
       return res.status(400).json({ message: ' Invalid email' });
     }
@@ -56,10 +44,10 @@ exports.updateAccount = async (req, res, next) => {
         .status(400)
         .json({ message: 'Description length should be between 10 and 200' });
     }
-    if (profile && !isURL(profile)) {
+    if (profile && !(isURL(profile) || isIpfsUrl(profile))) {
       return res.status(400).json({ message: 'Invalid profile image URL' });
     }
-    if (cover && !isURL(cover)) {
+    if ((cover && !isURL(cover)) || isIpfsUrl(cover)) {
       return res.status(400).json({ message: 'Invalid cover image URL' });
     }
     if (
@@ -77,15 +65,85 @@ exports.updateAccount = async (req, res, next) => {
     //! The validation below will need to be checked before merging into main branch
     if (collections && Array.isArray(collections)) {
       return res.status(400).json({
-        message: 'collections must be array of (!!! slugs or CIDs)',
+        message: 'collections must be array of (!!! slugs / CIDs / urls)',
       });
     }
-    //TODO finding an existing entry in DB
+    // finding an existing entry in DB
+    const account = accountModel.getAccount(address);
+    if (!account) {
+      // creating new entry in the database if not exist
+      const newData = {
+        email: '',
+        walletAddress: '',
+        description: '',
+        profile: '',
+        cover: '',
+        verified: false,
+        social: {},
+        collections: [],
+        followers: [],
+      };
+      //email
+      if (!email) {
+        return res
+          .status(400)
+          .json({ message: 'email is required for creating account' });
+      }
+      //address
+      if (!address) {
+        return res
+          .status(400)
+          .json({ message: 'wallet address is required for creating account' });
+      }
+      //description
+      if (!description) {
+        return res.status(400).json({
+          message:
+            'description is required,length should be between 10 and 200',
+        });
+      }
+      newData.email = email;
+      newData.walletAddress = address;
+      newData.description = description;
+      if (profile) {
+        newData.profile = profile;
+      }
+      if (cover) {
+        newData.cover = cover;
+      }
+      if (social) {
+        newData.social = social;
+      }
+      if (collections) {
+        newData.collections = collections;
+      }
+      await accountModel.createNewAccount(address, newData);
+      return res.status(201).json({ status: 'ok', newAccount: newData });
+    }
+    // update the entry in the database if does exist
+    const newData = { ...account };
+    if (email) {
+      newData.email = email;
+    }
+    if (description) {
+      newData.description = description;
+    }
+    if (profile) {
+      newData.profile = profile;
+    }
 
-    //TODO creating new entry in the database if not exist
-    //TODO update the entry in the database if does exist
+    if (cover) {
+      newData.cover = cover;
+    }
+    if (social) {
+      newData.social = { ...social, ...newData.social };
+    }
+    if (collections) {
+      newData.collections = [...newData.collections, ...collections];
+    }
 
-    //TODO responding to request about what was updated
+    await accountModel.updateAccount(address, newData);
+    return res.status(200).json({ status: 'ok', updatedAccount: newData });
   } catch (error) {
     console.log(error);
   }
