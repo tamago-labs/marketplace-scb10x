@@ -8,7 +8,7 @@ const getAccount = async (address) => {
     .collection('accounts-v2')
     .doc(String(address).toLowerCase())
     .get();
-  if (collection.isEmpty) {
+  if (!collection.exists) {
     return null;
   }
   return collection.data();

@@ -11,15 +11,15 @@ module.exports = async (req, res, next) => {
     }
 
     //validate and see if recoveredAddress matches walletAddress
-    // const recoveredAddress = recoverAddressFromMessageAndSignature(
-    //   message,
-    //   signature
-    // );
-    // if (recoveredAddress.toLowerCase() !== address.toLowerCase()) {
-    //   return res.status(401).json({ message: 'Unauthorized access' });
-    // }
+    const recoveredAddress = recoverAddressFromMessageAndSignature(
+      message,
+      signature
+    );
+    if (recoveredAddress.toLowerCase() !== address.toLowerCase()) {
+      return res.status(401).json({ message: 'Unauthorized access' });
+    }
 
-    console.log('authenticated');
+    // console.log('authenticated');
     next();
   } catch (error) {
     console.log(error);

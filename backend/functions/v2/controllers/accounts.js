@@ -63,14 +63,20 @@ exports.updateAccount = async (req, res, next) => {
       });
     }
     //! The validation below will need to be checked before merging into main branch
-    if (collections && Array.isArray(collections)) {
+    if (
+      collections &&
+      (!Array.isArray(collections) ||
+        !collections.reduce((result, current) => {
+          return result && typeof current === 'string';
+        }, true))
+    ) {
       return res.status(400).json({
         message: 'collections must be array of (!!! slugs / CIDs / urls)',
       });
     }
     // finding an existing entry in DB
-    const account = accountModel.getAccount(address);
-    if (!account) {
+    const account = await accountModel.getAccount(address);
+    if (account === null) {
       // creating new entry in the database if not exist
       const newData = {
         email: '',
