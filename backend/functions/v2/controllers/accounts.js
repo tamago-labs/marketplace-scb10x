@@ -62,12 +62,11 @@ exports.updateAccount = async (req, res, next) => {
           'social should be an object, the value to each key must be valid URLs',
       });
     }
-    //! The validation below will need to be checked before merging into main branch
     if (
       collections &&
-      (!Array.isArray(collections) ||
-        !collections.reduce((result, current) => {
-          return result && typeof current === 'string';
+      (typeof collections !== 'object' ||
+        !Object.values(collections).reduce((result, current) => {
+          return result && isURL(current);
         }, true))
     ) {
       return res.status(400).json({
@@ -145,7 +144,7 @@ exports.updateAccount = async (req, res, next) => {
       newData.social = { ...social, ...newData.social };
     }
     if (collections) {
-      newData.collections = [...newData.collections, ...collections];
+      newData.collections = { ...newData.collections, ...collections };
     }
 
     await accountModel.updateAccount(address, newData);

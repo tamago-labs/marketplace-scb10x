@@ -18,8 +18,6 @@
 
    1.4 - other keys are optional
 
-   1.5 - social and collections send in the request shall replace those in the database
-
 example request body :
 
   <pre>
