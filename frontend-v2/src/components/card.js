@@ -248,7 +248,7 @@ export const SelectableCardCancelOrder = ({
         chainId: order.chainId,
       }).then(setData);
     }
-  }, [account]);
+  }, [account, chainId]);
   return (
     <SelectableCard
       image={

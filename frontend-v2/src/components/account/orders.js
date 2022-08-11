@@ -60,6 +60,15 @@ const ColWithLink = styled.th.attrs((props) => ({
   }
 `;
 
+const FixedButtonContainer = styled.div`
+  position: fixed;
+  color: #000;
+  text-align: center;
+  left: 50%;
+  top: 80%;
+  z-index: 10;
+`;
+
 const OrderItem = ({
   disabled,
   index,
@@ -102,10 +111,11 @@ const OrdersPanel = styled.div`
 `;
 
 const Orders = () => {
-  const [loading, setLoading] = useState(-1);
+  const [loading, setLoading] = useState(false);
   const [orders, setOrders] = useState([]);
   const [tick, setTick] = useState(0);
   const [cancelData, setCancelData] = useState([]);
+  const [disabledCancel, setDisabledCancel] = useState(true);
 
   const { getOrdersFromAccount } = useOrder();
   const { account, library, chainId } = useWeb3React();
@@ -116,12 +126,27 @@ const Orders = () => {
       getOrdersFromAccount(chainId, account).then(setOrders);
   }, [account, chainId]);
 
+  useEffect(() => {
+    if (cancelData.length <= 0) {
+      setDisabledCancel(true);
+    } else {
+      setDisabledCancel(false);
+    }
+  }, [cancelData]);
+
   const onCancelOrder = useCallback(
-    async (order, index) => {
-      setLoading(Number(index));
+    async (cancelData) => {
+      setLoading(true);
+
+      let cidArr = [];
+      if (cancelData.length > 1) {
+        cancelData.map((order) => {
+          cidArr.push(order.cid);
+        });
+      }
 
       const { contractAddress } = NFT_MARKETPLACE.find(
-        (item) => item.chainId === order.chainId
+        (item) => item.chainId === cancelData[0].chainId
       );
       const marketplaceContract = new ethers.Contract(
         contractAddress,
@@ -130,13 +155,20 @@ const Orders = () => {
       );
 
       try {
-        const tx = await marketplaceContract.cancel(order.cid);
-        await tx.wait();
+        if (cancelData.length === 1) {
+          const tx = await marketplaceContract.cancel(cancelData[0].cid);
+          await tx.wait();
+        }
+
+        if (cancelData.length > 1) {
+          const tx = await marketplaceContract.cancelBatch(cidArr);
+          await tx.wait();
+        }
       } catch (e) {
         console.log(e);
       } finally {
         getOrdersFromAccount(chainId, account).then(setOrders);
-        setLoading(-1);
+        setLoading(false);
         setTick(tick + 1);
       }
     },
@@ -175,7 +207,7 @@ const Orders = () => {
                   account={account}
                 />
 
-                <NFTCard
+                {/* <NFTCard
                   key={index}
                   delay={index % orders.length}
                   order={order}
@@ -187,10 +219,38 @@ const Orders = () => {
                     onCancelOrder={onCancelOrder}
                     tick={tick}
                   />
-                </NFTCard>
+                </NFTCard> */}
               </div>
             );
           })}
+        <FixedButtonContainer>
+          <button
+            disabled={disabledCancel}
+            style={{
+              color: "white",
+              borderRadius: "32px",
+              padding: "4px 8px",
+              width: "200px",
+            }}
+            className="btn btn-danger shadow"
+            onClick={() => onCancelOrder(cancelData)}
+          >
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "center",
+              }}
+            >
+              {loading && (
+                <span style={{ marginRight: "10px" }}>
+                  <LoadingSpinner />
+                </span>
+              )}
+              Cancel
+            </div>
+          </button>
+        </FixedButtonContainer>
       </OrdersPanel>
     </Wrapper>
   );
