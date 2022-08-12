@@ -1,30 +1,26 @@
-import React, { useState, useEffect, useCallback, useContext } from "react"
-import styled from "styled-components"
-import { Link, useNavigate } from "react-router-dom"
-import { Table } from "react-bootstrap"
-import { useWeb3React } from "@web3-react/core"
-import { ethers } from "ethers"
-import Skeleton from "react-loading-skeleton"
-import { AssetCard } from "../card"
-import NFTCard from "../nftCard"
-import { TailSpin } from 'react-loader-spinner'
-import useOrder from "../../hooks/useOrder"
-// import { useMarketplace } from "../../hooks/useMarketplace"
-import { resolveNetworkName, shortAddress } from "../../helper"
-import { NFT_MARKETPLACE } from "../../constants"
-import { ExternalLink, AlertTriangle } from "react-feather"
-import MarketplaceABI from "../../abi/marketplace.json"
+import React, { useState, useEffect, useCallback } from "react";
+import styled from "styled-components";
+import { Table } from "react-bootstrap";
+import { useWeb3React } from "@web3-react/core";
+import { ethers } from "ethers";
+import { AssetCard } from "../card";
+import NFTCard from "../nftCard";
+import { TailSpin } from "react-loader-spinner";
+import useOrder from "../../hooks/useOrder";
+import { NFT_MARKETPLACE } from "../../constants";
+import MarketplaceABI from "../../abi/marketplace.json";
+import { SelectableCardCancelOrder } from "../card";
 
 const LoadingSpinner = () => {
-    return <TailSpin color="#fff" height={24} width={24} />
-}
+  return <TailSpin color="#fff" height={24} width={24} />;
+};
 
 const Wrapper = styled.div.attrs(() => ({
-    className: "rounded-md",
+  className: "rounded-md",
 }))`
   background: var(--secondary);
   min-height: 200px;
-  margin-top: 1rem; 
+  margin-top: 1rem;
 
   p {
     margin-top: 10px;
@@ -42,226 +38,222 @@ const Wrapper = styled.div.attrs(() => ({
     font-size: 14px;
     color: var(--danger);
   }
-`
+`;
 
 const OrderTable = styled(Table)`
   color: #fff;
-`
+`;
 
 const TableRow = styled.tr`
   cursor: pointer;
   :hover {
     text-decoration: underline;
   }
-`
+`;
 
-const ColWithLink = styled.th.attrs((props) => ({ onClick: () => props.navigate(`/order/${props.orderId}`) }))`
-    cursor: pointer;
-    :hover {
-        text-decoration: underline;
-    }
-`
+const ColWithLink = styled.th.attrs((props) => ({
+  onClick: () => props.navigate(`/order/${props.orderId}`),
+}))`
+  cursor: pointer;
+  :hover {
+    text-decoration: underline;
+  }
+`;
+
+const FixedButtonContainer = styled.div`
+  position: fixed;
+  color: #000;
+  text-align: center;
+  left: 50%;
+  top: 80%;
+  z-index: 10;
+`;
 
 const OrderItem = ({
-    disabled,
-    index,
-    data,
-    loading,
-    onCancelOrder,
-    onClaim,
-    tick
+  disabled,
+  index,
+  data,
+  loading,
+  onCancelOrder,
+  onClaim,
+  tick,
 }) => {
-
-    // const [status, setStatus] = useState()
-    // const { resolveStatus } = useOrder()
-
-    // const navigate = useNavigate();
-
-    // useEffect(() => {
-
-    //     setTimeout(() => {
-
-    //         if (data && data.chainId && data.orderId) {
-    //             resolveStatus({
-    //                 chainId: data.chainId,
-    //                 orderId: data.orderId
-    //             }).then(setStatus)
-    //         }
-
-    //     }, 300 * index)
-
-    // }, index, data)
-
-    // useEffect(() => {
-
-    //     if (tick && tick > 0) {
-    //         resolveStatus({
-    //             chainId: data.chainId,
-    //             orderId: data.orderId
-    //         }).then(setStatus)
-    //     }
-
-    // }, [tick, data])
-
-    return (
-        <div style={{ color: "black", textAlign: "center" }}>
-
-            {/* <tr key={index} >
-            <ColWithLink navigate={navigate} orderId={data.cid}>{shortAddress(data.cid)}</ColWithLink>
-            <ColWithLink navigate={navigate} orderId={data.cid}>{resolveNetworkName(data.chainId)}
-                {disabled && <AlertTriangle style={{ marginLeft: "5px" }} size="18px" />}
-            </ColWithLink>
-            <ColWithLink navigate={navigate} orderId={data.cid}>{(data.timestamp).toLocaleString()}</ColWithLink>
-            
-            <th>
-
-                <button
-                    disabled={loading === Number(data.cid) || disabled}
-                    onClick={() => onCancelOrder(data, index)}
-                    style={{
-                        zIndex: 40,
-                        color: "white",
-                        borderRadius: "32px",
-                        padding: "4px 8px",
-                    }}
-                    className="btn btn-danger shadow"
-                >
-                    <div style={{ display: "flex", flexDirection: "row" }}>
-                        {loading === Number(index) && (
-                            <span style={{ marginRight: "10px" }}><LoadingSpinner /></span>
-                        )}
-                        Cancel
-                    </div>
-
-                </button>
-            </th>
-        </tr> */}
-            <button
-                disabled={loading === Number(index)}
-                onClick={() => onCancelOrder(data, index)}
-                style={{
-                    zIndex: 40,
-                    color: "white",
-                    borderRadius: "32px",
-                    padding: "4px 8px",
-                }}
-                className="btn btn-danger shadow"
-            >
-                <div style={{ display: "flex", flexDirection: "row" }}>
-                    {loading === Number(index) && (
-                        <span style={{ marginRight: "10px" }}><LoadingSpinner /></span>
-                    )}
-                    Cancel
-                </div>
-
-            </button>
+  return (
+    <div style={{ color: "black", textAlign: "center" }}>
+      <button
+        disabled={loading === Number(index)}
+        onClick={() => onCancelOrder(data, index)}
+        style={{
+          zIndex: 40,
+          color: "white",
+          borderRadius: "32px",
+          padding: "4px 8px",
+        }}
+        className="btn btn-danger shadow"
+      >
+        <div style={{ display: "flex", flexDirection: "row" }}>
+          {loading === Number(index) && (
+            <span style={{ marginRight: "10px" }}>
+              <LoadingSpinner />
+            </span>
+          )}
+          Cancel
         </div>
-    )
-}
+      </button>
+    </div>
+  );
+};
 
 const OrdersPanel = styled.div`
-    display: flex;
-    flex-wrap: wrap;  
-    padding-top: 10px;
-`
-
+  display: flex;
+  flex-wrap: wrap;
+  padding-top: 10px;
+`;
 
 const Orders = () => {
+  const [loading, setLoading] = useState(false);
+  const [orders, setOrders] = useState([]);
+  const [tick, setTick] = useState(0);
+  const [cancelData, setCancelData] = useState([]);
+  const [disabledCancel, setDisabledCancel] = useState(true);
 
-    const [loading, setLoading] = useState(-1)
-    const [orders, setOrders] = useState([])
+  const { getOrdersFromAccount } = useOrder();
+  const { account, library, chainId } = useWeb3React();
 
-    const { getOrdersFromAccount } = useOrder()
-    const { account, library, chainId } = useWeb3React()
-    const [tick, setTick] = useState(0)
+  useEffect(() => {
+    chainId &&
+      account &&
+      getOrdersFromAccount(chainId, account).then(setOrders);
+  }, [account, chainId]);
 
-    useEffect(() => {
-        chainId && account && getOrdersFromAccount(chainId, account).then(setOrders)
-    }, [account, chainId])
+  useEffect(() => {
+    if (cancelData.length <= 0) {
+      setDisabledCancel(true);
+    } else {
+      setDisabledCancel(false);
+    }
+  }, [cancelData]);
 
-    const onCancelOrder = useCallback(
-        async (order, index) => {
-            setLoading(Number(index))
+  const onCancelOrder = useCallback(
+    async (cancelData) => {
+      setLoading(true);
 
-            const { contractAddress } = NFT_MARKETPLACE.find(
-                (item) => item.chainId === order.chainId
-            )
-            const marketplaceContract = new ethers.Contract(
-                contractAddress,
-                MarketplaceABI,
-                library.getSigner()
-            )
+      let cidArr = [];
+      if (cancelData.length > 1) {
+        cancelData.map((order) => {
+          cidArr.push(order.cid);
+        });
+      }
 
-            try {
-                const tx = await marketplaceContract.cancel(order.cid)
-                await tx.wait()
-            } catch (e) {
-                console.log(e)
-            } finally {
-                getOrdersFromAccount(chainId, account).then(setOrders)
-                setLoading(-1)
-                setTick(tick + 1)
-            }
-        },
-        [orders, chainId, account, tick]
-    )
+      const { contractAddress } = NFT_MARKETPLACE.find(
+        (item) => item.chainId === cancelData[0].chainId
+      );
+      const marketplaceContract = new ethers.Contract(
+        contractAddress,
+        MarketplaceABI,
+        library.getSigner()
+      );
 
-    return (
-        <Wrapper>
-            {/* <OrderTable>
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Chain</th>
-                        <th>Created</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {orders
-                        ? orders.map((data, index) => {
+      try {
+        if (cancelData.length === 1) {
+          const tx = await marketplaceContract.cancel(cancelData[0].cid);
+          await tx.wait();
+        }
 
-                            const disabled = data.chainId !== chainId
+        if (cancelData.length > 1) {
+          const tx = await marketplaceContract.cancelBatch(cidArr);
+          await tx.wait();
+        }
+      } catch (e) {
+        console.log(e);
+      } finally {
+        getOrdersFromAccount(chainId, account).then(setOrders);
+        setLoading(false);
+        setTick(tick + 1);
+      }
+    },
+    [orders, chainId, account, tick]
+  );
 
-                            return (
-                                <OrderItem
-                                    data={data}
-                                    index={index}
-                                    disabled={disabled}
-                                    loading={loading}
-                                    onCancelOrder={onCancelOrder}
-                                    tick={tick}
-                                />
-                            )
-                        })
-                        : ""}
-                </tbody>
-            </OrderTable> */}
+  const onClickCard = (nft) => {
+    if (cancelData.find((data) => data.cid === nft.cid)) {
+      const newNFTArray = cancelData.filter((data) => data.cid !== nft.cid);
+      setCancelData(newNFTArray);
+    } else {
+      setCancelData([...cancelData, nft]);
+    }
+  };
 
-            <OrdersPanel>
+  useEffect(() => {
+    console.log(
+      "🚀 ~ file: orders.js ~ line 152 ~ onClickCard ~ cancelData",
+      cancelData
+    );
+  }, [cancelData]);
 
-                {(!orders || orders.length === 0) && <AssetCard />}
+  return (
+    <Wrapper>
+      <OrdersPanel>
+        {(!orders || orders.length === 0) && <AssetCard />}
+        {orders.length > 0 &&
+          orders.map((order, index) => {
+            return (
+              <div>
+                <SelectableCardCancelOrder
+                  chainId={chainId}
+                  onClickCard={onClickCard}
+                  order={order}
+                  cancelData={cancelData}
+                  account={account}
+                />
 
-                {(orders.length > 0) &&
-                    orders.map((order, index) => {
-                        return (
-                            <NFTCard key={index} delay={index % orders.length} order={order} >
-                                <OrderItem
-                                    data={order}
-                                    index={index}
-                                    // disabled={disabled}
-                                    loading={loading}
-                                    onCancelOrder={onCancelOrder}
-                                    tick={tick}
-                                />
-                            </NFTCard>
-                        );
-                    })}
+                {/* <NFTCard
+                  key={index}
+                  delay={index % orders.length}
+                  order={order}
+                >
+                  <OrderItem
+                    data={order}
+                    index={index}
+                    loading={loading}
+                    onCancelOrder={onCancelOrder}
+                    tick={tick}
+                  />
+                </NFTCard> */}
+              </div>
+            );
+          })}
+        <FixedButtonContainer>
+          <button
+            disabled={disabledCancel}
+            style={{
+              color: "white",
+              borderRadius: "32px",
+              padding: "4px 8px",
+              width: "200px",
+            }}
+            className="btn btn-danger shadow"
+            onClick={() => onCancelOrder(cancelData)}
+          >
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "center",
+              }}
+            >
+              {loading && (
+                <span style={{ marginRight: "10px" }}>
+                  <LoadingSpinner />
+                </span>
+              )}
+              Cancel Order(s)
+            </div>
+          </button>
+        </FixedButtonContainer>
+      </OrdersPanel>
+    </Wrapper>
+  );
+};
 
-            </OrdersPanel>
-
-        </Wrapper>
-    )
-}
-
-export default Orders
+export default Orders;
