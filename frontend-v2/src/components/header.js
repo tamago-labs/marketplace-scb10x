@@ -44,11 +44,9 @@ const Brand = styled.div`
 `;
 
 const Menu = styled.div`
-  margin: auto;
-
-  @media only screen and (max-width: 600px) {
-    text-align: center;
-  }
+  margin: auto; 
+  flex: 1; 
+  text-align: center;
 `;
 
 const Address = styled.div`
@@ -59,8 +57,9 @@ const Address = styled.div`
 `;
 
 const Buttons = styled.div`
-  text-align: right;
-  width: 300px;
+  display: flex;
+  justify-content: right;  
+  flex: 1;
 `;
 
 const NetworkBadge = styled(({ className, toggleSwitchChain, chainId }) => {
@@ -147,10 +146,6 @@ const Header = () => {
           <Link to="/">Tamago NFT</Link>
         </Brand>
         <Menu>
-          {/* <Link to="/">
-                        {` `}Marketplace
-                    </Link>
-                    {` `} */}
           <Link to="/launchpad">{` `}Launchpad</Link>
           {` `}
           <Link to="/faucet">{` `}Faucet</Link>
@@ -166,12 +161,15 @@ const Header = () => {
                 toggleSwitchChain={toggleSwitchChain}
               />
               {isSupported && (
-                <Button onClick={() => navigate("/create")}>Sell</Button>
+                <>
+                  <Button onClick={() => navigate("/create")}>Sell</Button>
+                  <CartModal chainId={chainId} />
+                </>
               )}
             </div>
           )}
+
         </Buttons>
-        {account && <CartModal chainId={chainId} />}
       </Container>
     </>
   );

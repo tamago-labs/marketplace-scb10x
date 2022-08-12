@@ -47,13 +47,18 @@ const SwapButton = styled.button.attrs(() => ({ className: "btn" }))`
 `;
 
 const NumDot = styled.div`
-  position: relative;
-  left: 15px;
-  bottom: 5px;
+  display: flex; 
+  margin-left: 7px;
+  padding: 1px 5px;
   background-color: #000;
   color: #ffff;
   border-radius: 50px;
 `;
+
+const Container = styled.div`
+  display: flex;
+  margin-left: 10px;
+`
 
 /** Function */
 const CartModal = ({ chainId }) => {
@@ -204,10 +209,12 @@ const CartModal = ({ chainId }) => {
   }, [cartList]);
 
   return (
-    <>
+    <Container>
       <Button variant="primary" onClick={handleShow}>
-        <NumDot>{cartListNum}</NumDot>
-        <ShoppingCart />
+        <div style={{ display: "flex", flexDirection: "row" }}>
+          <ShoppingCart />
+          <NumDot>{cartListNum}</NumDot>
+        </div>
       </Button>
 
       <Modal show={show} onHide={handleClose} style={{ color: "#000" }}>
@@ -220,7 +227,7 @@ const CartModal = ({ chainId }) => {
         <Modal.Body>
           {cartList.map((cartItem, index) => {
             return (
-              <Preview>
+              <Preview key={index}>
                 <div>
                   {cartItem.item && cartItem.item.tokenType === 0 && (
                     <>
@@ -305,7 +312,7 @@ const CartModal = ({ chainId }) => {
           </div>
         </Modal.Body>
       </Modal>
-    </>
+    </Container>
   );
 };
 

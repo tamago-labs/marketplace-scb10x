@@ -407,15 +407,13 @@ const NFTCard = ({
           </Button2>
           <div style={{ marginTop: "4px" }}></div>
           {item.chainId === chainId ? (
-            <Button2 onClick={handleAddToCart}>
-              {cartAdded ? <CheckCircle /> : "add to cart"}
-            </Button2>
+            <a style={{ color: "black", fontSize: "12px", cursor: "pointer", textDecoration: "underline" }} onClick={handleAddToCart}>
+              {cartAdded ? <>Added<CheckCircle size={14}/></> : "Add to cart"}
+            </a>
           ) : (
             ""
           )}
-          {/* <Button2 disabled={loading || !account} onClick={handleAddToCart}>
-            {cartAdded ? <CheckCircle /> : "add to cart"}
-          </Button2> */}
+
         </div>
       </PairAssetCard>
     </>
@@ -671,8 +669,8 @@ const OrderDetails = () => {
                         {order.baseAssetTokenType === 0
                           ? "ERC-20"
                           : order.baseAssetTokenType === 1
-                          ? "ERC-721"
-                          : "ERC-1155"}
+                            ? "ERC-721"
+                            : "ERC-1155"}
                       </div>
                     </ListGroupItem>
                     <ListGroupItem>
