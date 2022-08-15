@@ -60,6 +60,12 @@ const COLLECTIONS = [
         description: "Mock CloneX for testing purpose"
     },
     {
+        chainId : 80001  ,
+        assetAddress : "0xe5209a4f622c6ed2c158dcccddb69b05f9d0e4e0",
+        title : "Mock Moonbird",
+        description: "Mock Moonbird NFT for testing purpose"
+    },
+    {
         chainId : 97  ,
         assetAddress : "0xe5209a4f622c6ed2c158dcccddb69b05f9d0e4e0",
         title : "Mock Coolcat",
