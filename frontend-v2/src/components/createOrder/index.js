@@ -193,7 +193,7 @@ const CreateOrder = () => {
         ) {
           metadata.image = metadata.image.replaceAll(
             "ipfs://",
-            "https://ipfs.infura.io/ipfs/"
+            "https://nftstorage.link/ipfs/"
           );
         }
 

@@ -92,7 +92,7 @@ const useOrder = () => {
     ) {
       metadata.image = metadata.image.replaceAll(
         "ipfs://",
-        "https://ipfs.infura.io/ipfs/"
+        "https://nftstorage.link/ipfs/"
       );
     }
 
@@ -735,7 +735,7 @@ const useOrder = () => {
         ) {
           data.metadata.image = data.metadata.image.replaceAll(
             "ipfs://",
-            "https://ipfs.infura.io/ipfs/"
+            "https://nftstorage.link/ipfs/"
           );
         }
 
