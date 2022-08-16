@@ -94,6 +94,18 @@ const CartModal = ({ chainId }) => {
   //   setCartList([]);
   // }, [chainId]);
 
+  const handleRemoveCart = (cartItem) => {
+    console.log(cartItem);
+    //remove from local storage
+    localStorage.removeItem(cartItem.order.title);
+
+    //remove from cartList context
+    const removeItemArr = cartList.filter(
+      (item) => item.order.title !== cartItem.order.title
+    );
+    setCartList(removeItemArr);
+  };
+
   const handleCart = useCallback(() => {
     try {
       const cartSet = new Set();
@@ -113,21 +125,14 @@ const CartModal = ({ chainId }) => {
     }
   }, []);
 
+  //bug
   useEffect(() => {
-    setCartListNum(cartList.length);
     console.log(
       "🚀 ~ file: cartModal.js ~ line 66 ~ CartModal ~ cartList",
       cartList
     );
+    setCartListNum(cartList.length);
   }, [cartList]);
-
-  useEffect(() => {
-    console.log(
-      "🚀 ~ file: cartModal.js ~ line 108 ~ CartModal ~ orderIdList",
-      orderIdList
-    );
-    console.log(orderList);
-  }, [orderIdList]);
 
   const increaseTick = useCallback(() => {
     setTick(tick + 1);
@@ -157,10 +162,6 @@ const CartModal = ({ chainId }) => {
       await Promise.all(
         cartList.map(async (cartItem) => {
           const item = cartItem.item;
-          console.log(
-            "🚀 ~ file: cartModal.js ~ line 97 ~ cartList.map ~ cartItem.approved",
-            cartItem.approved
-          );
           if (
             !assetAddressSet.has(item.assetAddress) &&
             cartItem.approved === false
@@ -168,7 +169,6 @@ const CartModal = ({ chainId }) => {
             assetAddressSet.add(item.assetAddress);
 
             if (item.tokenType === 0) {
-              console.log("erc20");
               const erc20 = new ethers.Contract(
                 item.assetAddress,
                 ERC20ABI,
@@ -178,8 +178,6 @@ const CartModal = ({ chainId }) => {
             }
 
             if (item.tokenType === 1) {
-              console.log("erc721");
-
               const erc721 = new ethers.Contract(
                 item.assetAddress,
                 ERC721ABI,
@@ -190,8 +188,6 @@ const CartModal = ({ chainId }) => {
             }
 
             if (item.tokenType === 2) {
-              console.log("erc1155");
-
               const erc1155 = new ethers.Contract(
                 item.assetAddress,
                 ERC1155ABI,
@@ -259,58 +255,68 @@ const CartModal = ({ chainId }) => {
           )}
           {cartList.map((cartItem, index) => {
             return (
-              <Preview key={index}>
-                <div>
-                  {cartItem.item && cartItem.item.tokenType === 0 && (
-                    <>
-                      <img
-                        src={"../images/coin.png"}
-                        width="100%"
-                        height="120px"
-                        style={{ margin: "auto" }}
-                      />
+              <>
+                <a
+                  class="link-danger"
+                  onClick={() => {
+                    handleRemoveCart(cartItem);
+                  }}
+                >
+                  remove
+                </a>
+                <Preview key={index}>
+                  <div>
+                    {cartItem.item && cartItem.item.tokenType === 0 && (
+                      <>
+                        <img
+                          src={"../images/coin.png"}
+                          width="100%"
+                          height="120px"
+                          style={{ margin: "auto" }}
+                        />
 
-                      <p>{cartItem.item.symbol}</p>
-                    </>
-                  )}
-                  {cartItem.pairMetadata && (
-                    <img
-                      src={cartItem.pairMetadata.metadata.image}
-                      width="100%"
-                      height="120px"
-                      style={{ margin: "auto" }}
-                    />
-                  )}
-                </div>
-                <div>
-                  <div style={{ margin: "auto", textAlign: "center" }}>
-                    <ArrowRight
-                      style={{ marginLeft: "auto", marginRight: "auto" }}
-                      size={32}
-                    />
-                  </div>
-                </div>
-                <div>
-                  {cartItem.baseMetadata ? (
-                    <img
-                      src={cartItem.baseMetadata.metadata.image}
-                      width="100%"
-                      height="120px"
-                      style={{ margin: "auto" }}
-                    />
-                  ) : (
-                    <>
-                      {/* <p>{cartItem.item.symbol}</p> */}
+                        <p>{cartItem.item.symbol}</p>
+                      </>
+                    )}
+                    {cartItem.pairMetadata && (
                       <img
-                        src={"../images/coin.png"}
+                        src={cartItem.pairMetadata.metadata.image}
                         width="100%"
                         height="120px"
                         style={{ margin: "auto" }}
                       />
-                    </>
-                  )}
-                </div>
-              </Preview>
+                    )}
+                  </div>
+                  <div>
+                    <div style={{ margin: "auto", textAlign: "center" }}>
+                      <ArrowRight
+                        style={{ marginLeft: "auto", marginRight: "auto" }}
+                        size={32}
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    {cartItem.baseMetadata ? (
+                      <img
+                        src={cartItem.baseMetadata.metadata.image}
+                        width="100%"
+                        height="120px"
+                        style={{ margin: "auto" }}
+                      />
+                    ) : (
+                      <>
+                        {/* <p>{cartItem.item.symbol}</p> */}
+                        <img
+                          src={"../images/coin.png"}
+                          width="100%"
+                          height="120px"
+                          style={{ margin: "auto" }}
+                        />
+                      </>
+                    )}
+                  </div>
+                </Preview>
+              </>
             );
           })}
           <hr style={{ background: "#333" }} />
