@@ -7,6 +7,7 @@ import { ethers } from "ethers";
 import { Puff } from "react-loading-icons";
 
 import { Button } from "../button";
+import { Alert } from "../alert";
 import { NftCartsContext } from "../../hooks/useNftCarts";
 import ERC721ABI from "../../abi/ERC721.json";
 import ERC1155ABI from "../../abi/ERC1155.json";
@@ -47,7 +48,7 @@ const SwapButton = styled.button.attrs(() => ({ className: "btn" }))`
 `;
 
 const NumDot = styled.div`
-  display: flex; 
+  display: flex;
   margin-left: 7px;
   padding: 1px 5px;
   background-color: #000;
@@ -58,7 +59,7 @@ const NumDot = styled.div`
 const Container = styled.div`
   display: flex;
   margin-left: 10px;
-`
+`;
 
 /** Function */
 const CartModal = ({ chainId }) => {
@@ -70,6 +71,7 @@ const CartModal = ({ chainId }) => {
   const [orderIdList, setOrderIdList] = useState([]);
   const [orderList, setOrderList] = useState([]);
   const [tokenIndexList, setTokenIndexList] = useState([]);
+  const [process, setProcess] = useState("");
 
   const { cartList, setCartList } = useContext(NftCartsContext);
   const { account, library } = useWeb3React();
@@ -91,6 +93,25 @@ const CartModal = ({ chainId }) => {
   //   localStorage.clear();
   //   setCartList([]);
   // }, [chainId]);
+
+  const handleCart = useCallback(() => {
+    try {
+      const cartSet = new Set();
+      if (localStorage.length > 0) {
+        for (let i = 0; i < localStorage.length; i++) {
+          let key = localStorage.key(i);
+          if (key.includes("Order")) {
+            let item = JSON.parse(localStorage.getItem(key));
+            cartSet.add(item);
+          }
+        }
+        const array = Array.from(cartSet);
+        setCartList(array);
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  }, []);
 
   useEffect(() => {
     setCartListNum(cartList.length);
@@ -196,6 +217,8 @@ const CartModal = ({ chainId }) => {
     try {
       const tx = await swapBatch(orderIdList, orderList, tokenIndexList);
       await tx.wait();
+      setProcess("success");
+      handleClearAll();
     } catch (e) {
       console.log(e, e.error);
 
@@ -210,7 +233,13 @@ const CartModal = ({ chainId }) => {
 
   return (
     <Container>
-      <Button variant="primary" onClick={handleShow}>
+      <Button
+        variant="primary"
+        onClick={() => {
+          handleShow();
+          handleCart();
+        }}
+      >
         <div style={{ display: "flex", flexDirection: "row" }}>
           <ShoppingCart />
           <NumDot>{cartListNum}</NumDot>
@@ -225,6 +254,9 @@ const CartModal = ({ chainId }) => {
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
+          {process === "success" && (
+            <Alert>Your order has been successfully swapped!</Alert>
+          )}
           {cartList.map((cartItem, index) => {
             return (
               <Preview key={index}>
