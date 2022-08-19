@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect, useCallback } from "react";
 import Modal from "react-bootstrap/Modal";
-import { ShoppingCart, ArrowRight } from "react-feather";
+import { ShoppingCart, ArrowRight, XCircle } from "react-feather";
 import styled from "styled-components";
 import { useWeb3React } from "@web3-react/core";
 import { ethers } from "ethers";
@@ -261,8 +261,9 @@ const CartModal = ({ chainId }) => {
                   onClick={() => {
                     handleRemoveCart(cartItem);
                   }}
+                  style={{ position: "relative", top: "12px" }}
                 >
-                  remove
+                  <XCircle />
                 </a>
                 <Preview key={index}>
                   <div>
