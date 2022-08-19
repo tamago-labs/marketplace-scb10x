@@ -1,38 +1,40 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import { Web3ReactProvider } from "@web3-react/core"
-import { BrowserRouter } from "react-router-dom"
+import React from "react";
+import ReactDOM from "react-dom/client";
+import { Web3ReactProvider } from "@web3-react/core";
+import { BrowserRouter } from "react-router-dom";
 import { MoralisProvider } from "react-moralis";
-import "bootstrap/dist/css/bootstrap.min.css"
-import "react-loading-skeleton/dist/skeleton.css"
+import "bootstrap/dist/css/bootstrap.min.css";
+import "react-loading-skeleton/dist/skeleton.css";
 import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
-import './index.css';
-import App from './App';
+import "./index.css";
+import App from "./App";
 import { ethers } from "ethers";
-import reportWebVitals from './reportWebVitals';
-import { SkeletonTheme } from "react-loading-skeleton"
+import reportWebVitals from "./reportWebVitals";
+import { SkeletonTheme } from "react-loading-skeleton";
 
-import { MORALIS_ID, MORALIS_URL } from './constants';
+import { MORALIS_ID, MORALIS_URL } from "./constants";
+import NftCartsProvider from "./hooks/useNftCarts";
 
 const getLibrary = (provider) => {
-  const library = new ethers.providers.Web3Provider(provider)
-  library.pollingInterval = 12000
-  return library
-}
+  const library = new ethers.providers.Web3Provider(provider);
+  library.pollingInterval = 12000;
+  return library;
+};
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
+const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
     <BrowserRouter>
       <Web3ReactProvider getLibrary={getLibrary}>
         <MoralisProvider serverUrl={MORALIS_URL} appId={MORALIS_ID}>
           <SkeletonTheme highlightColor="#ccc">
-            <App />
+            <NftCartsProvider>
+              <App />
+            </NftCartsProvider>
           </SkeletonTheme>
         </MoralisProvider>
       </Web3ReactProvider>
     </BrowserRouter>
-
   </React.StrictMode>
 );
 

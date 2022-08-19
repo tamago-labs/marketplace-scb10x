@@ -1,13 +1,28 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState, useContext } from "react";
 import { useParams, Link } from "react-router-dom";
-import { Briefcase } from "react-feather";
+import { CheckCircle } from "react-feather";
 import styled from "styled-components";
 import Skeleton from "react-loading-skeleton";
 import { Puff } from "react-loading-icons";
 import { useWeb3React } from "@web3-react/core";
 import useOrder from "../../hooks/useOrder";
-import { Row, Col, Accordion, AccordionBody, AccordionHeader, AccordionItem, List, ListGroup, ListGroupItem } from "reactstrap";
-import { resolveBlockexplorerLink, resolveNetworkName, shortAddress, shorterName } from "../../helper";
+import {
+  Row,
+  Col,
+  Accordion,
+  AccordionBody,
+  AccordionHeader,
+  AccordionItem,
+  List,
+  ListGroup,
+  ListGroupItem,
+} from "reactstrap";
+import {
+  resolveBlockexplorerLink,
+  resolveNetworkName,
+  shortAddress,
+  shorterName,
+} from "../../helper";
 import { PairAssetCard } from "../card";
 import SwapModal from "../modals/swapModal";
 import { useERC1155 } from "../../hooks/useERC1155";
@@ -15,6 +30,7 @@ import { useERC20 } from "../../hooks/useERC20";
 import { useERC721 } from "../../hooks/useERC721";
 import { AlertWarning } from "../../components/alert";
 import { Button2 } from "../../components/button";
+import { NftCartsContext } from "../../hooks/useNftCarts";
 import { ethers } from "ethers";
 
 const Container = styled.div.attrs(() => ({ className: "container" }))`
@@ -49,19 +65,16 @@ const L2Text = styled(L1Text)`
   font-size: 12px;
 `;
 
-
-const Attribute = styled.div` 
-
+const Attribute = styled.div`
   .accordion-item {
     background: transparent;
     border: 1px solid white;
   }
   .accordion-header {
-    
   }
 
   .list-group-item {
-    color: white; 
+    color: white;
     padding-top: 15px;
     font-size: 14px;
     padding-bottom: 15px;
@@ -82,9 +95,7 @@ const Attribute = styled.div`
       border-bottom: 0px;
     }
   }
-
-
-`
+`;
 
 export const Info = styled(({ className, name, value, link }) => {
   return (
@@ -98,7 +109,7 @@ export const Info = styled(({ className, name, value, link }) => {
         </Link>
       )}
     </div>
-  )
+  );
 })`
   display: inline-block;
   min-width: 100px;
@@ -114,10 +125,8 @@ export const Info = styled(({ className, name, value, link }) => {
   a {
     color: inherit;
     text-decoration: none;
-  } 
+  }
 `;
-
-
 
 const NFTCard = ({
   orderId,
@@ -128,6 +137,8 @@ const NFTCard = ({
   baseMetadata,
   index,
   increaseTick,
+  selectedCard,
+  setSelectedCard,
 }) => {
   const { resolveMetadata, resolveTokenValue, swap } = useOrder();
   const [data, setData] = useState();
@@ -138,6 +149,9 @@ const NFTCard = ({
   const [approved, setApproval] = useState(false);
   const [ownedItems, setOwnedItems] = useState(-1);
   const [tick, setTick] = useState();
+  const [cartAdded, setCartAdded] = useState(false);
+
+  const { cartList, setCartList } = useContext(NftCartsContext);
 
   useEffect(() => {
     if (item && item.tokenType !== 0) {
@@ -263,11 +277,78 @@ const NFTCard = ({
       setOwnedItems(balance.toString());
       assetAddressContractErc1155.isApproved().then(setApproval);
     } else if (item.tokenType === 3) {
-      const balance = await library.getBalance(account)
-      setOwnedItems( Number(ethers.utils.formatEther(balance)).toLocaleString())
-      setApproval(true)
+      const balance = await library.getBalance(account);
+      setOwnedItems(Number(ethers.utils.formatEther(balance)).toLocaleString());
+      setApproval(true);
     }
-  }, [assetAddressContractErc721, assetAddressContractErc1155, contractErc20, library, account]);
+  }, [
+    assetAddressContractErc721,
+    assetAddressContractErc1155,
+    contractErc20,
+    library,
+    account,
+  ]);
+
+  const handleAddToCart = () => {
+    let itemObject = {
+      item: item,
+      order: order,
+      pairMetadata: data,
+      baseMetadata: baseMetadata,
+      approved: approved,
+      orderId: orderId,
+    };
+    localStorage.setItem(`${order.title}`, JSON.stringify(itemObject));
+
+    //selected card
+    const arr = [];
+    selectedCard.map((item, i) => {
+      if (index == i) {
+        arr.push(true);
+      } else {
+        arr.push(false);
+      }
+    });
+    setSelectedCard(arr);
+  };
+
+  useEffect(() => {
+    try {
+      const cartSet = new Set();
+      if (localStorage.length > 0) {
+        for (let i = 0; i < localStorage.length; i++) {
+          let key = localStorage.key(i);
+          if (key.includes("Order")) {
+            let item = JSON.parse(localStorage.getItem(key));
+            cartSet.add(item);
+          }
+        }
+        const array = Array.from(cartSet);
+        setCartList(array);
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  }, [selectedCard]);
+
+  //if clear check button
+  useEffect(() => {
+    const arr = [];
+    if (cartList.length === 0) {
+      selectedCard.map((item, i) => {
+        arr.push(false);
+      });
+      setSelectedCard(arr);
+    }
+  }, [cartList]);
+
+  useEffect(() => {
+    selectedCard.map((item, i) => {
+      if (index == i) {
+        setCartAdded(item);
+      }
+    });
+  }, [selectedCard]);
 
   return (
     <>
@@ -285,7 +366,7 @@ const NFTCard = ({
       />
       <PairAssetCard
         image={
-          (item.tokenType === 0 || item.tokenType === 3)
+          item.tokenType === 0 || item.tokenType === 3
             ? "../images/coin.png"
             : data && data.metadata && data.metadata.image
         }
@@ -299,9 +380,11 @@ const NFTCard = ({
         }
       >
         <div className="name">
-          {(item.tokenType !== 0 && item.tokenType !== 3) ? (
+          {item.tokenType !== 0 && item.tokenType !== 3 ? (
             <>
-              {data && data.metadata.name ? data.metadata.name : `#${shorterName(item.assetTokenIdOrAmount)}`}
+              {data && data.metadata.name
+                ? data.metadata.name
+                : `#${shorterName(item.assetTokenIdOrAmount)}`}
             </>
           ) : (
             <>
@@ -315,13 +398,22 @@ const NFTCard = ({
         </div>
         <div style={{ padding: "5px", textAlign: "center" }}>
           <Button2
-            onClick={() =>
-              item.chainId === chainId && setSwapModalVisible(true)
-            }
+            onClick={() => {
+              item.chainId === chainId && setSwapModalVisible(true);
+            }}
             disabled={loading || !account}
           >
             Swap
           </Button2>
+          <div style={{ marginTop: "4px" }}></div>
+          {item.chainId === chainId ? (
+            <a style={{ color: "black", fontSize: "12px", cursor: "pointer", textDecoration: "underline" }} onClick={handleAddToCart}>
+              {cartAdded ? <>Added<CheckCircle size={14}/></> : "Add to cart"}
+            </a>
+          ) : (
+            ""
+          )}
+
         </div>
       </PairAssetCard>
     </>
@@ -331,10 +423,15 @@ const NFTCard = ({
 const OrderDetails = () => {
   const { account, library, chainId } = useWeb3React();
 
-  const { getOrder, resolveMetadata, resolveTokenValue, resolveStatus, getCollectionInfo } =
-    useOrder();
+  const {
+    getOrder,
+    resolveMetadata,
+    resolveTokenValue,
+    resolveStatus,
+    getCollectionInfo,
+  } = useOrder();
 
-  const [open, setOpen] = useState('2');
+  const [open, setOpen] = useState("2");
   const toggle = (id) => {
     open === id ? setOpen() : setOpen(id);
   };
@@ -343,7 +440,9 @@ const OrderDetails = () => {
   const [data, setData] = useState();
   const [status, setStatus] = useState();
   const [tick, setTick] = useState(0);
-  const [collectionInfo, setCollectionInfo] = useState()
+  const [collectionInfo, setCollectionInfo] = useState();
+  const [cartAdded, setCartAdded] = useState(false);
+  const [selectedCard, setSelectedCard] = useState([]);
 
   const { id } = useParams();
 
@@ -362,7 +461,9 @@ const OrderDetails = () => {
         tokenId: order.baseAssetTokenIdOrAmount,
         chainId: order.chainId,
       }).then(setData);
-      getCollectionInfo(order.baseAssetAddress, order.chainId).then(setCollectionInfo)
+      getCollectionInfo(order.baseAssetAddress, order.chainId).then(
+        setCollectionInfo
+      );
     }
   }, [order]);
 
@@ -376,13 +477,16 @@ const OrderDetails = () => {
   }, [id, order, tick]);
 
   const items = useMemo(() => {
+    const arr = [];
     if (order && order.barterList.length > 0) {
       const list = order.barterList.map((item, index) => {
+        arr.push(false);
         return {
           ...item,
           index,
         };
       });
+      setSelectedCard(arr);
       return list;
     }
     return [];
@@ -444,7 +548,15 @@ const OrderDetails = () => {
           <div
             style={{ display: "flex", flexDirection: "row", marginTop: "1rem" }}
           >
-            <Info link={`${order.chainId}/${order.baseAssetAddress}`} name={"Collection"} value={collectionInfo && collectionInfo.title ? collectionInfo.title : shortAddress(order.baseAssetAddress)} />
+            <Info
+              link={`${order.chainId}/${order.baseAssetAddress}`}
+              name={"Collection"}
+              value={
+                collectionInfo && collectionInfo.title
+                  ? collectionInfo.title
+                  : shortAddress(order.baseAssetAddress)
+              }
+            />
             <Info name={"Status"} value={status ? "Sold" : "New"} />
             {/* <Info name={"Chain"} value={resolveNetworkName(order.chainId)} />
             <Info
@@ -479,6 +591,10 @@ const OrderDetails = () => {
                   index={index}
                   increaseTick={increaseTick}
                   tick={tick}
+                  cartAdded={cartAdded}
+                  setCartAdded={setCartAdded}
+                  selectedCard={selectedCard}
+                  setSelectedCard={setSelectedCard}
                 />
               );
             })}
@@ -490,71 +606,84 @@ const OrderDetails = () => {
             <Accordion open={open} toggle={toggle}>
               <AccordionItem>
                 <AccordionHeader targetId="1">
-                  Attributes ({data && data.metadata.attributes && data.metadata.attributes.length || 0})
+                  Attributes (
+                  {(data &&
+                    data.metadata.attributes &&
+                    data.metadata.attributes.length) ||
+                    0}
+                  )
                 </AccordionHeader>
                 <AccordionBody accordionId="1">
-
                   <Row>
-                    {data && data.metadata && data.metadata.attributes && data.metadata.attributes.map((item, index) => {
-                      return (
-                        <Col sm="3" key={index} style={{ padding: 10 }}>
-                          <div style={{ border: "1px solid white", height: "80px", borderRadius: "8px", padding: "10px", fontSize: "12px" }}>
-                            <h5 style={{ fontSize: "16px" }}>{item.trait_type || "Key"}</h5>
-                            <b>{item.value || "Value"}</b>
-                          </div>
-                        </Col>
-                      )
-                    })}
+                    {data &&
+                      data.metadata &&
+                      data.metadata.attributes &&
+                      data.metadata.attributes.map((item, index) => {
+                        return (
+                          <Col sm="3" key={index} style={{ padding: 10 }}>
+                            <div
+                              style={{
+                                border: "1px solid white",
+                                height: "80px",
+                                borderRadius: "8px",
+                                padding: "10px",
+                                fontSize: "12px",
+                              }}
+                            >
+                              <h5 style={{ fontSize: "16px" }}>
+                                {item.trait_type || "Key"}
+                              </h5>
+                              <b>{item.value || "Value"}</b>
+                            </div>
+                          </Col>
+                        );
+                      })}
                   </Row>
-
                 </AccordionBody>
               </AccordionItem>
               <AccordionItem>
-                <AccordionHeader targetId="2">
-                  Information
-                </AccordionHeader>
+                <AccordionHeader targetId="2">Information</AccordionHeader>
                 <AccordionBody accordionId="2">
                   <ListGroup>
                     <ListGroupItem>
+                      <div>Contract Addresss</div>
                       <div>
-                        Contract Addresss
-                      </div>
-                      <div>
-                        <a target="_blank" href={resolveBlockexplorerLink(order.chainId, order.baseAssetAddress)}>
+                        <a
+                          target="_blank"
+                          href={resolveBlockexplorerLink(
+                            order.chainId,
+                            order.baseAssetAddress
+                          )}
+                        >
                           {shortAddress(order.baseAssetAddress)}
                         </a>
                       </div>
                     </ListGroupItem>
                     <ListGroupItem>
+                      <div>Token ID</div>
+                      <div>#{shorterName(order.baseAssetTokenIdOrAmount)}</div>
+                    </ListGroupItem>
+                    <ListGroupItem>
+                      <div>Token Standard</div>
                       <div>
-                        Token ID
-                      </div>
-                      <div>
-                        #{shorterName(order.baseAssetTokenIdOrAmount)}
+                        {order.baseAssetTokenType === 0
+                          ? "ERC-20"
+                          : order.baseAssetTokenType === 1
+                            ? "ERC-721"
+                            : "ERC-1155"}
                       </div>
                     </ListGroupItem>
                     <ListGroupItem>
-                      <div>
-                        Token Standard
-                      </div>
-                      <div>
-                        {order.baseAssetTokenType === 0 ? "ERC-20" : order.baseAssetTokenType === 1 ? "ERC-721" : "ERC-1155"}
-                      </div>
+                      <div>Blockchain</div>
+                      <div>{resolveNetworkName(order.chainId)}</div>
                     </ListGroupItem>
                     <ListGroupItem>
+                      <div>Added</div>
+                      <div>Added</div>
                       <div>
-                        Blockchain
-                      </div>
-                      <div>
-                        {resolveNetworkName(order.chainId)}
-                      </div>
-                    </ListGroupItem>
-                    <ListGroupItem>
-                      <div>
-                        Added
-                      </div>
-                      <div>
-                        {new Date(Number(order.timestamp) * 1000).toLocaleDateString()}
+                        {new Date(
+                          Number(order.timestamp) * 1000
+                        ).toLocaleDateString()}
                       </div>
                     </ListGroupItem>
                   </ListGroup>
@@ -564,7 +693,7 @@ const OrderDetails = () => {
           </Attribute>
         </Col>
       </Row>
-    </Container >
+    </Container>
   );
 };
 
